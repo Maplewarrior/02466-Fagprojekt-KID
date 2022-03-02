@@ -11,8 +11,8 @@ PyMF Archetypal Analysis [1]
 import numpy as np
 from cvxopt import solvers, base
 
-from .svd import pinv
-from .base import MatrixFactBase
+from svd import pinv
+from base import MatrixFactBase
 __all__ = ["AA"]
 
 class AA(MatrixFactBase):
