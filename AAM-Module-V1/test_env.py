@@ -10,3 +10,5 @@ AAM.load_analysis(model_type = "OAA")
 
 AAM.plot("CAA", plot_type="barplot",archetype_number=0)
 AAM.plot("OAA", plot_type="barplot",archetype_number=0)
+
+AAM.load_analysis(model_type="TSAA")
