@@ -2,6 +2,7 @@
 from CAA_class import _CAA
 from OAA_class import _OAA
 from RBOAA_class import _RBOAA
+from TSAA_class import _TSAA
 
 import pandas as pd
 import numpy as np
@@ -18,11 +19,12 @@ class AA:
         self._CAA = _CAA()
         self._OAA = _OAA()
         self._RBOAA = _RBOAA()
-        self._results = {"CAA": [], "OAA": [], "RBOAA": []}
+        self._TSAA = _TSAA()
+        self._results = {"CAA": [], "OAA": [], "TSAA": [], "RBOAA": []}
         self._has_data = False
 
 
-    def load_data(self, X: np.ndarray, columns: list[str]):
+    def load_data(self, X, columns):
         self.columns = columns
         self.X = X
         self.N, self.M = X.shape
@@ -36,7 +38,7 @@ class AA:
             print(f"\nThe data was loaded successfully!\n")
 
 
-    def load_csv(self, filename: str, columns: list[int] = None, rows: int = None):
+    def load_csv(self, filename, columns, rows):
         self.columns, self.M, self.N, self.X = self._clean_data(filename, columns, rows)
         self._has_data = True
         print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
@@ -61,7 +63,7 @@ class AA:
         return column_names, M, N, X
     
 
-    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.001, mute: bool = False):
+    def analyse(self, K=3, n_iter=1000, AA_type="all", lr=0.001, mute=False):
         if self._has_data:
             if AA_type == "all" or AA_type == "CAA":
                 self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
@@ -69,6 +71,9 @@ class AA:
                 self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
             elif AA_type == "all" or AA_type == "RBOAA":
                 self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+            elif AA_type == "all" or AA_type == "TSAA":
+                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+                
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         
@@ -77,15 +82,15 @@ class AA:
 
 
     def plot(self, 
-            model_type: str = "CAA", 
-            plot_type: str = "PCA_scatter_plot", 
-            result_number: int = 0, 
-            attributes: list[int] = [0,1], 
-            archetype_number: int = 0, 
-            types: dict = {},
-            weighted: str = "equal_norm"):
+            model_type="CAA", 
+            plot_type="PCA_scatter_plot", 
+            result_number=0, 
+            attributes=[0,1], 
+            archetype_number=0, 
+            types={},
+            weighted="equal_norm"):
         
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "TSAA", "RBOAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.")
         elif not plot_type in ["PCA_scatter_plot","attribute_scatter_plot","loss_plot","mixture_plot","barplot","barplot_all","typal_plot"]:
             print("\nThe plot type you have specified can not be recognized. Please try again.\n")
@@ -104,9 +109,9 @@ class AA:
             print("\nThe requested plot was successfully plotted!\n")
 
 
-    def save_analysis(self,filename: str = "analysis",model_type: str = "CAA", result_number: int = 0):
+    def save_analysis(self,filename="analysis",model_type="CAA", result_number=0):
 
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
         elif not result_number < len(self._results[model_type]):
             print("\nThe analysis you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
@@ -117,7 +122,7 @@ class AA:
             print("\nThe analysis was successfully saved!\n")
 
     
-    def load_analysis(self, filename: str = "analysis", model_type: str = "CAA"):
+    def load_analysis(self, filename = "analysis", model_type = "CAA"):
         if not model_type in ["CAA", "OAA", "RBOAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
         elif not path.exists("results/" + model_type + "_" + filename + '.obj'):
