@@ -13,7 +13,7 @@ function MI=calcMI(Z1,Z2)
 % Output:
 %   MI  Mutual information between Z1 and Z2.
 %
-% Written by Morten Mørup
+% Written by Morten Mï¿½rup
 
 P=Z1*Z2';
 PXY=P/sum(sum(P));

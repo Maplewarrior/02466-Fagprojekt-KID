@@ -13,6 +13,9 @@ function NMI=calcNMI(Z1,Z2)
 % Output:
 %   NMI Normalized Mutual information between Z1 and Z2.
 %
-% Written by Morten Mørup
+% Written by Morten Mï¿½rup
 
 NMI=(2*calcMI(Z1,Z2))/(calcMI(Z1,Z1)+calcMI(Z2,Z2));
+
+# z1 = [2,4;5,4]
+# z2 = [1,7;4,3]
