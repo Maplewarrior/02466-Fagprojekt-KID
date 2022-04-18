@@ -123,7 +123,7 @@ class AA:
 
     
     def load_analysis(self, filename = "analysis", model_type = "CAA"):
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
         elif not path.exists("results/" + model_type + "_" + filename + '.obj'):
             print(f"The analysis {filename} of type {model_type} does not exist on your device.")
