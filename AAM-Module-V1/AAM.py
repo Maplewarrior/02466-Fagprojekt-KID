@@ -2,6 +2,7 @@
 from CAA_class import _CAA
 from OAA_class import _OAA
 from RBOAA_class import _RBOAA
+from TSAA_class import _TSAA
 
 import pandas as pd
 import numpy as np
@@ -18,7 +19,8 @@ class AA:
         self._CAA = _CAA()
         self._OAA = _OAA()
         self._RBOAA = _RBOAA()
-        self._results = {"CAA": [], "OAA": [], "RBOAA": []}
+        self._TSAA = _TSAA()
+        self._results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
         self._has_data = False
 
 
@@ -69,6 +71,8 @@ class AA:
                 self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
             elif AA_type == "all" or AA_type == "RBOAA":
                 self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+            elif AA_type == "all" or AA_type == "TSAA":
+                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         
@@ -85,7 +89,7 @@ class AA:
             types: dict = {},
             weighted: str = "equal_norm"):
         
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.")
         elif not plot_type in ["PCA_scatter_plot","attribute_scatter_plot","loss_plot","mixture_plot","barplot","barplot_all","typal_plot"]:
             print("\nThe plot type you have specified can not be recognized. Please try again.\n")
@@ -106,7 +110,7 @@ class AA:
 
     def save_analysis(self,filename: str = "analysis",model_type: str = "CAA", result_number: int = 0):
 
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
         elif not result_number < len(self._results[model_type]):
             print("\nThe analysis you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
@@ -118,7 +122,7 @@ class AA:
 
     
     def load_analysis(self, filename: str = "analysis", model_type: str = "CAA"):
-        if not model_type in ["CAA", "OAA", "RBOAA"]:
+        if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
         elif not path.exists("results/" + model_type + "_" + filename + '.obj'):
             print(f"The analysis {filename} of type {model_type} does not exist on your device.")

@@ -94,12 +94,10 @@ class _plots:
         ax.bar(np.arange(len(archetype)),archetype)
         ax.set_xticks(np.arange(len(archetype)))
         ax.set_xticklabels(labels=columns)
-        if type == "CAA":
-            plt.ylim(1, np.max(Z+0.2))
-        else:
-            plt.ylim(0, np.max(Z+0.2))
+        plt.ylim(np.floor(np.min(Z)), np.max(Z+0.2))
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
         fig.set_size_inches(10, 10)
+        ax.plot(np.arange(len(columns)), [np.max(Z) for i in range(len(columns))],c="black")
         plt.show()
 
 
@@ -120,6 +118,7 @@ class _plots:
 
         df=pd.DataFrame(data,columns=names)
         df.plot(x="Attributes", y=names[1:], kind="bar",figsize=(10,10))
+        plt.ylim(np.floor(np.min(Z)), np.max(Z+0.2))
         plt.show()
 
 
