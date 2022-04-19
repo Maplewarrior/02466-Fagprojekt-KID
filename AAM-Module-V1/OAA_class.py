@@ -67,7 +67,8 @@ class _OAA:
         
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
-
+        # Error message: IndexError: tensors used as indices must be long, byte or bool tensors
+        # Fix: Added extension .long() to torch.flatten(X-1)
         loss = torch.sum(inverse_log_P[torch.flatten(X).long()-1,N_arange,M_arange])
         
         return loss
