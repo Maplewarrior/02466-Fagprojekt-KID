@@ -39,10 +39,15 @@ class _RBOAA:
         return alphas
 
     def _calculate_X_tilde(self,X,alphas):
+
+        # N and M seem switched here or at least not alligned with the rest of the functions..
         N = len(X)
         M = len(X[0,:])
         N_arange = [n for n in range(N) for m in range(M)]
-        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X-1)],(X.shape))
+        # Error message: IndexError: tensors used as indices must be long, byte or bool tensors
+        # Fix: Added extension .long() to torch.flatten(X-1)
+        ## Should -1 be inside or outside the parentheses?
+        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X-1).long()],(X.shape))
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
@@ -78,7 +83,11 @@ class _RBOAA:
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
 
-        loss = torch.sum(inverse_log_P[torch.flatten(X)-1,N_arange,M_arange])
+        
+        ## Error message: IndexError: tensors used as indices must be long, byte or bool tensors
+        ## Fix: Added extension .long() to torch.flatten(X-1)
+        ## Should the -1 be inside the parentheses? 
+        loss = torch.sum(inverse_log_P[torch.flatten(X).long()-1,N_arange,M_arange])
 
         return loss
 

@@ -33,7 +33,9 @@ class _OAA:
         return alphas
 
     def _calculate_X_tilde(self,X,alphas):
-        X_tilde = alphas[X-1]
+        ## Error message: IndexError: tensors used as indices must be long, byte or bool tensors
+        ## Fix: Added extension .long() to torch.flatten(X-1)
+        X_tilde = alphas[X.long()-1]
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
@@ -65,8 +67,9 @@ class _OAA:
         
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
-
-        loss = torch.sum(inverse_log_P[torch.flatten(X)-1,N_arange,M_arange])
+        # Error message: IndexError: tensors used as indices must be long, byte or bool tensors
+        # Fix: Added extension .long() to torch.flatten(X-1)
+        loss = torch.sum(inverse_log_P[torch.flatten(X).long()-1,N_arange,M_arange])
         
         return loss
 

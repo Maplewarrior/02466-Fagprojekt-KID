@@ -3,6 +3,8 @@ from CAA_class import _CAA
 from OAA_class import _OAA
 from RBOAA_class import _RBOAA
 from TSAA_class import _TSAA
+from Synthetic_data_class import syntheticData
+
 
 import pandas as pd
 import numpy as np
@@ -29,7 +31,7 @@ class AA:
         self.X = X
         self.N, self.M = X.shape
         self._has_data = True
-        if self.N>self.M:
+        if self.M>self.N:
             print("Your data has more attributes than subjects.")
             print(f"Your data has {self.M} attributes and {self.N} subjects.")
             print("This is highly unusual for this type of data.")
@@ -38,7 +40,7 @@ class AA:
             print(f"\nThe data was loaded successfully!\n")
 
 
-    def load_csv(self, filename: str, columns: list[int] = None, rows: int = None):
+    def load_csv(self, filename: str, columns: list = None, rows: int = None):
         self.columns, self.M, self.N, self.X = self._clean_data(filename, columns, rows)
         self._has_data = True
         print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
@@ -62,6 +64,27 @@ class AA:
 
         return column_names, M, N, X
     
+    """
+    Function for creating synthetic data
+    ######################################################
+    Arguments are:
+       - M = rows (questions)
+       - N = columns (respondents)
+       - K = number of archetypes
+       - p = length of likert-scale
+
+    Returns:
+       - X (Data matrix)
+       - Z (Matrix containing archetypes)
+       - A (Scaling matrix)
+    """ 
+    def synthetic_data(self, M, N, K, p):
+        syn = syntheticData()
+        self.X, self.Z_gt, self.A_gt = syn.X(N=N, M=M, K=K, p=p)
+        self.M, self.N = self.X.shape
+        self.columns = ["SQ"+str(i) for i in range(1, self.M+1)]
+        self._has_data = True
+        
 
     def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.001, mute: bool = False):
         if self._has_data:
