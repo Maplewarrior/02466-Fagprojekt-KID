@@ -1,7 +1,11 @@
 import numpy as np
+from scipy.special import softmax
 
 class syntheticData:
     
+    """ def applySoftmax(M):
+        return softmax(M, axis=0) """
+
     def Z(self, M, K, p):
         # Assure reproducibility
         np.random.seed(42)
@@ -11,7 +15,7 @@ class syntheticData:
         Z = np.empty((M, K))
         
         # Calculate beta-values
-        betas = betas / sum(betas)
+        betas = betas/sum(betas)
         
         # Calculate alpha-values
         for i in range(len(betas)):
@@ -39,7 +43,9 @@ class syntheticData:
         return np.random.dirichlet(alpha, size=N).transpose()
     
     def map_X_noise_free(self, X, betas):
-        
+        """
+        Implement version with noise only..
+        """
         M, N = X.shape
         X_thilde = np.empty((M,N))
         
@@ -78,17 +84,19 @@ K = 5 # number of archetypes
 p = 10 # length of likert scale
 
 syn = syntheticData()
-X_syn, Z_syn, A_syn = syn.X(N=N, M=M, K=K, p=p)
+X_syn, Z_syn, A_syn = syn.X(N=N, M=M, K=K, p=p) 
+
+answer_dist=[]
+l = list(X_syn.flatten())
+for i in range(p-1):
+    answer_dist.append(l.count(i+1))
+print(answer_dist)
 
 
-
-syn2 = syntheticData()
-X_syn2, _, _ = syn2.X(N=N, M=M, K=K, p=p)
 
 
 def assertIdentical(M1, M2):
     N, M = M1.shape
-    
     for i in range(N):
         for j in range(M):
             if (M1[i][j] != M2[i][j]):
@@ -98,14 +106,9 @@ def assertIdentical(M1, M2):
     return 1
 
 
-print(assertIdentical(X_syn, X_syn2))
+""" 
+""" print(assertIdentical(X_syn, X_syn2))
 print(type(X_syn))
 
 print(len(np.unique(X_syn)))
-print(len(np.unique(Z_syn))) """
-
-
-
-
-    
-    
+print(len(np.unique(Z_syn)))   """
