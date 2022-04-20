@@ -17,5 +17,5 @@ function NMI=calcNMI(Z1,Z2)
 
 NMI=(2*calcMI(Z1,Z2))/(calcMI(Z1,Z1)+calcMI(Z2,Z2));
 
-# z1 = [2,4;5,4]
-# z2 = [1,7;4,3]
+%# z1 = [2,4;5,4]
+%# z2 = [1,7;4,3]
