@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.special import softmax
+<<<<<<< HEAD
 from scipy.stats import norm
+=======
+import scipy.stats
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
 
 """  def __init__(self, N, M ,K, p):
         self.X, self.Z, self.A = self.X(N=N, M=M, K=K, p=p)
@@ -88,6 +92,7 @@ class syntheticData:
         X_thilde = np.empty((M,N))
         D = np.empty((J+2, M, N))
         
+<<<<<<< HEAD
         for j in range(J+2):
             # Left-most tail
             if j == 0:
@@ -97,12 +102,60 @@ class syntheticData:
                 D[j] = np.ones((M,N))*(np.inf)
             else:
                 D[j] = (betas[j-1] - X_rec)/(sigma+1e-10) ## Add softplus(sigma)
+=======
+        for i in range(M):
+            for j in range(N):
+                for k in range(len(betas)):
+                    if not k == len(betas)-1: #if not done
+                        if betas[k] <= X[i,j] and X[i,j] <= betas[k+1]:
+                            X_thilde[i,j] = int(k+1)
+                            
+                        elif X[i,j] < betas[0]:
+                            X_thilde[i,j] = int(1)
+                        
+                        elif X[i,j] > betas[-1]:
+                            X_thilde[i,j] = int(len(betas))
+        X_thilde = X_thilde.astype(int)
+        return X_thilde    
+    
+    def map_X(self, X, betas, sigma):
+        M, N = X.shape
+        X_thilde = np.empty((M,N))
+        D = np.empty((M,N,len(betas)+2))
+        probs = np.empty((M,N,len(betas)))
+
+        for i in range(M):
+            for j in range(N):
+                for k in range(len(betas)):
+                    if not k == len(betas)-1:
+                        D[i,j,k] = (betas[k] - X[i,j]) / sigma
+
+                        probs[i,j,k] = scipy.stats.norm.cdf(D[i,j,k+1]) - scipy.stats.norm.cdf(D[i,j,k])
+        print("D matrix ",D.shape)
+        print(D[0:5,0,:])
+        print("probs",probs.shape)
+        print(probs[0:5,0,:])
+        print("cumsum ",np.cumsum(probs[0:5,0,:]))
+        # nu tages en værdi mellem 0 og 1 og mapper til en kategori
+        
+        #np.random.rand(0,1)
+        #X_thilde[i,j] = int(k+1)
+
+        X_thilde = X_thilde.astype(int)
+        return X_thilde    
+
+    def X(self, N, M, K, p, sigma):
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
         
         return D
 
     def Probs(D):
         
+<<<<<<< HEAD
         J, M, N = D.shape
+=======
+        X_thilde = self.map_X(X=X_hat, betas=betas, sigma=sigma)
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
         
         probs = np.empty((J-1, M, N)) 
         for i in range(J):
@@ -123,6 +176,7 @@ class syntheticData:
         
         return X_cat
     
+<<<<<<< HEAD
     # function combining the previous methods to get X_thilde
     def X(self, M, N, K, p, sigma=1):
         Z, betas = self.get_Z(M, K, p)
@@ -134,6 +188,18 @@ class syntheticData:
         X_thilde = self.toCategorical(probs)
 
         return X_thilde, Z, A
+=======
+#### Testing the script ####   
+## Define constants
+N = 10 # number of respondents
+M = 10 # number of questions
+K = 5 # number of archetypes
+p = 10 # length of likert scale
+sigma = 0.3
+
+syn = syntheticData()
+X_syn, Z_syn, A_syn = syn.X(N=N, M=M, K=K, p=p, sigma=sigma) 
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
 
 ### distribution of answers and check that the data is reproducible ###
 """ answer_dist=[]
@@ -142,6 +208,12 @@ for i in range(p-1):
     answer_dist.append(l.count(i+1))
 print(answer_dist)
 
+<<<<<<< HEAD
+=======
+
+"""
+
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
 def assertIdentical(M1, M2):
     N, M = M1.shape
     for i in range(N):
@@ -151,8 +223,18 @@ def assertIdentical(M1, M2):
                 return 0
     print("identical")
     return 1
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
 print(assertIdentical(X_syn, X_syn2))
 print(type(X_syn))
 
 print(len(np.unique(X_syn)))
+<<<<<<< HEAD
 print(len(np.unique(Z_syn)))  """ 
+=======
+print(len(np.unique(Z_syn))) 
+"""
+>>>>>>> b28575ec4a1de8a3daee8f8aca4c0f06aa84d4b2
