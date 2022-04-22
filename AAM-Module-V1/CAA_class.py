@@ -20,7 +20,7 @@ class _CAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
 
         ########## INITIALIZATION ##########
         self.RSS = []
@@ -52,7 +52,7 @@ class _CAA:
         X_hat_f = X@B_f@A_f
         end = timer()
         time = round(end-start,2)
-        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"CAA")
+        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"CAA",with_synthetic_data = with_synthetic_data)
 
         if not mute:
             result._print()

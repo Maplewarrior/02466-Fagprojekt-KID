@@ -9,7 +9,7 @@ class _CAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, X_hat, n_iter, RSS, Z, K, time, columns,type):
+    def __init__(self, A, B, X, X_hat, n_iter, RSS, Z, K, time, columns,type, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
@@ -21,6 +21,7 @@ class _CAA_result:
         self.time = time
         self.columns = columns
         self.type = type
+        self.with_synthetic_data = with_synthetic_data
 
     def _print(self):
         print("/////////////// INFORMATION ABOUT CONVENTIONAL ARCHETYPAL ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
@@ -49,7 +50,10 @@ class _CAA_result:
             self.plots._typal_plot(self.Z,types,weighted)
 
     def _save(self,filename):
-        file = open("results/" + self.type + "_" + filename + '.obj','wb')
+        if not self.with_synthetic_data:
+            file = open("results/" + self.type + "_" + filename + '.obj','wb')
+        else:
+            file = open("synthetic_results/" + self.type + "_" + filename + '.obj','wb')
         pickle.dump(self, file)
         file.close()
 
@@ -59,7 +63,7 @@ class _OAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type):
+    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
@@ -74,6 +78,7 @@ class _OAA_result:
         self.time = time
         self.columns = columns
         self.type = type
+        self.with_synthetic_data = with_synthetic_data
 
     def _print(self):
         print("/////////////// INFORMATION ABOUT ORDINAL ARCHETYPAL ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
@@ -102,6 +107,9 @@ class _OAA_result:
             self.plots._typal_plot(self.Z_tilde,types,weighted)
 
     def _save(self,filename):
-        file = open("results/" + self.type + "_" + filename + '.obj','wb')
+        if not self.with_synthetic_data:
+            file = open("results/" + self.type + "_" + filename + '.obj','wb')
+        else:
+            file = open("synthetic_results/" + self.type + "_" + filename + '.obj','wb')
         pickle.dump(self, file)
         file.close()

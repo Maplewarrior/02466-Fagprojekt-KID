@@ -25,7 +25,6 @@ class _TSAA:
     def _applySoftmax(self,M):
         return softmax(M)
     
-    
     def _projectOrdinals(self, X):
         M, N = X.shape
         
@@ -47,9 +46,8 @@ class _TSAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    
     ############# Two-step ordinal AA #############
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False):
         
         ##### Project the data #####
         X = self._projectOrdinals(X)
@@ -85,7 +83,7 @@ class _TSAA:
         X_hat_f = X@B_f@A_f
         end = timer()
         time = round(end-start,2)
-        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"TSAA")
+        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"TSAA", with_synthetic_data = with_synthetic_data)
 
         if not mute:
             result._print()

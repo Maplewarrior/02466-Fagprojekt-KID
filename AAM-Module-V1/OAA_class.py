@@ -33,9 +33,7 @@ class _OAA:
         return alphas
 
     def _calculate_X_tilde(self,X,alphas):
-        ## Error message: IndexError: tensors used as indices must be long, byte or bool tensors
-        ## Fix: Added extension .long() to torch.flatten(X-1)
-        X_tilde = alphas[X.long()-1]
+        X_tilde = alphas[X-1]
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
@@ -67,9 +65,8 @@ class _OAA:
         
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
-        # Error message: IndexError: tensors used as indices must be long, byte or bool tensors
-        # Fix: Added extension .long() to torch.flatten(X-1)
-        loss = torch.sum(inverse_log_P[torch.flatten(X).long()-1,N_arange,M_arange])
+
+        loss = torch.sum(inverse_log_P[torch.flatten(X)-1,N_arange,M_arange])
         
         return loss
 
@@ -89,7 +86,7 @@ class _OAA:
         return loss
         
 
-    def _compute_archetypes(self, X, K, n_iter, lr, mute, columns):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute, columns, with_synthetic_data = False):
 
         ########## INITIALIZATION ##########
         self.loss = []
@@ -131,7 +128,7 @@ class _OAA:
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA")
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()

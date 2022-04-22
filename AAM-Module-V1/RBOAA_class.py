@@ -39,15 +39,10 @@ class _RBOAA:
         return alphas
 
     def _calculate_X_tilde(self,X,alphas):
-
-        # N and M seem switched here or at least not alligned with the rest of the functions..
         N = len(X)
         M = len(X[0,:])
         N_arange = [n for n in range(N) for m in range(M)]
-        # Error message: IndexError: tensors used as indices must be long, byte or bool tensors
-        # Fix: Added extension .long() to torch.flatten(X-1)
-        ## Should -1 be inside or outside the parentheses?
-        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X-1).long()],(X.shape))
+        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X-1)],(X.shape))
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
@@ -83,11 +78,7 @@ class _RBOAA:
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
 
-        
-        ## Error message: IndexError: tensors used as indices must be long, byte or bool tensors
-        ## Fix: Added extension .long() to torch.flatten(X-1)
-        ## Should the -1 be inside the parentheses? 
-        loss = torch.sum(inverse_log_P[torch.flatten(X).long()-1,N_arange,M_arange])
+        loss = torch.sum(inverse_log_P[torch.flatten(X)-1,N_arange,M_arange])
 
         return loss
 
@@ -106,7 +97,7 @@ class _RBOAA:
 
         return loss
         
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
 
         ########## INITIALIZATION ##########
         self.loss = []
@@ -149,7 +140,7 @@ class _RBOAA:
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA")
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA",with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()

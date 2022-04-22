@@ -2,12 +2,6 @@ import numpy as np
 from scipy.special import softmax
 from scipy.stats import norm
 
-"""  def __init__(self, N, M ,K, p):
-        self.X, self.Z, self.A = self.X(N=N, M=M, K=K, p=p)
-        self.N = N
-        self.M = M
-        self.K = K
-        self.p = p """
 
 
 
@@ -17,19 +11,20 @@ from scipy.stats import norm
     
     
 
-class syntheticData:
+class _synthetic_data:
 
-    def __init__(self, N, M ,K, p):
-        self.X, self.Z, self.A = self.X(N=N, M=M, K=K, p=p)
+    def __init__(self, N, M ,K, p, sigma):
+        self.X, self.Z, self.A = self.X(N=N, M=M, K=K, p=p, sigma=sigma)
         self.N = N
         self.M = M
         self.K = K
         self.p = p
+        self.columns = ["SQ"+str(i) for i in range(1, M+1)]
 
     def get_Z(self, M, K, p):
     # Assure reproducibility
         np.random.seed(42)
-        betas = np.arange(1,p)
+        betas = np.arange(1,p)*0.5
         
         alphas = np.empty(len(betas)+1)
         Z = np.empty((M, K))
@@ -100,7 +95,7 @@ class syntheticData:
         
         return D
 
-    def Probs(D):
+    def Probs(self, D):
         
         J, M, N = D.shape
         
@@ -111,7 +106,7 @@ class syntheticData:
                 
         return probs
 
-    def toCategorical(probs):
+    def toCategorical(self, probs):
         
         categories = np.arange(1, len(probs)+1)    
         J, M, N = probs.shape
