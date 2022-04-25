@@ -18,7 +18,7 @@ def betaConstraintsNoBias(betas):
     return new_betas
 
 
-def softPlus(sigma):
+def softplus(sigma):
     return np.log(1+np.exp(sigma))
 
 def get_Z(M, K, p):
@@ -30,7 +30,7 @@ def get_Z(M, K, p):
     betas = np.arange(1,p)
     betas = betaConstraintsNoBias(betas)
     
-    betas = np.array([0.00, 0.4, 0.8, 1.2, 1.6])
+    betas = np.array([0.00, 0.25, 0.5, 0.75, 1])
     
     alphas = np.empty(len(betas)+1)
     
@@ -52,7 +52,9 @@ def get_Z(M, K, p):
             Z[i,j] = alphas[idx]
     
     
-    # # "non-random Z"
+    return Z, betas
+
+    # # An idea for a "non-random Z"
     # cutoff_vals = [int(np.round( ((i+1) * len(alphas) - 1) / 4)) for i in range(4)]
     # # print(cutoff_vals)
     # # print(cutoff_vals)
@@ -71,7 +73,7 @@ def get_Z(M, K, p):
     #             Z[i,j] = np.random.choice(alphas, size=1)
     # print("n.o. alphas: ", len(alphas))
     
-    return Z, betas
+    
 
 def get_A(N, K):
     np.random.seed(123) # set another seed :)
@@ -95,10 +97,12 @@ def get_D(X, betas, sigma):
         elif j == J+1:
             D[j] = np.ones((M,N))*(np.inf)
         else:
-            D[j] = (betas[j-1] - X)/(softPlus(sigma)) # Softplus = np.log(1+np.exp(sigma))
+            D[j] = (betas[j-1] - X)/(softplus(sigma)) # Softplus = np.log(1+np.exp(sigma))
 
     return D
 
+
+from statistics import NormalDist
 def Probs(D):
     
     J, M, N = D.shape
@@ -110,11 +114,19 @@ def Probs(D):
     
     probs = norm.cdf(D[1:], loc=0, scale=1)-norm.cdf(D[:len(D)-1], loc=0, scale=1)
     
+    
+    ### Another norm cdf
     # for i in range(J):
     #     if i != J-1:
     #         probs[i,:,:] = norm.cdf(D[i+1], loc=0, scale=1) - norm.cdf(D[i], loc=0, scale=1)
     
-    
+    ### Yet another normal cdf to ensure correctness...
+    # for j in range(J):
+    #     for m in range(M):
+    #         for n in range(N):
+    #             if j != J-1:
+    #                 probs[j,m,n] = NormalDist(mu=0, sigma=1).cdf(D[j+1, m, n]) - NormalDist(mu=0, sigma=1).cdf(D[j, m, n])
+
     return probs
 
 def toCategorical(probs):
@@ -136,7 +148,7 @@ M = 15
 N = 1000
 p = 6
 K = 5
-sigma = 1
+sigma = 0.0
 
 
 Z, betas = get_Z(M,K,p)
