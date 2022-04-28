@@ -9,28 +9,28 @@ def betaConstraintsNoBias(betas):
     denom = sum(betas)
     
     for i in range(len(new_betas)):
-        new_betas[i] = np.sum(betas[:i]) / denom
+        new_betas[i] = np.sum(betas[:i+1]) / denom
     
     # betas = np.concatenate((np.array([betas[0]]), betas))
     # betas = softmax(betas)
     # new_betas = np.cumsum(betas, axis = 0)[:len(betas)-1]
     
-    return new_betas
+    return new_betas[:-1]
 
 
 def softplus(sigma):
-    return np.log(1+np.exp(sigma))
+    return np.log(1 + np.exp(sigma))
 
 def get_Z(M, K, p):
     # Assure reproducibility
     np.random.seed(123)
     
     # betas = np.arange(1,p)
-    # betas = np.ones(p-1)*5
-    betas = np.arange(1,p)
+    # betas = np.arange(1,p)
+    betas = np.ones(p)
     betas = betaConstraintsNoBias(betas)
     
-    betas = np.array([0.00, 0.25, 0.5, 0.75, 1])
+    # betas = np.array([0.00, 0.25, 0.5, 0.75, 1])
     
     alphas = np.empty(len(betas)+1)
     
@@ -50,7 +50,6 @@ def get_Z(M, K, p):
             idx = np.random.randint(0, len(alphas))
             # Z[i,j] = np.random.choice(alphas, size=1)
             Z[i,j] = alphas[idx]
-    
     
     return Z, betas
 
@@ -78,7 +77,7 @@ def get_Z(M, K, p):
 def get_A(N, K):
     np.random.seed(123) # set another seed :)
     
-    a = np.array([1]*K)
+    a = np.array([0.05]*K)
     return np.random.dirichlet(a, size=N).transpose()
 
 
@@ -148,7 +147,7 @@ M = 15
 N = 1000
 p = 6
 K = 5
-sigma = 0.0
+sigma = -10
 
 
 Z, betas = get_Z(M,K,p)
@@ -184,7 +183,11 @@ print("betas: ", betas)
 # print(probs[0,3,3])
 
 
+# print("Z matrix:", Z)
+# print("A matrix: ", A)
+# print(D)
 
+# print(probs)
 
 #%%
 print("betas", betas)
