@@ -17,17 +17,27 @@ def betaConstraintsNoBias(betas):
     
     return new_betas[:-1]
 
+def get_bias_betas(N, b_param, p):
+    
+    b = np.array(b_param*p)
+    return np.random.dirichlet(b, size=N).transpose()
+    
 
 def softplus(sigma):
     return np.log(1 + np.exp(sigma))
 
-def get_Z(M, K, p):
+def get_Z(M, K, p, response_bias = False):
     # Assure reproducibility
     np.random.seed(123)
     
     # betas = np.arange(1,p)
     # betas = np.arange(1,p)
-    betas = np.ones(p)
+    if response_bias == True:
+        betas = get_bias_betas(N, b_param = 100, p=p)
+    else:
+        betas = np.ones(p)
+    
+    # betas = np.array([1,2,3,4,5,6])
     betas = betaConstraintsNoBias(betas)
     
     # betas = np.array([0.00, 0.25, 0.5, 0.75, 1])
@@ -74,10 +84,10 @@ def get_Z(M, K, p):
     
     
 
-def get_A(N, K):
+def get_A(N, K, a_param = 0.05):
     np.random.seed(123) # set another seed :)
     
-    a = np.array([0.05]*K)
+    a = np.array(a_param * K)
     return np.random.dirichlet(a, size=N).transpose()
 
 

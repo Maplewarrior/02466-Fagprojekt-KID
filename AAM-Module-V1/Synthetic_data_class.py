@@ -21,6 +21,21 @@ class _synthetic_data:
         self.p = p
         self.columns = ["SQ"+str(i) for i in range(1, M+1)]
 
+    
+    def betaConstraintsNoBias(self, betas):
+    
+        new_betas = np.empty(len(betas))
+        denom = sum(betas)
+        
+        for i in range(len(new_betas)):
+            new_betas[i] = np.sum(betas[:i+1]) / denom
+    
+        return new_betas[:-1]
+    
+    def softplus(self, sigma):
+        return np.log(1 + np.exp(sigma))
+
+
     def get_Z(self, M, K, p):
     # Assure reproducibility
         np.random.seed(42)
@@ -30,7 +45,7 @@ class _synthetic_data:
         Z = np.empty((M, K))
         
         # Calculate beta-values
-        betas = softmax(betas)
+        betas = self.betaConstraintsNoBias(betas)
         
         # Calculate alpha-values
         for i in range(len(betas)):
@@ -119,12 +134,12 @@ class _synthetic_data:
         return X_cat
     
     # function combining the previous methods to get X_thilde
-    def X(self, M, N, K, p, sigma=1):
+    def X(self, M, N, K, p, sigma):
         Z, betas = self.get_Z(M, K, p)
         A = self.get_A(N,K)
         X_rec = Z@A
         
-        D = self.get_D(X_rec, betas, sigma)
+        D = self.get_D(X_rec, betas, self.softplus(sigma))
         probs = self.Probs(D)
         X_thilde = self.toCategorical(probs)
 
