@@ -7,7 +7,6 @@ from synthetic_data_class import _synthetic_data
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import pickle
 from os import path
 
@@ -171,7 +170,7 @@ class AA:
             
             else:
                 self._synthtic_results[model_type][result_number]._save(filename)
-                self._syntehtic_data._save(model_type,filename)
+                # self._syntehtic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
     

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import softmax
 from scipy.stats import norm
-
+import pickle
 
 
 
@@ -144,6 +144,8 @@ class _synthetic_data:
         X_thilde = self.toCategorical(probs)
 
         return X_thilde, Z, A
+    
+
 
 ### distribution of answers and check that the data is reproducible ###
 """ answer_dist=[]
