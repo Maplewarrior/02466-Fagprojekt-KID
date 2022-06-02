@@ -27,7 +27,7 @@ class AA:
         self.has_synthetic_data = False
 
 
-    def load_data(self, X: np.ndarray, columns: list[str]):
+    def load_data(self, X: np.ndarray, columns: list()):
         self.columns = columns
         self.X = X
         self.N, self.M = X.shape
@@ -41,7 +41,7 @@ class AA:
             print(f"\nThe data was loaded successfully!\n")
 
 
-    def load_csv(self, filename: str, columns: list[int] = None, rows: int = None):
+    def load_csv(self, filename: str, columns: list(), rows: int = None):
         self.columns, self.M, self.N, self.X = self._clean_data(filename, columns, rows)
         self._has_data = True
         print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
@@ -114,7 +114,7 @@ class AA:
             model_type: str = "CAA", 
             plot_type: str = "PCA_scatter_plot", 
             result_number: int = 0, 
-            attributes: list[int] = [0,1], 
+            attributes: list() = [0,1], 
             archetype_number: int = 0, 
             types: dict = {},
             weighted: str = "equal_norm",
