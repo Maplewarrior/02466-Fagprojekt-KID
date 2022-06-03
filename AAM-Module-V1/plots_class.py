@@ -1,5 +1,5 @@
 ########## IMPORT ##########
-from turtle import color
+#from turtle import color
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import numpy as np
