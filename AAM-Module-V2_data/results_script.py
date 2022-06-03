@@ -52,7 +52,7 @@ for type in AA_types1:
         AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
     
         for k in archetypes:
-            AAM.analyse(AA_type = type, with_synthetic_data = True, K=k, n_iter = n_iter)
+            AAM.analyse(AA_type = type, with_synthetic_data = True, K=k, n_iter=n_iter)
             AAM.save_analysis(filename =  "_sigma_" + str(s) + "_Arche_" + str(k), model_type = type, result_number = 0, with_synthetic_data=True) 
         
             
