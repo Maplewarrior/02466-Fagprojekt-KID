@@ -75,7 +75,7 @@ class AA:
         elif p < 2:
             print("The value of p can't be less than 2. The value specified was {0}".format(p))
         else:
-            self._syntehtic_data = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+            self._synthetic_data = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
             self.has_synthetic_data = True
             self._synthtic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
             print("\nThe synthetic data was successfully created! To use the data in an analysis, specificy the with_synthetic_data parameter as True.\n")
