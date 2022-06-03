@@ -47,12 +47,11 @@ a_param_vals = []
 
 
 counter1 = 0
-for idx1, type in enumerate(AA_types1):
-    for idx, s in enumerate(sigma_vals):
+for type in AA_types1:
+    for s in sigma_vals:
         AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
     
-        for idx2, k in enumerate(archetypes):
-            print(type)
+        for k in archetypes:
             AAM.analyse(AA_type = type, with_synthetic_data = True, K=k, n_iter = n_iter)
             AAM.save_analysis(filename =  "_sigma_" + str(s) + "_Arche_" + str(k), model_type = type, result_number = 0, with_synthetic_data=True) 
         
