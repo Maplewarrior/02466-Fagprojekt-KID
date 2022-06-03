@@ -19,10 +19,10 @@ from AAM import AA
          - The higher b_param is, the lower the response bias. 
     
 """
-N = 50
-M = 10
-K = 3
-p = 5
+N = 40000
+M = 21
+K = 5
+p = 6
 
 sigma = 1
 a_param = 1
@@ -36,11 +36,12 @@ n_iter = 2000
 AAM = AA()
 
 AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
-archetypes = [3, 5, 7]
+archetypes = [3, 5, 7, 9]
 
-AA_types1 = ["CAA","TSAA"]
-# sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
-sigma_vals = [-1000, 1, 10]
+# AA_types1 = ["CAA","TSAA"]
+sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
+# sigma_vals = [-1000, 1, 10]
+
 
 b_param_vals = []
 a_param_vals = []
