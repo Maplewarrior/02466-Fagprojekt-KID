@@ -96,13 +96,13 @@ class AA:
     
         elif self.has_synthetic_data and with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "OAA":
-                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "RBOAA":
-                self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         else:
@@ -170,7 +170,7 @@ class AA:
             
             else:
                 self._synthetic_results[model_type][result_number]._save(filename)
-                # self._syntehtic_data._save(model_type,filename)
+                # self._synthetic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
     
@@ -203,7 +203,7 @@ class AA:
                 file = open("synthetic_results/" + model_type + "_" + filename + '_metadata' + '.obj','rb')
                 result = pickle.load(file)
                 file.close()
-                self._syntehtic_data = result
+                self._synthetic_data = result
 
                 print("\nThe analysis with synthetic data was successfully loaded!\n")
                 self.has_synthetic_data = True

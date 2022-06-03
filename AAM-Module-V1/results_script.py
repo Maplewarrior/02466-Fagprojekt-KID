@@ -19,7 +19,7 @@ from AAM import AA
          - The higher b_param is, the lower the response bias. 
     
 """
-N = 40000
+N = 40
 M = 21
 K = 5
 p = 6
