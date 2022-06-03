@@ -21,7 +21,7 @@ class AA:
         self._RBOAA = _RBOAA()
         self._TSAA = _TSAA()
         self._results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
-        self._synthtic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
+        self._synthetic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
         self._has_data = False
         self.has_synthetic_data = False
 
@@ -77,7 +77,7 @@ class AA:
         else:
             self._synthetic_data = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
             self.has_synthetic_data = True
-            self._synthtic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
+            self._synthetic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
             print("\nThe synthetic data was successfully created! To use the data in an analysis, specificy the with_synthetic_data parameter as True.\n")
 
 
@@ -96,13 +96,13 @@ class AA:
     
         elif self.has_synthetic_data and with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._synthtic_results["CAA"].insert(0,self._CAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "OAA":
-                self._synthtic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "RBOAA":
-                self._synthtic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._synthtic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._syntehtic_data.X, K, n_iter, lr, mute, self._syntehtic_data.columns,with_synthetic_data=True))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         else:
@@ -139,14 +139,14 @@ class AA:
                 print("\nThe requested plot was successfully plotted!\n")
         
         else:
-            if result_number < 0 or not result_number < len(self._synthtic_results[model_type]):
+            if result_number < 0 or not result_number < len(self._synthetic_results[model_type]):
                 print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
-            elif archetype_number < 0 or archetype_number > self._synthtic_results[model_type][result_number].K:
+            elif archetype_number < 0 or archetype_number > self._synthetic_results[model_type][result_number].K:
                 print(f"\nThe \'archetype_number\' parameter recieved an unexpected value of {archetype_number}.\n")
-            elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._synthtic_results[model_type][result_number].columns)):
+            elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._synthetic_results[model_type][result_number].columns)):
                 print(f"\nThe \'attributes\' parameter recieved an unexpected value of {attributes}.\n")
             else:
-                result = self._synthtic_results[model_type][result_number]
+                result = self._synthetic_results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
                 print("\nThe requested synthetic data result plot was successfully plotted!\n")
         
@@ -165,11 +165,11 @@ class AA:
                 self._results[model_type][result_number]._save(filename)
                 print("\nThe analysis was successfully saved!\n")
         else:
-            if not result_number < len(self._synthtic_results[model_type]):
+            if not result_number < len(self._synthetic_results[model_type]):
                 print("\nThe analysis with synthetic data, which you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
             
             else:
-                self._synthtic_results[model_type][result_number]._save(filename)
+                self._synthetic_results[model_type][result_number]._save(filename)
                 # self._syntehtic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
@@ -198,7 +198,7 @@ class AA:
                 file = open("synthetic_results/" + model_type + "_" + filename + '.obj','rb')
                 result = pickle.load(file)
                 file.close()
-                self._synthtic_results[model_type].append(result)
+                self._synthetic_results[model_type].append(result)
 
                 file = open("synthetic_results/" + model_type + "_" + filename + '_metadata' + '.obj','rb')
                 result = pickle.load(file)
