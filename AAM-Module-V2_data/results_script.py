@@ -21,7 +21,7 @@ from AAM import AA
 """
 N = 10000
 M = 10
-K = 4
+K = 3
 p = 5
 
 sigma = 1
@@ -37,7 +37,7 @@ AAM = AA()
 AA_types = ["CAA", "OAA", "ROBAA", "TSAA"]
 archetypes = [3, 5, 7]
 
-
+AA_types1 = ["CAA","TSAA"]
 # sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
 sigma_vals = [-1000, 1, 10]
 
@@ -47,12 +47,14 @@ a_param_vals = []
 
 
 counter1 = 0
-for idx, s in enumerate(sigma_vals):
-    AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
+for idx1, type in enumerate(AA_types1):
+    for idx, s in enumerate(sigma_vals):
+        AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
     
-    for idx2, k in enumerate(archetypes):
-        AAM.analyse(AA_type = "CAA", with_synthetic_data = True, K=k, n_iter = n_iter)
-        AAM.save_analysis(filename = "Analysis"+ "_sigma_" + str(s) + "_Arche_" + str(k), result_number = idx2, with_synthetic_data=True) 
+        for idx2, k in enumerate(archetypes):
+            print(type)
+            AAM.analyse(AA_type = type, with_synthetic_data = True, K=k, n_iter = n_iter)
+            AAM.save_analysis(filename =  "_sigma_" + str(s) + "_Arche_" + str(k), model_type = type, result_number = 0, with_synthetic_data=True) 
         
-        counter1 +=1
+            
         

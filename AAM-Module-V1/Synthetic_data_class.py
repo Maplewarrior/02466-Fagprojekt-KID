@@ -22,7 +22,7 @@ class _synthetic_data:
         self.columns = ["SQ"+str(i) for i in range(1, M+1)]
 
     
-    def betaConstraintsNoBias(self, betas):
+    def betaConstraints(self, betas):
     
         new_betas = np.empty(len(betas))
         denom = sum(betas)
@@ -35,17 +35,26 @@ class _synthetic_data:
     def softplus(self, sigma):
         return np.log(1 + np.exp(sigma))
 
+    # If there's response bias, sample from a dirichlet distribution.
+    def biasedBetas(self, N, p, b_param):
+        b = np.array([b_param]*p)
+        return np.random.dirichlet(b, size=N).transpose()
+        
 
-    def get_Z(self, M, K, p):
-    # Assure reproducibility
+    def get_Z(self, N, M, K, p, rb = False, b_param = None,):
+    # Ensure reproducibility
         np.random.seed(42)
-        betas = np.arange(1,p)*0.5
+        
+        if rb == False:
+            betas = np.ones(p)
+        else:
+            betas = self.biasedBetas(N=N, p=p, b_param=b_param)
         
         alphas = np.empty(len(betas)+1)
         Z = np.empty((M, K))
         
         # Calculate beta-values
-        betas = self.betaConstraintsNoBias(betas)
+        betas = self.betaConstraints(betas)
         
         # Calculate alpha-values
         for i in range(len(betas)):
@@ -81,13 +90,13 @@ class _synthetic_data:
         #         else:
         #             Z[i,j] = np.random.choice(alphas, size=1)
         # print("n.o. alphas: ", len(alphas))
+        
         return Z, betas
 
     def get_A(self, N, K):
         np.random.seed(42) # set another seed :)
         
         alpha = np.array([1]*K)
-        
         return np.random.dirichlet(alpha, size=N).transpose()
 
 
@@ -127,22 +136,25 @@ class _synthetic_data:
         J, M, N = probs.shape
         X_cat = np.empty((M,N))
         
+        
         for m in range(M):
             for n in range(N):
-                X_cat[m,n] = np.random.choice(categories, p = list(probs[:,m,n]))
+                X_cat[m,n] = int(np.random.choice(categories, p = list(probs[:,m,n])))
         
         return X_cat
     
     # function combining the previous methods to get X_thilde
     def X(self, M, N, K, p, sigma):
-        Z, betas = self.get_Z(M, K, p)
+        
+        Z, betas = self.get_Z(N=N,M=M, K=K, p=p)
         A = self.get_A(N,K)
         X_rec = Z@A
         
         D = self.get_D(X_rec, betas, self.softplus(sigma))
         probs = self.Probs(D)
         X_thilde = self.toCategorical(probs)
-
+        X_thilde = X_thilde.astype(int)
+        
         return X_thilde, Z, A
     
 

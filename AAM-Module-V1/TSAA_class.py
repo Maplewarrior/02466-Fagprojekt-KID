@@ -14,8 +14,10 @@ class _TSAA:
     RSS = []    
     
     def _logOdds(self, X):
-        Ordinals = range(min(X.flatten()), max(X.flatten()+1))
-    
+        
+        
+        Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
+        
         probs = [(np.count_nonzero(X.flatten() == e))/len(X.flatten()) for e in Ordinals]
         baseline = max(probs)
     
@@ -30,8 +32,12 @@ class _TSAA:
         
         X_thilde = np.empty((M, N))
         
+        
         theta = self._applySoftmax(self._logOdds(X))
-        Ordinals = range(min(X.flatten()), max(X.flatten()+1))
+        
+        print(type(X[0,0]))
+        
+        Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         for i in range(M):
             for j in range(N):
                 idx = X[i,j]-1
