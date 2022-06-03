@@ -49,7 +49,7 @@ def get_Z(M, K, p, response_bias = False):
     alphas[-1] = (1+ betas[-1]) / 2
     for i in range(len(betas)-1):
         alphas[i+1] = (betas[i] + betas[i+1]) / 2
-        
+    
 
     
     Z = np.empty((M, K))
