@@ -42,7 +42,7 @@ class _RBOAA:
         N = len(X)
         M = len(X[0,:])
         N_arange = [n for n in range(N) for m in range(M)]
-        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X-1)],(X.shape))
+        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X.long()-1)],(X.shape))
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
@@ -78,7 +78,7 @@ class _RBOAA:
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
 
-        loss = torch.sum(inverse_log_P[torch.flatten(X)-1,N_arange,M_arange])
+        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,N_arange,M_arange])
 
         return loss
 

@@ -19,8 +19,8 @@ from AAM import AA
          - The higher b_param is, the lower the response bias. 
     
 """
-N = 10000
-M = 10
+N = 100
+M = 5
 K = 3
 p = 5
 
@@ -34,7 +34,7 @@ n_iter = 2000
 #%%
 AAM = AA()
 
-AA_types = ["CAA", "OAA", "ROBAA", "TSAA"]
+AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
 archetypes = [3, 5, 7]
 
 AA_types1 = ["CAA","TSAA"]
@@ -47,7 +47,7 @@ a_param_vals = []
 
 
 counter1 = 0
-for type in AA_types1:
+for type in AA_types:
     for s in sigma_vals:
         AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
     

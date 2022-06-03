@@ -28,14 +28,14 @@ class _TSAA:
         return softmax(M)
     
     def _projectOrdinals(self, X):
+        
         M, N = X.shape
         
         X_thilde = np.empty((M, N))
         
-        
         theta = self._applySoftmax(self._logOdds(X))
         
-        print(type(X[0,0]))
+        
         
         Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         for i in range(M):
