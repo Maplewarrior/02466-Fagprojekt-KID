@@ -5,7 +5,7 @@ from AAM import AA
 """
 ###### Setting the variables ######
       
-     N: Number of respodents
+     N: Number of respondents
      M: Number of questions
      K: Number of archetypes
      p: Length of Likert scale
@@ -45,14 +45,10 @@ b_param_vals = []
 a_param_vals = []
 
 
-
-counter1 = 0
 for idx, s in enumerate(sigma_vals):
     AAM.create_synthetic_data(N=N, M=M, K=K, p=p, sigma=s)
     
     for idx2, k in enumerate(archetypes):
         AAM.analyse(AA_type = "CAA", with_synthetic_data = True, K=k, n_iter = n_iter)
         AAM.save_analysis(filename = "Analysis"+ "_sigma_" + str(s) + "_Arche_" + str(k), result_number = idx2, with_synthetic_data=True) 
-        
-        counter1 +=1
         
