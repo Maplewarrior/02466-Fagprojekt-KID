@@ -35,12 +35,14 @@ n_iter = 2000
 #%%
 AAM = AA()
 
-AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
-archetypes = [3, 5, 7, 9]
+#AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
+AA_types = ["RBOAA"]
+#archetypes = [3, 5, 7, 9]
+archetypes = [3]
 
 # AA_types1 = ["CAA","TSAA"]
-sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
-# sigma_vals = [-1000, 1, 10]
+#sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
+sigma_vals = [1, 10]
 
 
 b_param_vals = []
