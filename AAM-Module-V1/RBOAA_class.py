@@ -62,7 +62,10 @@ class _RBOAA:
                 D[j] = torch.tensor(np.matrix(np.ones((M)) * (np.inf)))
             else:
                 D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
-
+        
+        if torch.isnan(D).any():
+            print(D,"\n")
+            print("    SIGMA: ", sigma, "\n")
         return D
 
     def _calculate_loss(self,D,X):
