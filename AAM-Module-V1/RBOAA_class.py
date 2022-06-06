@@ -24,9 +24,7 @@ class _RBOAA:
 
     def _apply_constraints_sigma(self,sigma):
         m = nn.Softplus()
-        sigma = m(sigma)
-        sigma[sigma==0] = 10**(-8)
-        return sigma
+        return m(sigma)
 
     def _calculate_alpha(self,b,J):
 
