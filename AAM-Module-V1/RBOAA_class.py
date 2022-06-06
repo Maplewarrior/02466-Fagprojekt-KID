@@ -82,7 +82,6 @@ class _RBOAA:
         M_arange = [m for m in range(M) for n in range(N)]
 
         loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,N_arange,M_arange])
-
         return loss
 
     def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J):
@@ -126,7 +125,7 @@ class _RBOAA:
                 loading_bar._update()
             optimizer.zero_grad()
             L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J)
-            self.loss.append(L)
+            self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step() 
         
