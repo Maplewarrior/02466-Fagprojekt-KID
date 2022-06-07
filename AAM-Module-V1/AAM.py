@@ -130,15 +130,15 @@ class AA:
         elif not plot_type in ["PCA_scatter_plot","attribute_scatter_plot","loss_plot","mixture_plot","barplot","barplot_all","typal_plot"]:
             print("\nThe plot type you have specified can not be recognized. Please try again.\n")
         elif not weighted in ["none","equal_norm","equal","norm"]:
-            print(f"\nThe \'weighted\' parameter recieved an unexpected value of {weighted}.\n")
+            print(f"\nThe \'weighted\' parameter received an unexpected value of {weighted}.\n")
 
         elif not with_synthetic_data:
             if result_number < 0 or not result_number < len(self._results[model_type]):
                 print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
             elif archetype_number < 0 or archetype_number > self._results[model_type][result_number].K:
-                print(f"\nThe \'archetype_number\' parameter recieved an unexpected value of {archetype_number}.\n")
+                print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._results[model_type][result_number].columns)):
-                print(f"\nThe \'attributes\' parameter recieved an unexpected value of {attributes}.\n")
+                print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")
             else:
                 result = self._results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
@@ -146,11 +146,11 @@ class AA:
         
         else:
             if result_number < 0 or not result_number < len(self._synthetic_results[model_type]):
-                print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe result you are requesting to plot is not available.\n Please make sure you have specified the input correctly.\n")
             elif archetype_number < 0 or archetype_number > self._synthetic_results[model_type][result_number].K:
-                print(f"\nThe \'archetype_number\' parameter recieved an unexpected value of {archetype_number}.\n")
+                print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._synthetic_results[model_type][result_number].columns)):
-                print(f"\nThe \'attributes\' parameter recieved an unexpected value of {attributes}.\n")
+                print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")
             else:
                 result = self._synthetic_results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
@@ -164,7 +164,7 @@ class AA:
         
         if not with_synthetic_data:
             if not result_number < len(self._results[model_type]):
-                print("\nThe analysis you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe analysis you are requesting to save is not available.\n Please make sure you have specified the input correctly.\n")
             
             
             else:
@@ -172,7 +172,7 @@ class AA:
                 print("\nThe analysis was successfully saved!\n")
         else:
             if not result_number < len(self._synthetic_results[model_type]):
-                print("\nThe analysis with synthetic data, which you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe analysis with synthetic data, which you are requesting to save is not available.\n Please make sure you have specified the input correctly.\n")
             
             else:
                 self._synthetic_results[model_type][result_number]._save(filename)
