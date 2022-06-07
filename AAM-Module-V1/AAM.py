@@ -5,6 +5,9 @@ from RBOAA_class import _RBOAA
 from TSAA_class import _TSAA
 from synthetic_data_class import _synthetic_data
 
+#### TJEK v
+from evaluation_class import _evaluation
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -24,6 +27,9 @@ class AA:
         self._synthetic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
         self._has_data = False
         self.has_synthetic_data = False
+
+        #### TJEK v
+        self._evaluation = _evaluation()
 
 
     def load_data(self, X: np.ndarray, columns: list()):
@@ -170,7 +176,7 @@ class AA:
             
             else:
                 self._synthetic_results[model_type][result_number]._save(filename)
-                # self._synthetic_data._save(model_type,filename)
+                self._synthetic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
     
@@ -207,3 +213,17 @@ class AA:
 
                 print("\nThe analysis with synthetic data was successfully loaded!\n")
                 self.has_synthetic_data = True
+
+    """def evaluate(self, ):
+
+        # tjek størrelsen af matricerne passer - sådan at der er lige mange kolonner i A1 og A2
+        self._evaluation._matrix_correlation_coefficient(A1,A2)
+
+        # tjek at kolonner summerer til 1
+        self._evaluation._normalised_mutual_information(A1,A2)
+
+        # tjek at endepunkter 0 og 1 ikke er med som grænser
+        # for RBOAA har vi mange lister af boundaries - dette skal løses på en måde, da vi pt. kun kan sammenligne 2 lister
+        self._evaluation._resbonse_bias_analysis(b1,b2)
+    """
+
