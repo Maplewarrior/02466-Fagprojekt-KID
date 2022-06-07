@@ -51,6 +51,8 @@ class _synthetic_data:
         
         Z = np.empty((M,K))
         
+        if b_param < 0.01:
+            b_param = 0.01
         
         # Check if we want to model response bias
         if not rb:
@@ -91,6 +93,10 @@ class _synthetic_data:
 
     def get_A(self, N, K, a_param):
         np.random.seed(42) # set another seed :)
+        
+        # Constrain a_param to avoid NaN's
+        if a_param < 0.01:
+            a_param = 0.01
         
         alpha = np.array([a_param]*K)
         return np.random.dirichlet(alpha, size=N).transpose()
