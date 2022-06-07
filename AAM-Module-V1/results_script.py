@@ -46,8 +46,8 @@ AA_types = ["RBOAA"]
 archetypes = [5]
 
 #sigma_vals = [-1000000, -10, 0, 0.5, 1, 2, 10, 100, 1000, 10000]
-sigma_vals = [-5, -1,-0.75, -0.5, -0.25, 0, 0.5, 1, 5, 10]
-#sigma_vals = [1]
+#sigma_vals = [-5, -1,-0.75, -0.5, -0.25, 0, 0.5, 1, 5, 10]
+sigma_vals = [-15]
 
 b_param_vals = []
 a_param_vals = []

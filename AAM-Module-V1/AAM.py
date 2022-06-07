@@ -87,7 +87,7 @@ class AA:
             print("\nThe synthetic data was successfully created! To use the data in an analysis, specificy the with_synthetic_data parameter as True.\n")
 
 
-    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.001, mute: bool = False, with_synthetic_data: bool = False):
+    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.0001, mute: bool = False, with_synthetic_data: bool = False):
         if self._has_data and not with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
                 self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
