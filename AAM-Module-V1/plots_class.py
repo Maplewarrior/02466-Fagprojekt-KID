@@ -43,9 +43,8 @@ class _plots:
 
 
     def _loss_plot(self,loss,type):
-        
         plt.plot(loss, c="#2c6c8c")
-        plt.xlabel(f"Itteration of {type}")
+        plt.xlabel(f"Iteration of {type}")
         plt.ylabel(f"Loss of {type}")
         plt.title(f"Loss w.r.t. Itteration of {type}")
         plt.show()

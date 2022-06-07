@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import norm
+import pickle
 
 class _synthetic_data:
     
@@ -168,7 +169,24 @@ class _synthetic_data:
         
         return X_thilde, Z, A
         
-        
+    def _save(self,type,filename):
+        file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
+        pickle.dump(self, file)
+        file.close()
             
-        
-    
+#%%
+# N = 40
+# M = 21
+# K = 5
+# p = 6
+
+# sigma = 1
+# a_param = 1
+# b_param = 1000
+# rb = True
+
+# n_iter = 2000
+
+# S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+
+# print(S.X)

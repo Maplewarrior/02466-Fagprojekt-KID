@@ -92,7 +92,7 @@ class _OAA:
         self.loss = []
         start = timer()
         if not mute:
-            loading_bar = _loading_bar(n_iter, "Ordinal Arhcetypal Analysis")
+            loading_bar = _loading_bar(n_iter, "Ordinal Archetypal Analysis")
         N, _ = X.T.shape
         J = int((np.max(X)-np.min(X))+1)
         Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)

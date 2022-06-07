@@ -28,7 +28,7 @@ class _CAA_result:
         print(f"▣ The Conventional Archetypal Analysis was computed using {self.K} archetypes.")
         print(f"▣ The Conventional Archetypal Analysis was computed on {len(self.X)} attributes.")
         print(f"▣ The Conventional Archetypal Analysis was computed on {len(self.X[0,:])} subjects.")
-        print(f"▣ The Conventional Archetypal Analysis ran for {self.n_iter} itterations.")
+        print(f"▣ The Conventional Archetypal Analysis ran for {self.n_iter} iterations.")
         print(f"▣ The Conventional Archetypal Analysis took {self.time} seconds to complete.")
         print(f"▣ The final RSS was: {self.RSS[-1]}.")
 
@@ -85,7 +85,7 @@ class _OAA_result:
         print(f"▣ The Ordinal Archetypal Analysis was computed using {self.K} archetypes.")
         print(f"▣ The Ordinal Archetypal Analysis was computed on {len(self.X)} attributes.")
         print(f"▣ The Ordinal Archetypal Analysis was computed on {len(self.X[0,:])} subjects.")
-        print(f"▣ The Ordinal Archetypal Analysis ran for {self.n_iter} itterations.")
+        print(f"▣ The Ordinal Archetypal Analysis ran for {self.n_iter} iterations.")
         print(f"▣ The Ordinal Archetypal Analysis took {self.time} seconds to complete.")
         print(f"▣ The final loss was: {self.loss[-1]}.")
     

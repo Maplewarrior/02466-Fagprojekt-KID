@@ -5,6 +5,9 @@ from RBOAA_class import _RBOAA
 from TSAA_class import _TSAA
 from synthetic_data_class import _synthetic_data
 
+#### TJEK v
+from evaluation_class import _evaluation
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -24,6 +27,9 @@ class AA:
         self._synthetic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
         self._has_data = False
         self.has_synthetic_data = False
+
+        #### TJEK v
+        self._evaluation = _evaluation()
 
 
     def load_data(self, X: np.ndarray, columns: list()):
@@ -81,7 +87,7 @@ class AA:
             print("\nThe synthetic data was successfully created! To use the data in an analysis, specificy the with_synthetic_data parameter as True.\n")
 
 
-    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.001, mute: bool = False, with_synthetic_data: bool = False):
+    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.0001, mute: bool = False, with_synthetic_data: bool = False):
         if self._has_data and not with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
                 self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
@@ -124,15 +130,15 @@ class AA:
         elif not plot_type in ["PCA_scatter_plot","attribute_scatter_plot","loss_plot","mixture_plot","barplot","barplot_all","typal_plot"]:
             print("\nThe plot type you have specified can not be recognized. Please try again.\n")
         elif not weighted in ["none","equal_norm","equal","norm"]:
-            print(f"\nThe \'weighted\' parameter recieved an unexpected value of {weighted}.\n")
+            print(f"\nThe \'weighted\' parameter received an unexpected value of {weighted}.\n")
 
         elif not with_synthetic_data:
             if result_number < 0 or not result_number < len(self._results[model_type]):
                 print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
             elif archetype_number < 0 or archetype_number > self._results[model_type][result_number].K:
-                print(f"\nThe \'archetype_number\' parameter recieved an unexpected value of {archetype_number}.\n")
+                print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._results[model_type][result_number].columns)):
-                print(f"\nThe \'attributes\' parameter recieved an unexpected value of {attributes}.\n")
+                print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")
             else:
                 result = self._results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
@@ -140,11 +146,11 @@ class AA:
         
         else:
             if result_number < 0 or not result_number < len(self._synthetic_results[model_type]):
-                print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe result you are requesting to plot is not available.\n Please make sure you have specified the input correctly.\n")
             elif archetype_number < 0 or archetype_number > self._synthetic_results[model_type][result_number].K:
-                print(f"\nThe \'archetype_number\' parameter recieved an unexpected value of {archetype_number}.\n")
+                print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._synthetic_results[model_type][result_number].columns)):
-                print(f"\nThe \'attributes\' parameter recieved an unexpected value of {attributes}.\n")
+                print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")
             else:
                 result = self._synthetic_results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
@@ -158,7 +164,7 @@ class AA:
         
         if not with_synthetic_data:
             if not result_number < len(self._results[model_type]):
-                print("\nThe analysis you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe analysis you are requesting to save is not available.\n Please make sure you have specified the input correctly.\n")
             
             
             else:
@@ -166,11 +172,11 @@ class AA:
                 print("\nThe analysis was successfully saved!\n")
         else:
             if not result_number < len(self._synthetic_results[model_type]):
-                print("\nThe analysis with synthetic data, which you are requesting to save is not availabe.\n Please make sure you have specified the input correctly.\n")
+                print("\nThe analysis with synthetic data, which you are requesting to save is not available.\n Please make sure you have specified the input correctly.\n")
             
             else:
                 self._synthetic_results[model_type][result_number]._save(filename)
-                # self._synthetic_data._save(model_type,filename)
+                self._synthetic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
     
@@ -207,3 +213,17 @@ class AA:
 
                 print("\nThe analysis with synthetic data was successfully loaded!\n")
                 self.has_synthetic_data = True
+
+    """def evaluate(self, ):
+
+        # tjek størrelsen af matricerne passer - sådan at der er lige mange kolonner i A1 og A2
+        self._evaluation._matrix_correlation_coefficient(A1,A2)
+
+        # tjek at kolonner summerer til 1
+        self._evaluation._normalised_mutual_information(A1,A2)
+
+        # tjek at endepunkter 0 og 1 ikke er med som grænser
+        # for RBOAA har vi mange lister af boundaries - dette skal løses på en måde, da vi pt. kun kan sammenligne 2 lister
+        self._evaluation._resbonse_bias_analysis(b1,b2)
+    """
+
