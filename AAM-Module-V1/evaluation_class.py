@@ -177,7 +177,7 @@ def create_dicts(results):
     return A_NMI_results, Z_NMI_results, Z_cor_results, Ls
 
 
-A_NMI_results, Z_NMI_results, Z_cor_results, Ls = create_dicts(results)
+# A_NMI_results, Z_NMI_results, Z_cor_results, Ls = create_dicts(results)
 #%%
 
 
@@ -216,7 +216,7 @@ def sigma_NMI_plot(NMI_result):
                         
     plt.show()
 
-sigma_NMI_plot(A_NMI_results)
+# sigma_NMI_plot(A_NMI_results)
 
 #%%
 
@@ -254,7 +254,7 @@ def m_cor_plot(cor_result):
     
     plt.show()
     
-m_cor_plot(Z_cor_results)
+# m_cor_plot(Z_cor_results)
 
 #%%
 
