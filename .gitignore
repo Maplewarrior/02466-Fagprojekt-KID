@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+AAM-Module-V1/synthetic_results/*
 # C extensions
 *.so
 
