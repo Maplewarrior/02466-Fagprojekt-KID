@@ -131,14 +131,14 @@ class _OAA:
         Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         A_f = self._apply_constraints_AB(A_non_constraint).detach().numpy()
         B_f = self._apply_constraints_AB(B_non_constraint).detach().numpy()
-        b_f = self._apply_constraints_beta(b_non_constraint)
+        b_f = self._apply_constraints_beta(b_non_constraint).detach().numpy()
         alphas_f = self._calculate_alpha(b_f,J)
         X_tilde_f = self._calculate_X_tilde(Xt,alphas_f).detach().numpy()
         Z_tilde_f = (X_tilde_f@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()
