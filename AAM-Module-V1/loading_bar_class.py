@@ -25,3 +25,6 @@ class _loading_bar:
             self.skip = 0
         else:
             self.skip += 1
+
+    def _kill(self):
+        print("\r{0}".format(f"Finished Successfully after {round(timer()-self.start,1)} seconds!                               \n"))
