@@ -41,4 +41,4 @@ def _resbonse_bias_analysis(b_true, b_est, AA_type):
     if AA_type == "OAA":
         b_est = np.array([b_est[:] for _ in range(N)])
     
-    return np.sum(np.abs(b_true-b_est)**2)
+    return (np.sum(np.abs(b_true-b_est)**2))/N
