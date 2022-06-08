@@ -31,25 +31,24 @@ def calcMI(A1, A2):
     MI = sum(PXY[ind]*np.log(PXY[ind]/PXPY[ind]))
     return MI
 
+
 # Normalized mutual information function
 def NMI(A1, A2):
     #krav at værdierne i række summer til 1 ???
     NMI = (2*calcMI(A1,A2)) / (calcMI(A1,A1) + calcMI(A2,A2))
     return NMI
 
+
 # AA_type in ["OAA", "RBOAA"]
-def _resbonse_bias_analysis(self,b_true, b_est, AA_type):
-    N, J = b_true.shape
+def _resbonse_bias_analysis(b_true, b_est, AA_type):
     
+    N, J = b_true.shape
     if AA_type == "OAA":
         b_est = np.array([b_est[:] for _ in range(N)])
     
     return np.sum(np.abs(b_true-b_est)**2)
 
-# def load_results(directory):
-    
-    
-#     return motherfucker_df
+
 
 
 def softplus(s):
