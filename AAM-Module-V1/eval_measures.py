@@ -35,10 +35,16 @@ def NMI(A1, A2):
 
 
 # AA_type in ["OAA", "RBOAA"]
-def betas_RSS(b_true, b_est, AA_type):
+# Boundary difference measure
+def BDM(b_true, b_est, AA_type):
     
     N, J = b_true.shape
     if AA_type == "OAA":
         b_est = np.array([b_est[:] for _ in range(N)])
     
-    return (np.sum(np.abs(b_true-b_est)**2))/N
+    return (np.sum(np.abs(b_true-b_est)))/N
+
+
+
+
+
