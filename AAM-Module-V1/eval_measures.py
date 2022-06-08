@@ -35,10 +35,23 @@ def NMI(A1, A2):
 
 
 # AA_type in ["OAA", "RBOAA"]
-def _resbonse_bias_analysis(b_true, b_est, AA_type):
+# Boundary difference measure
+def BDM(b_true, b_est, AA_type):
     
     N, J = b_true.shape
     if AA_type == "OAA":
         b_est = np.array([b_est[:] for _ in range(N)])
     
-    return (np.sum(np.abs(b_true-b_est)**2))/N
+    return (np.sum(np.abs(b_true-b_est)))/(N*J)
+
+#%%
+
+A1 = np.random.rand(3,21)*1000000000
+
+A2 = A1
+A2 = np.random.rand(7,21)*100000000
+
+print(NMI(A1,A2))
+print(NMI(A2,A1))
+
+
