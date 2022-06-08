@@ -28,9 +28,12 @@ class AA:
         self._has_data = False
         self.has_synthetic_data = False
 
+<<<<<<< HEAD
+=======
         #### TJEK v
         # self._evaluation = _evaluation()
 
+>>>>>>> b2b6bf12399bfc58ed4e5b73af72aedd4cde11db
 
     def load_data(self, X: np.ndarray, columns: list()):
         self.columns = columns
