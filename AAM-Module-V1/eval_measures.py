@@ -35,7 +35,7 @@ def NMI(A1, A2):
 
 
 # AA_type in ["OAA", "RBOAA"]
-def _resbonse_bias_analysis(b_true, b_est, AA_type):
+def betas_RSS(b_true, b_est, AA_type):
     
     N, J = b_true.shape
     if AA_type == "OAA":
