@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import pickle
+import matplotlib.pyplot as plt
 
 ########## EVALUATION CLASS ##########
 class _evaluation:
@@ -43,14 +44,15 @@ class _evaluation:
         return results
 
     def _matrix_correlation_coefficient(self, A1, A2):
-        K, _ = A1.shape() #kolonner - btw A1 og A2 skal have samme antal kolonner aka archetyper
-        corr = np.zeros((K,K))
-        for i in range(K):
-            for j in range(K):
+        _, K1 = A1.shape #kolonner - btw A1 og A2 skal have samme antal kolonner aka archetyper
+        _, K2 = A2.shape
+        corr = np.zeros((K1,K2))
+        for i in range(K1):
+            for j in range(K2):
                 corr[i][j] = np.corrcoef(A1[:,i], A2[:,j])[0][1]
         
         max_list = []
-        for _ in range(K):
+        for _ in range(min(K1,K2)):
             row, column = np.unravel_index(corr.argmax(), corr.shape)
             max_list.append(corr[row][column])
             corr = np.delete(corr, row, axis=0)
@@ -88,6 +90,9 @@ class _evaluation:
         print(self._normalised_mutual_information(a_an,a_gt))
 
 
+
+ev = _evaluation()
+results = ev.load_results()
 #%%
 
 
@@ -169,92 +174,172 @@ def create_dicts(results):
                             Z_gt = results[type][s][k][a][b]["metadata"][i].Z
                             
                                                 
-                            A_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(A_an, A_gt))
-                            Z_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(Z_an.T, Z_gt.T))
+                            A_NMI_results[type][s][k][a][b][i].append(ev._normalised_mutual_information(A_an, A_gt))
+                            Z_NMI_results[type][s][k][a][b][i].append(ev._normalised_mutual_information(Z_an.T, Z_gt.T))
                             
                             
-                            Z_cor_results[type][s][k][a][b][i] = ec._matrix_correlation_coefficient(Z_an, Z_gt)
+                            Z_cor_results[type][s][k][a][b][i] = ev._matrix_correlation_coefficient(Z_an, Z_gt)
     return A_NMI_results, Z_NMI_results, Z_cor_results, Ls
 
 
-# A_NMI_results, Z_NMI_results, Z_cor_results, Ls = create_dicts(results)
+A_NMI_results, Z_NMI_results, Z_cor_results, Ls = create_dicts(results)
 #%%
 
 
 def softplus(s):
     return np.log(1+np.exp(s))
 
-def sigma_NMI_plot(NMI_result):
+def sigma_NMI_plot(NMI_result, type = "combined"):
     
-    AA_types = list(NMI_result.keys())
-    sigmas = sorted(list(NMI_result["TSAA"].keys()))
-    archetypes = list(NMI_result["TSAA"][sigmas[0]].keys())
+    # MAKE A PLOT WITH EACH METHOD THAT MAKES SENSE
+    if type == "combined":
+        # print("not done")
+        AA_types = list(NMI_result.keys())
+        sigmas = sorted(list(NMI_result["TSAA"].keys()))
+        archetypes = list(NMI_result["TSAA"][sigmas[0]].keys())
+        
+        a_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+        b_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+        n_reps = len(list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))    
+        
+        colors = ["g", "black","b","r"]
+        sigmas_c = [round(softplus(s),2) for s in sigmas]
+        
+        y_vals = np.empty((len(AA_types), len(sigmas)))
+        
+        # Get NMI values
+        for j, type in enumerate(AA_types):
+            for l, s in enumerate(sigmas):
+                vals = []
+                for i in range(n_reps):
+                    vals.append(NMI_result[type][s][5][1][1000][i])
+                # Take mean of the repetitions
+                y_vals[j,l] = np.mean(vals)
+        
+        
+        for c in range(len(AA_types)):
+            plt.scatter(sigmas_c, y_vals[c], label = str(AA_types[c]))
+            plt.plot(sigmas_c, y_vals[c], '--')
+            plt.xlabel('sigma', fontsize=18)
+            plt.ylabel('NMI', fontsize=18)
+            plt.title('NMI plot for the four methods', fontsize = 22)
+            
+            
+        plt.legend()
+        plt.show()
+          
+    # MAKE 4 SUBPLOTS, ONE FOR EACH METHOD
+    elif type == "individual":
     
-    a_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]].keys())
-    b_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
-    n_reps = len(list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))    
-    
-    colors = ["g", "black","b","r"]
-    sigmas_c = [round(softplus(s),2) for s in sigmas]
-    
-    
-    y_vals = np.empty((len(AA_types), len(sigmas)))
-    for j, type in enumerate(AA_types):
-        for l, s in enumerate(sigmas):
-            vals = []
-            for i in range(n_reps):
-                vals.append(NMI_result[type][s][5][1][1000][i])
-            y_vals[j,l] = np.mean(vals)
-    
-    fig, ax = plt.subplots(2,2)
-    for k, axs in enumerate(fig.axes):
-        axs.scatter(sigmas_c, y_vals[k], c = colors[k])
-        axs.set_title(str(AA_types[k]))
-        axs.set_xlabel("sigma")
-        axs.set_ylabel("NMI")
-        fig.subplots_adjust(hspace=0.8, wspace=0.5)                    
-                        
-    plt.show()
+        
 
-# sigma_NMI_plot(A_NMI_results)
+        AA_types = list(NMI_result.keys())
+        sigmas = sorted(list(NMI_result["TSAA"].keys()))
+        archetypes = list(NMI_result["TSAA"][sigmas[0]].keys())
+        
+        a_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+        b_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+        n_reps = len(list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))    
+        
+        colors = ["g", "black","b","r"]
+        sigmas_c = [round(softplus(s),2) for s in sigmas]
+        
+        
+        y_vals = np.empty((len(AA_types), len(sigmas)))
+        for j, type in enumerate(AA_types):
+            for l, s in enumerate(sigmas):
+                vals = []
+                for i in range(n_reps):
+                    vals.append(NMI_result[type][s][5][1][1000][i])
+                y_vals[j,l] = np.mean(vals)
+        
+        fig, ax = plt.subplots(2,2)
+        for k, axs in enumerate(fig.axes):
+            axs.scatter(sigmas_c, y_vals[k], c = colors[k])
+            axs.set_title(str(AA_types[k]))
+            axs.set_xlabel("sigma")
+            axs.set_ylabel("NMI")
+            fig.subplots_adjust(hspace=0.8, wspace=0.5)                    
+                            
+        plt.show()
+
+sigma_NMI_plot(A_NMI_results, type = "combined")
 
 #%%
 
-def m_cor_plot(cor_result):
+
+def m_cor_plot(cor_result, type = "combined"):
     
-    AA_types = list(cor_result.keys())
-    sigmas = sorted(list(cor_result["TSAA"].keys()))
-    archetypes = list(cor_result["TSAA"][sigmas[0]].keys())
-    
-    a_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]].keys())
-    b_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
-    n_reps = len(list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
-    
-    
-    colors = ["g", "black","b","r"]
-    sigmas_c = [round(softplus(s),2) for s in sigmas]
-    
-    
-    y_vals = np.empty((len(AA_types), len(sigmas)))
-    for j, type in enumerate(AA_types):
-        for l, s in enumerate(sigmas):
-            vals = []
-            for i in range(n_reps):
-                vals.append(cor_result[type][s][5][a_params[-1]][b_params[-1]][i])
-            y_vals[j,l] = np.mean(vals)
-    
-    fig, ax = plt.subplots(2,2)
-    for k, axs in enumerate(fig.axes):
-        axs.scatter(sigmas_c, y_vals[k], c = colors[k])
-        axs.set_title(str(AA_types[k]))
-        axs.set_xlabel("sigma")
-        axs.set_ylabel("MCC")
-        fig.subplots_adjust(hspace=0.8, wspace=0.5)
+    if type == 'combined':
+        AA_types = list(cor_result.keys())
+        sigmas = sorted(list(cor_result["TSAA"].keys()))
+        archetypes = list(cor_result["TSAA"][sigmas[0]].keys())
+        
+        a_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+        b_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+        n_reps = len(list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
+        
+        
+        colors = ["g", "black","b","r"]
+        sigmas_c = [round(softplus(s),2) for s in sigmas]
+        
+        y_vals = np.empty((len(AA_types), len(sigmas)))
+        for j, type in enumerate(AA_types):
+            for l, s in enumerate(sigmas):
+                vals = []
+                for i in range(n_reps):
+                    vals.append(cor_result[type][s][5][a_params[-1]][b_params[-1]][i])
+                y_vals[j,l] = np.mean(vals)
+        
+        
+        for c in range(len(AA_types)):
+            plt.scatter(sigmas_c, y_vals[c], label = str(AA_types[c]))
+            plt.plot(sigmas_c, y_vals[c], '--')
+            plt.xlabel('sigma', fontsize=18)
+            plt.ylabel('MCC', fontsize=18)
+            plt.title('MCC plot for the 4 methods', fontsize = 22)
+            
+            
+        plt.legend()
+        plt.show()
+            
+        
+    elif type == 'individual':
         
     
-    plt.show()
+        AA_types = list(cor_result.keys())
+        sigmas = sorted(list(cor_result["TSAA"].keys()))
+        archetypes = list(cor_result["TSAA"][sigmas[0]].keys())
+        
+        a_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+        b_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+        n_reps = len(list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
+        
+        
+        colors = ["g", "black","b","r"]
+        sigmas_c = [round(softplus(s),2) for s in sigmas]
+        
+        
+        y_vals = np.empty((len(AA_types), len(sigmas)))
+        for j, type in enumerate(AA_types):
+            for l, s in enumerate(sigmas):
+                vals = []
+                for i in range(n_reps):
+                    vals.append(cor_result[type][s][5][a_params[-1]][b_params[-1]][i])
+                y_vals[j,l] = np.mean(vals)
+        
+        fig, ax = plt.subplots(2,2)
+        for k, axs in enumerate(fig.axes):
+            axs.scatter(sigmas_c, y_vals[k], c = colors[k])
+            axs.set_title(str(AA_types[k]))
+            axs.set_xlabel("sigma")
+            axs.set_ylabel("MCC")
+            fig.subplots_adjust(hspace=0.8, wspace=0.5)
+            
+        
+        plt.show()
     
-# m_cor_plot(Z_cor_results)
+m_cor_plot(Z_cor_results, type = "combined")
 
 #%%
 
@@ -276,7 +361,6 @@ def plot_loss(Ls):
     L_CAA, L_TSAA, L_OAA, L_RBOAA = [], [], [], []
     vals = np.empty((len(AA_types), n_reps))
     for s in sigmas:
-        print(s)
         for i, type in enumerate(AA_types):
             for j in range(n_reps):
                 # print(len(Ls[type][s][5][a_params[1]][b_params[-1]][j]))
@@ -295,20 +379,23 @@ def plot_loss(Ls):
     ax[0].plot(sigmas_c, L_OAA)
     ax[0].scatter(x=sigmas_c, y=L_RBOAA, label = "RBOAA")
     ax[0].plot(sigmas_c, L_RBOAA)
-    ax[0].set_xlabel("sigma")
-    ax[0].set_ylabel("loss")
+    ax[0].set_xlabel("sigma", fontsize = 15)
+    ax[0].set_ylabel("loss", fontsize = 15)
+    ax[0].set_title('Loss plot for OAA and RBOAA', fontsize = 20)
     ax[0].legend()
     
     ax[1].scatter(x=sigmas_c, y=L_CAA, label = "CAA")
     ax[1].plot(sigmas_c, L_CAA)
     ax[1].scatter(x=sigmas_c, y=L_TSAA, label = "TSAA")
     ax[1].plot(sigmas_c, L_TSAA)
-    ax[1].set_xlabel("sigma")
-    ax[1].set_ylabel("loss")
+    ax[1].set_xlabel("sigma", fontsize = 15)
+    ax[1].set_ylabel("loss", fontsize = 15)
+    ax[1].set_title('Loss plot for CAA and TSAA', fontsize = 20)
     ax[1].legend()
+    
     
     plt.tight_layout()
     plt.show()
     
-            
 
+plot_loss(Ls)
