@@ -88,8 +88,21 @@ class _evaluation:
         a_gt = results["TSAA"][-20][5][1][1000]["metadata"][-1].A
 
         print(self._normalised_mutual_information(a_an,a_gt))
-
-
+    
+    
+    
+    #### IMPLEMENT METHODS ####
+    def NMI_plot(self, NMI_result, type):
+        
+        plt.show()
+    
+    def MCC_plot(self, MCC_result, type):
+        
+        plt.show()
+        
+    def loss_plot(self, Ls):
+        
+        plt.show()
 
 ev = _evaluation()
 results = ev.load_results()
