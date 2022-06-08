@@ -87,28 +87,28 @@ class AA:
             print("\nThe synthetic data was successfully created! To use the data in an analysis, specificy the with_synthetic_data parameter as True.\n")
 
 
-    def analyse(self, K: int = 3, n_iter: int = 1000, AA_type = "all", lr: float = 0.0001, mute: bool = False, with_synthetic_data: bool = False):
+    def analyse(self, K: int = 3, n_iter: int = 1000, early_stopping: bool = False, AA_type = "all", lr: float = 0.0001, mute: bool = False, with_synthetic_data: bool = False):
         if self._has_data and not with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+                self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
-                self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+                self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "RBOAA":
-                self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+                self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns))
+                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
     
         elif self.has_synthetic_data and with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
+                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns, with_synthetic_data=True,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
-                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "RBOAA":
-                self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True))
+                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         else:
@@ -155,9 +155,9 @@ class AA:
                 result = self._synthetic_results[model_type][result_number]
                 result._plot(plot_type,attributes,archetype_number,types,weighted)
                 print("\nThe requested synthetic data result plot was successfully plotted!\n")
-        
 
-    def save_analysis(self,filename: str = "analysis",model_type: str = "CAA", result_number: int = 0, with_synthetic_data: bool = False):
+
+    def save_analysis(self,filename: str = "analysis",model_type: str = "CAA", result_number: int = 0, with_synthetic_data: bool = False, save_synthetic_data: bool = True):
 
         if not model_type in ["CAA", "OAA", "RBOAA", "TSAA"]:
             print("\nThe model type you have specified can not be recognized. Please try again.\n")
@@ -176,7 +176,8 @@ class AA:
             
             else:
                 self._synthetic_results[model_type][result_number]._save(filename)
-                self._synthetic_data._save(model_type,filename)
+                if save_synthetic_data:
+                    self._synthetic_data._save(model_type,filename)
                 print("\nThe analysis was successfully saved!\n")
 
     
@@ -213,6 +214,7 @@ class AA:
 
                 print("\nThe analysis with synthetic data was successfully loaded!\n")
                 self.has_synthetic_data = True
+
 
     """def evaluate(self, ):
 

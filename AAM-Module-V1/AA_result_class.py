@@ -14,7 +14,7 @@ class _CAA_result:
         self.B = B
         self.X = X
         self.X_hat  = X_hat
-        self.n_iter = n_iter
+        self.n_iter = len(RSS)
         self.RSS = RSS
         self.Z = Z
         self.K = K
@@ -67,7 +67,7 @@ class _OAA_result:
         self.A = A
         self.B = B
         self.X = X
-        self.n_iter = n_iter
+        self.n_iter = len(loss)
         self.b = b
         self.X_tilde = X_tilde
         self.Z_tilde = Z_tilde

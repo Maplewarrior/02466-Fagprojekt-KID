@@ -20,7 +20,7 @@ class _CAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False):
 
         ########## INITIALIZATION ##########
         self.RSS = []
@@ -43,6 +43,11 @@ class _CAA:
             self.RSS.append(L.detach().numpy())
             L.backward()
             optimizer.step()
+
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.RSS) > 250 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                    break
             
 
         ########## POST ANALYSIS ##########

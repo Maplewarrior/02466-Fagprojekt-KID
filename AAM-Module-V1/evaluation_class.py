@@ -78,7 +78,14 @@ class _evaluation:
             total += abs(b1[i]-b2[i])
         return total/k
 
+    def test(self):
+        results = self.load_results()
 
-ec = _evaluation()
-results = ec.load_results()
-print(results)
+
+        a_an = results["TSAA"][-20][5][1][1000]["analysis"][-1].A
+        a_gt = results["TSAA"][-20][5][1][1000]["metadata"][-1].A
+
+        print(self._normalised_mutual_information(a_an,a_gt))
+
+#ev = _evaluation()
+#ev.test()
