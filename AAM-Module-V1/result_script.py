@@ -4,7 +4,8 @@ if __name__ ==  '__main__':
     from ast import arg
     import multiprocessing
 
-    sigma_vals = [-20, -3, -2.25,-1.5,-1]
+    # ALL SIGMA: sigma_vals = [-20, -3, -2.25,-1.5,-1]
+    sigma_vals = [-20]
     archetypes = [4,6]
     a_param = [0.85, 1, 2]
     b_param = [10, 1000]

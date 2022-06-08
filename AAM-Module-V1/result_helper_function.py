@@ -3,13 +3,12 @@ def result_helper_function(params):
     from AAM import AA
     import numpy as np
     
-    #N = 5000
-    N = 50
+    N = 5000
     M = 21
     K = 5
     p = 6
     rb = True
-    #n_iter = 8000
+    n_iter = 10000
     n_iter = 100
     reps = 5
     analysis_archs = np.arange(2,11,2)
