@@ -6,7 +6,7 @@ from TSAA_class import _TSAA
 from synthetic_data_class import _synthetic_data
 
 #### TJEK v
-from evaluation_class import _evaluation
+# from evaluation_class import _evaluation
 
 import pandas as pd
 import numpy as np
@@ -29,7 +29,7 @@ class AA:
         self.has_synthetic_data = False
 
         #### TJEK v
-        self._evaluation = _evaluation()
+        # self._evaluation = _evaluation()
 
 
     def load_data(self, X: np.ndarray, columns: list()):
