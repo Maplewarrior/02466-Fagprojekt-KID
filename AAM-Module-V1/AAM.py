@@ -25,9 +25,6 @@ class AA:
         self._has_data = False
         self.has_synthetic_data = False
 
-        #### TJEK v
-        self._evaluation = _evaluation()
-
 
     def load_data(self, X: np.ndarray, columns: list()):
         self.columns = columns
