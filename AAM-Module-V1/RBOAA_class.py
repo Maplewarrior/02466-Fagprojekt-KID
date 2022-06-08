@@ -120,7 +120,7 @@ class _RBOAA:
 
             ########## EARLY STOPPING ##########
             if i % 25 == 0 and early_stopping:
-                if len(self.loss) > 250 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
+                if len(self.loss) > 25 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
                     break
 
         

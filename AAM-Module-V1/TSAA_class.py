@@ -83,7 +83,7 @@ class _TSAA:
             
             ########## EARLY STOPPING ##########
             if i % 25 == 0 and early_stopping:
-                if len(self.RSS) > 250 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                if len(self.RSS) > 25 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
                     break
             
 
