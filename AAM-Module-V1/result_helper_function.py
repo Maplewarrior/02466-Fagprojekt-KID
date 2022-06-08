@@ -8,8 +8,7 @@ def result_helper_function(params):
     K = 5
     p = 6
     rb = True
-    n_iter = 10000
-    n_iter = 100
+    n_iter = 25000
     reps = 5
     analysis_archs = np.arange(2,11,2)
 
