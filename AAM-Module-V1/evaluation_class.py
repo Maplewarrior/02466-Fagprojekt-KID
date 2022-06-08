@@ -87,17 +87,6 @@ ec = _evaluation()
 results = ec.load_results()
 
 
-#%%
-AA_types = list(results.keys())
-sigmas = list(results["TSAA"].keys())
-
-archetypes = list(results["TSAA"][sigmas[0]].keys())
-
-a_params = list(results["TSAA"][sigmas[0]][archetypes[0]].keys())
-b_params = list(results["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
-
-n_reps = len(list(results[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]["analysis"]))
-
 
 #%%
 
@@ -269,23 +258,63 @@ m_cor_plot(Z_cor_results)
 
 #%%
 
-
-AA_types = list(Ls.keys())
-sigmas = sorted(list(Ls[AA_types[0]].keys()))
-archetypes = sorted(list(Ls[AA_types[0]][sigmas[0]].keys()))
-a_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]].keys()))
-b_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]].keys()))
-n_reps = len(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
-
-
-print(AA_types)
-
-#%%
-# def plot_loss
+def plot_loss(Ls):
+    
+    AA_types = sorted(list(Ls.keys()))
+    sigmas = sorted(list(Ls[AA_types[0]].keys()))
+    archetypes = sorted(list(Ls[AA_types[0]][sigmas[0]].keys()))
+    a_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]].keys()))
+    b_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]].keys()))
+    n_reps = len(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
+    
+    
+    sigmas_c = [round(softplus(s),2) for s in sigmas]
+    
+    colors = ["g", "black","b","r"]
+    
+    
+    L_CAA, L_TSAA, L_OAA, L_RBOAA = [], [], [], []
+    vals = np.empty((len(AA_types), n_reps))
+    for s in sigmas:
+        print(s)
+        for i, type in enumerate(AA_types):
+            for j in range(n_reps):
+                # print(len(Ls[type][s][5][a_params[1]][b_params[-1]][j]))
+                vals[i,j] = Ls[type][s][5][a_params[1]][b_params[-1]][j][-1]
+     
+        L_CAA.append(np.mean(vals[0,:]))
+        L_OAA.append(np.mean(vals[1,:]))
+        L_RBOAA.append(np.mean(vals[2,:]))
+        L_TSAA.append(np.mean(vals[3,:]))
+    
+    
+    
+    
+    fig, ax = plt.subplots(1,2)
+    ax[0].scatter(x=sigmas_c, y=L_OAA, label = "OAA")
+    ax[0].plot(sigmas_c, L_OAA)
+    ax[0].scatter(x=sigmas_c, y=L_RBOAA, label = "RBOAA")
+    ax[0].plot(sigmas_c, L_RBOAA)
+    ax[0].set_xlabel("sigma")
+    ax[0].set_ylabel("loss")
+    ax[0].legend()
+    
+    ax[1].scatter(x=sigmas_c, y=L_CAA, label = "CAA")
+    ax[1].plot(sigmas_c, L_CAA)
+    ax[1].scatter(x=sigmas_c, y=L_TSAA, label = "TSAA")
+    ax[1].plot(sigmas_c, L_TSAA)
+    ax[1].set_xlabel("sigma")
+    ax[1].set_ylabel("loss")
+    ax[1].legend()
+    
+    plt.tight_layout()
+    plt.show()
+    
+            
 
 
     
-#%% RESPONSE BIAS DATA OAA AND RBOAA
+#%% RESPONSE BIAS DATA OAA AND RBOAA 
 
 
 
