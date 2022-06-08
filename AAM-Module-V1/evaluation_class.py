@@ -96,103 +96,99 @@ archetypes = list(results["TSAA"][sigmas[0]].keys())
 a_params = list(results["TSAA"][sigmas[0]][archetypes[0]].keys())
 b_params = list(results["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
 
-n_reps = len(list(results[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
-Z_NMI_results, A_NMI_results = {}, {}
-cor_results = {}
-
-
-
-
-for type in AA_types:
-    
-    if not type in Z_NMI_results:
-        
-        Z_NMI_results[type] = {}
-        A_NMI_results[type] = {}
-        cor_results[type] = {}
-    
-    for s in sigmas:
-        if not s in Z_NMI_results[type]:
-            Z_NMI_results[type][s] = {}
-            A_NMI_results[type][s] = {}
-            cor_results[type][s] = {}
-            
-            
-            
-        for k in archetypes:
-             if not k in Z_NMI_results[type][s]:
-                 Z_NMI_results[type][s][k] = {}
-                 A_NMI_results[type][s][k] = {}
-                 cor_results[type][s][k] = {}
-                     
-             for a in a_params:
-                 if not a in Z_NMI_results[type][s][k]:
-                     Z_NMI_results[type][s][k][a] = {}
-                     A_NMI_results[type][s][k][a] = {}
-                     cor_results[type][s][k][a] = {}
-                     
-                 for b in b_params:
-                    if not b in Z_NMI_results[type][s][k][a]:
-                        Z_NMI_results[type][s][k][a][b] = {}
-                        A_NMI_results[type][s][k][a][b] = {}
-                        cor_results[type][s][k][a][b] = {}
-                        
-                    for i in range(n_reps):
-                        if not i in Z_NMI_results[type][s][k][a][b]:
-                            Z_NMI_results[type][s][k][a][b][i] = []
-                            A_NMI_results[type][s][k][a][b][i] = []
-                            cor_results[type][s][k][a][b][i] = []
-                                
-                        A_an = results[type][s][k][a][b]["analysis"][i].A
-                        A_gt = results[type][s][k][a][b]["metadata"][i].A
-                        # print(ec._normalised_mutual_information(A_an, A_an))
-                        
-                        Z_an = results[type][s][k][a][b]["analysis"][i].Z
-                        Z_gt = results[type][s][k][a][b]["metadata"][i].Z
-                        
-                        
-                        # print(A_an.shape, A_gt.shape)
-                        # # print("For Z: ", Z_an.shape, Z_gt.shape)
-                        
-                        # print((A_an @ A_gt.T).shape)
-                        A_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(A_an, A_gt))
-                        Z_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(Z_an.T, Z_gt.T))
-                        
-                        print(Z_an.shape, Z_gt.shape)
-                        cor_results[type][s][k][a][b] = ec._matrix_correlation_coefficient(Z_an, Z_gt)
-                    
-                    
-
+n_reps = len(list(results[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]["analysis"]))
 
 
 #%%
-print(A_an.shape, A_gt.shape)
-M1 = A_an @ A_gt.T
-print(M1.shape)
 
-M2 = Z_an.T @ Z_gt
-print(Z_gt.shape, Z_an.shape)
-print(M2.shape)
-# sigmas = list(results["CAA"].keys())
-# sigmas = sorted(sigmas)
-# print(sigmas)
-# n_reps = 10
-# y_vals, vals = [], []
-# a_params = list(results["CAA"][-0.43][3].keys())
-# b_params = list(results["CAA"][-0.43][3][0.85].keys())
 
-# print(a_params)
-# print(b_params)
-#%%
-# for s in sigmas:
-#     for i in range(n_reps):
-#         vals.append(NMI_results["OAA"][s][5][a_params[0]][b_params[0]][i])
-#     y_vals.append(np.mean(vals))
+def create_dicts(results):
+    
+    Z_NMI_results, A_NMI_results = {}, {}
+    Z_cor_results = {}
+    Ls = {}
+    
+    AA_types = list(results.keys())
+    sigmas = list(results["TSAA"].keys())
+    
+    archetypes = list(results["TSAA"][sigmas[0]].keys())
+    
+    a_params = list(results["TSAA"][sigmas[0]][archetypes[0]].keys())
+    b_params = list(results["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+    
+    n_reps = len(list(results[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]["analysis"]))
+    
+    for type in AA_types:
+    
+        if not type in Z_NMI_results:
+            
+            Z_NMI_results[type] = {}
+            A_NMI_results[type] = {}
+            Z_cor_results[type] = {}
+            Ls[type] = {}
         
-# print(y_vals)
-# print(vals)
+        for s in sigmas:
+            if not s in Z_NMI_results[type]:
+                Z_NMI_results[type][s] = {}
+                A_NMI_results[type][s] = {}
+                Z_cor_results[type][s] = {}
+                Ls[type][s] = {}
+                
+                
+                
+            for k in archetypes:
+                 if not k in Z_NMI_results[type][s]:
+                     Z_NMI_results[type][s][k] = {}
+                     A_NMI_results[type][s][k] = {}
+                     Z_cor_results[type][s][k] = {}
+                     Ls[type][s][k] = {}
+                         
+                 for a in a_params:
+                     if not a in Z_NMI_results[type][s][k]:
+                         Z_NMI_results[type][s][k][a] = {}
+                         A_NMI_results[type][s][k][a] = {}
+                         Z_cor_results[type][s][k][a] = {}
+                         Ls[type][s][k][a] = {}
+                         
+                     for b in b_params:
+                        if not b in Z_NMI_results[type][s][k][a]:
+                            Z_NMI_results[type][s][k][a][b] = {}
+                            A_NMI_results[type][s][k][a][b] = {}
+                            Z_cor_results[type][s][k][a][b] = {}
+                            Ls[type][s][k][a][b] = {}
+                            
+                        for i in range(n_reps):
+                            if not i in Z_NMI_results[type][s][k][a][b]:
+                                Z_NMI_results[type][s][k][a][b][i] = []
+                                A_NMI_results[type][s][k][a][b][i] = []
+                                Z_cor_results[type][s][k][a][b][i] = []
+                                Ls[type][s][k][a][b][i] = []
+                            
+                            
+                            if type in ["CAA", "TSAA"]:
+                                Ls[type][s][k][a][b][i] = results[type][s][k][a][b]["analysis"][i].RSS
+                            
+                            else:
+                                Ls[type][s][k][a][b][i] = results[type][s][k][a][b]["analysis"][i].loss
+                            
+                            
+                            A_an = results[type][s][k][a][b]["analysis"][i].A
+                            A_gt = results[type][s][k][a][b]["metadata"][i].A
+                            # print(ec._normalised_mutual_information(A_an, A_an))
+                            
+                            Z_an = results[type][s][k][a][b]["analysis"][i].Z
+                            Z_gt = results[type][s][k][a][b]["metadata"][i].Z
+                            
+                                                
+                            A_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(A_an, A_gt))
+                            Z_NMI_results[type][s][k][a][b][i].append(ec._normalised_mutual_information(Z_an.T, Z_gt.T))
+                            
+                            
+                            Z_cor_results[type][s][k][a][b][i] = ec._matrix_correlation_coefficient(Z_an, Z_gt)
+    return A_NMI_results, Z_NMI_results, Z_cor_results, Ls
 
 
+A_NMI_results, Z_NMI_results, Z_cor_results, Ls = create_dicts(results)
 #%%
 
 
@@ -201,18 +197,13 @@ def softplus(s):
 
 def sigma_NMI_plot(NMI_result):
     
-    AA_types = list(results.keys())
-    sigmas = sorted(list(results["TSAA"].keys()))
-    archetypes = list(results["TSAA"][sigmas[0]].keys())
+    AA_types = list(NMI_result.keys())
+    sigmas = sorted(list(NMI_result["TSAA"].keys()))
+    archetypes = list(NMI_result["TSAA"][sigmas[0]].keys())
     
-    a_params = list(results["TSAA"][sigmas[0]][archetypes[0]].keys())
-    b_params = list(results["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
-    n_reps = 1
-    print(a_params)
-    print(b_params)
-    
-    
-    
+    a_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+    b_params = list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+    n_reps = len(list(NMI_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))    
     
     colors = ["g", "black","b","r"]
     sigmas_c = [round(softplus(s),2) for s in sigmas]
@@ -223,31 +214,36 @@ def sigma_NMI_plot(NMI_result):
         for l, s in enumerate(sigmas):
             vals = []
             for i in range(n_reps):
-                vals.append(NMI_results[type][s][5][1][1000][i])
+                vals.append(NMI_result[type][s][5][1][1000][i])
             y_vals[j,l] = np.mean(vals)
     
     fig, ax = plt.subplots(2,2)
     for k, axs in enumerate(fig.axes):
         axs.scatter(sigmas_c, y_vals[k], c = colors[k])
         axs.set_title(str(AA_types[k]))
-        fig.subplots_adjust(hspace=1, wspace=1)                    
+        axs.set_xlabel("sigma")
+        axs.set_ylabel("NMI")
+        fig.subplots_adjust(hspace=0.8, wspace=0.5)                    
                         
     plt.show()
 
-sigma_NMI_plot(NMI_results)
+sigma_NMI_plot(A_NMI_results)
 
 #%%
 
 def m_cor_plot(cor_result):
     
+    AA_types = list(cor_result.keys())
+    sigmas = sorted(list(cor_result["TSAA"].keys()))
+    archetypes = list(cor_result["TSAA"][sigmas[0]].keys())
+    
+    a_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]].keys())
+    b_params = list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]].keys())
+    n_reps = len(list(cor_result["TSAA"][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
+    
+    
     colors = ["g", "black","b","r"]
-    AA_types = list(results.keys())
-    sigmas = list(results["CAA"].keys())
-    sigmas_c = [softplus(s) for s in sigmas]
-    archetypes = list(results["CAA"][-0.43].keys())
-    a_params = list(results["CAA"][-0.43][3].keys())
-    b_params = list(results["CAA"][-0.43][3][0.85].keys())
-    n_reps = 10
+    sigmas_c = [round(softplus(s),2) for s in sigmas]
     
     
     y_vals = np.empty((len(AA_types), len(sigmas)))
@@ -262,14 +258,34 @@ def m_cor_plot(cor_result):
     for k, axs in enumerate(fig.axes):
         axs.scatter(sigmas_c, y_vals[k], c = colors[k])
         axs.set_title(str(AA_types[k]))
-        fig.subplots_adjust(hspace=1, wspace=1)
+        axs.set_xlabel("sigma")
+        axs.set_ylabel("MCC")
+        fig.subplots_adjust(hspace=0.8, wspace=0.5)
         
     
     plt.show()
-# m_cor_plot(cor_results())
+    
+m_cor_plot(Z_cor_results)
+
 #%%
 
+
+AA_types = list(Ls.keys())
+sigmas = sorted(list(Ls[AA_types[0]].keys()))
+archetypes = sorted(list(Ls[AA_types[0]][sigmas[0]].keys()))
+a_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]].keys()))
+b_params = sorted(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]].keys()))
+n_reps = len(list(Ls[AA_types[0]][sigmas[0]][archetypes[0]][a_params[0]][b_params[0]]))
+
+
+print(AA_types)
+
+#%%
+# def plot_loss
+
+
     
+#%% RESPONSE BIAS DATA OAA AND RBOAA
 
 
 
