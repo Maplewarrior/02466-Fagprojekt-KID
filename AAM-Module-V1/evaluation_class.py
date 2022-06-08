@@ -87,8 +87,6 @@ class _evaluation:
 
         print(self._normalised_mutual_information(a_an,a_gt))
 
-<<<<<<< HEAD
-
 
 #%%
 
