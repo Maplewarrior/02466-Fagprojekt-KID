@@ -53,7 +53,7 @@ class _TSAA:
         return m(A)
     
     ############# Two-step ordinal AA #############
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False, early_stopping = False):
         
         ##### Project the data #####
         X = self._projectOrdinals(X)
@@ -80,6 +80,11 @@ class _TSAA:
             self.RSS.append(L.detach().numpy())
             L.backward()
             optimizer.step()
+            
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.RSS) > 250 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                    break
             
 
         ########## POST ANALYSIS ##########

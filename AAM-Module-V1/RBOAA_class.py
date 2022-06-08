@@ -27,61 +27,45 @@ class _RBOAA:
         return m(sigma)
 
     def _calculate_alpha(self,b,J):
-
-        zeros = torch.zeros((len(b),1))
-        ones = torch.ones((len(b),1))
-
-        b_j = torch.cat((zeros,b),1)
-        b_j_plus1 = torch.cat((b,ones),1)
-
+        b_j = torch.cat((torch.zeros((len(b),1)),b),1)
+        b_j_plus1 = torch.cat((b,torch.ones((len(b),1))),1)
         alphas = (b_j_plus1+b_j)/2
-
         return alphas
 
     def _calculate_X_tilde(self,X,alphas):
-        N = len(X)
-        M = len(X[0,:])
-        N_arange = [n for n in range(N) for m in range(M)]
-        X_tilde = torch.reshape(alphas[N_arange,torch.flatten(X.long()-1)],(X.shape))
+        X_tilde = torch.reshape(alphas[self.N_arange,torch.flatten(X.long()-1)],(X.shape))
         return X_tilde
         
     def _calculate_X_hat(self,X_tilde,A,B):
         return X_tilde@B@A
 
-    def _calculate_D(self,b,Xt,X_hat,sigma):
-
-        N = len(Xt[0,:])
-        M = len(Xt)
-        J = len(b[0,:])
-        D = torch.rand(J+2,N,M)
-
-        for j in range(J+2):
-            if j == 0:
-                D[j] = torch.tensor(np.matrix(np.ones((M)) * (-np.inf)))
-            elif j == J+1:
-                D[j] = torch.tensor(np.matrix(np.ones((M)) * (np.inf)))
-            else:
-                D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
+    def _calculate_D(self,b,X_hat,sigma):
         
-        if torch.isnan(D).any():
-            print(D,"\n")
-            print("    SIGMA: ", sigma, "\n")
+        # J = len(b[0,:])
+        D = torch.rand(len(b[0,:])+2,self.N,self.M)
+        D[0] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
+        D[-1] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
+        D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
+
+        # for j in range(J+2):
+        #     if j == 0:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
+        #     elif j == J+1:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
+        #     else:
+        #         D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
+        
         return D
 
     def _calculate_loss(self,D,X):
-        
-        N = len(X[0,:])
-        M = len(X)
+    
         stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
 
         D_cdf = stand_norm.cdf(D)
         P = D_cdf[1:]-D_cdf[:len(D)-1]
-        inverse_log_P = -torch.log(P)
+        inverse_log_P = -torch.log(P+1e-16)
 
-        N_arange = [n for n in range(N) for m in range(M)]
-        M_arange = [m for m in range(M) for n in range(N)]
-
-        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,N_arange,M_arange])
+        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
         return loss
 
     def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J):
@@ -94,14 +78,19 @@ class _RBOAA:
         
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
-        D = self._calculate_D(b,Xt,X_hat,sigma)
+        D = self._calculate_D(b,X_hat,sigma)
         loss = self._calculate_loss(D,Xt)
 
         return loss
         
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False):
 
         ########## INITIALIZATION ##########
+        self.N = len(X[0,:])
+        self.M = len(X)
+        self.N_arange = [n for n in range(self.N) for m in range(self.M)]
+        self.M_arange = [m for m in range(self.M) for n in range(self.N)]
+
         self.loss = []
         start = timer()
         if not mute:
@@ -128,6 +117,12 @@ class _RBOAA:
             self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step() 
+
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.loss) > 250 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
+                    break
+
         
         
         ########## POST ANALYSIS ##########

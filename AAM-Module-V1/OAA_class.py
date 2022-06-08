@@ -42,31 +42,28 @@ class _OAA:
     def _calculate_D(self,b,X_hat,sigma):
         
         D = torch.rand(len(b)+2,len(X_hat),len(X_hat[0,:]))
+        D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+        D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+        D[1:-1] = torch.div(b.expand(self.M,self.N,len(b)).T-X_hat,sigma)
 
-        for j in range(len(b)+2):
-            if j == 0:
-                D[j] = torch.tensor(np.matrix(np.ones((len(X_hat),len(X_hat[0,:]))) * (-np.inf)))
-            elif j == len(b)+1:
-                D[j] = torch.tensor(np.matrix(np.ones((len(X_hat),len(X_hat[0,:]))) * (np.inf)))
-            else:
-                D[j] = (b[j-1]-X_hat)/sigma
+        # for j in range(len(b)+2):
+        #     if j == 0:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+        #     elif j == len(b)+1:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+        #     else:
+        #         D[j] = (b[j-1]-X_hat)/sigma
 
         return D
 
     def _calculate_loss(self,D,X):
 
-        N = len(X)
-        M = len(X[0,:])
-
         stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
         D_cdf = stand_norm.cdf(D)
         P = D_cdf[1:]-D_cdf[:len(D)-1]
-        inverse_log_P = -torch.log(P)
-        
-        N_arange = [n for n in range(N) for m in range(M)]
-        M_arange = [m for m in range(M) for n in range(N)]
+        inverse_log_P = -torch.log(P+1e-16)
 
-        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,N_arange,M_arange])
+        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
         
         return loss
 
@@ -86,9 +83,13 @@ class _OAA:
         return loss
         
 
-    def _compute_archetypes(self, X, K, n_iter, lr, mute, columns, with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False):
 
         ########## INITIALIZATION ##########
+        self.N = len(X)
+        self.M = len(X[0,:])
+        self.N_arange = [n for n in range(self.N) for m in range(self.M)]
+        self.M_arange = [m for m in range(self.M) for n in range(self.N)]
         self.loss = []
         start = timer()
         if not mute:
@@ -115,6 +116,12 @@ class _OAA:
             self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step() 
+
+
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.loss) > 250 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
+                    break
             
         
         ########## POST ANALYSIS ##########
