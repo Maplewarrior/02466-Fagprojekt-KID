@@ -1,39 +1,6 @@
 
-# def result_helper_function(params):
-#     from AAM import AA
-#     import numpy as np
-    
-#     N = 10000
-#     M = 21
-#     K = 5
-#     p = 6
-#     rb = True
-#     n_iter = 25000
-#     reps = 10
-#     analysis_archs = np.arange(2,11)
 
-#     AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
-#     s = params[0]
-#     synthetic_arch = params[1]
-#     a_param = params[2]
-#     b_param = params[3]
-    
-
-#     AAM = AA()
-#     AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=rb, a_param=a_param, b_param=b_param)
-#     for AA_type in AA_types:
-#         for analysis_arch in analysis_archs:
-#             for rep in range(reps):
-#                 AAM.analyse(AA_type = AA_type, lr=0.05, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=True, early_stopping=True)
-#                 analysis_name = "sigma_" + str(s) + "_Arche_" + str(analysis_arch) + "_a_" + str(a_param) + "_b_" + str(b_param) + "_rep_" + str(rep) + "_SYNARCH_" + str(synthetic_arch)
-#                 if AA_type == AA_types[0] and analysis_arch == analysis_archs[0] and rep == 0:
-#                     AAM.save_analysis(filename =  analysis_name, model_type = AA_type, result_number = 0, with_synthetic_data=True, save_synthetic_data=True)
-#                 else:
-#                     AAM.save_analysis(filename =  analysis_name, model_type = AA_type, result_number = 0, with_synthetic_data=True, save_synthetic_data=False)
-
-
-
-
+from telnetlib import OLD_ENVIRON
 from eval_measures import calcMI
 
 
@@ -53,10 +20,10 @@ def result_helper_function2(params):
     n_iter = 2000
 
     #reps = 10
-    reps = 1
+    reps = 2
     #analysis_archs = np.arange(3,11)
     analysis_archs = [5]
-    AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
+    AA_types = ["CAA","RBOAA", "OAA"]
 
     s = params[0]
     synthetic_arch = params[1]
@@ -84,11 +51,11 @@ def result_helper_function2(params):
         if AA_type == "CAA":
             lr = 0.01
         elif AA_type == "TSAA":
-            lr = 0.05
+            lr = 0.01
         elif AA_type == "OAA":
-            lr = 0.05
+            lr = 0.01
         else:
-            lr = 0.1
+            lr = 0.01
         for analysis_arch in analysis_archs:
             for rep in range(reps):
 
@@ -97,11 +64,19 @@ def result_helper_function2(params):
                 reps_list.append(rep)
 
                 if AA_type == "OAA":
-                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True)
+                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True, p=p)
+                elif AA_type == "RBOAA":
+                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True,p=p)
                 else:
                     AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True)
 
                 analysis_A = AAM._synthetic_results[AA_type][0].A
+
+                if AA_type == "RBOAA":
+                    print("A ANAL")
+                    print(analysis_A[0,0])
+                    print("A TRUE")
+                    print(syn_A[0,0])
 
                 if AA_type in ["CAA","TSAA"]:
                     analysis_Z = AAM._synthetic_results[AA_type][0].Z
@@ -117,10 +92,7 @@ def result_helper_function2(params):
                 NMIs_list.append(NMI(analysis_A,syn_A))
                 MCCs_list.append(MCC(analysis_Z,syn_Z))
 
-                print("AA_TYPE: " + str(AA_type))
-                print(syn_betas)
-                print(analysis_betas)
-
+                print(NMI(analysis_A,syn_A))
 
 
     dataframe = pd.DataFrame.from_dict({
@@ -136,6 +108,7 @@ def result_helper_function2(params):
         'MCC': MCCs_list,
         'BDM': BDM_list})
 
+    print(BDM_list)
     print(NMIs_list)
 
     csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"

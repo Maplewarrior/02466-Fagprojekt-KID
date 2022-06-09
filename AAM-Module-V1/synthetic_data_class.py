@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 import pickle
+import torch
 
 class _synthetic_data:
     
@@ -67,7 +68,8 @@ class _synthetic_data:
             for i in range(M):
                 for j in range(K):
                     Z[i,j] = np.random.choice(alphas, size=1)
-            
+                    
+        
         else:
             betas = self.biasedBetas(N=N, p=p, b_param=b_param)
             betas = self.betaConstraintsBias(betas)
@@ -110,6 +112,11 @@ class _synthetic_data:
         
             J = len(betas)    
             D = np.empty((J+2, M, N))
+
+            # D = torch.rand(len(betas)+2,len(X_rec),len(X_rec[0,:]))
+            # D[0] = torch.tensor(np.matrix(np.ones((M,N)) * (-np.inf)))
+            # D[-1] = torch.tensor(np.matrix(np.ones((M,N)) * (np.inf)))
+            # D[1:-1] = torch.div(torch.tensor(betas).expand(N,M,len(betas)).T-X_rec,sigma+1e-16)
             
             for j in range(J+2):
                 # Left-most tail
@@ -119,11 +126,16 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[j-1] - X_rec)/(sigma+1e-10) ## Add softplus(sigma)
+                    D[j] = (betas[j-1] - X_rec)/(sigma+1e-16) ## Add softplus(sigma)
                     
         else:
             J = len(betas[0,:])
             D = np.empty((J+2, M, N))
+
+            # D = torch.rand(len(betas[0,:])+2,M,N)
+            # D[0] = torch.tensor(np.matrix(np.ones((N)) * (-np.inf)))
+            # D[-1] = torch.tensor(np.matrix(np.ones((N)) * (np.inf)))
+            # D[1:-1] = torch.div(torch.unsqueeze(betas.T, 2).repeat(1,1,N)-X_rec.T,torch.unsqueeze(sigma+1e-16, 1).repeat(1,N))
             
             for j in range(J+2):
                 if j == 0:
@@ -131,7 +143,7 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[:,j-1] - X_rec)/(sigma+1e-10) ## Add softplus(sigma)
+                    D[j] = (betas[:,j-1] - X_rec)/(sigma+1e-16) ## Add softplus(sigma)
                     # D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
         return D
