@@ -40,21 +40,20 @@ def result_helper_function2(params):
     import pandas as pd
     from eval_measures import NMI
     from eval_measures import MCC
-    from eval_measures import betas_RSS
+    from eval_measures import BDM
     
-    #N = 10000
-    N = 50
+    N = 5000
     M = 21
     K = 5
     p = 6
     rb = True
-    n_iter = 25000
+    n_iter = 2000
 
     #reps = 10
-    reps = 2
-    analysis_archs = np.arange(2,11)
-    #AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
-    AA_types = ["RBOAA", "CAA"]
+    reps = 1
+    #analysis_archs = np.arange(3,11)
+    analysis_archs = [5]
+    AA_types = ["RBOAA", "CAA", "OAA",  "TSAA"]
 
     s = params[0]
     synthetic_arch = params[1]
@@ -67,7 +66,7 @@ def result_helper_function2(params):
     losses_list = []
     NMIs_list = []
     MCCs_list = []
-    betas_RSS_list = []
+    BDM_list = []
 
     AAM = AA()
 
@@ -76,9 +75,15 @@ def result_helper_function2(params):
     syn_Z = AAM._synthetic_data.Z
     syn_betas = AAM._synthetic_data.betas
 
+    done = False
+
     for AA_type in AA_types:
-        if AA_type in ["CAA","TSAA"]:
-            lr = 0.005
+        if AA_type == "CAA":
+            lr = 0.01
+        elif AA_type == "TSAA":
+            lr = 0.05
+        elif AA_type == "OAA":
+            lr = 0.05
         else:
             lr = 0.1
         for analysis_arch in analysis_archs:
@@ -88,23 +93,26 @@ def result_helper_function2(params):
                 analysis_archs_list.append(analysis_arch)
                 reps_list.append(rep)
 
-                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=True, early_stopping=True)
+                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True)
+
                 analysis_A = AAM._synthetic_results[AA_type][0].A
-                analysis_Z = AAM._synthetic_results[AA_type][0].Z
+
                 if AA_type in ["CAA","TSAA"]:
+                    analysis_Z = AAM._synthetic_results[AA_type][0].Z
                     loss = AAM._synthetic_results[AA_type][0].RSS[-1]
-                    betas_RSS_list.append("NaN")
+                    BDM_list.append("NaN")
                 else:
+                    analysis_Z = AAM._synthetic_results[AA_type][0].Z
                     loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     analysis_betas = AAM._synthetic_results[AA_type][0].b
-                    print(AA_type)
-                    print(np.shape(analysis_betas))
-                    print(np.shape(syn_betas))
-                    betas_RSS_list.append(betas_RSS(syn_betas,analysis_betas,AA_type))
+                    BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                 
                 losses_list.append(loss)
                 NMIs_list.append(NMI(syn_A,analysis_A))
                 MCCs_list.append(MCC(syn_Z,analysis_Z))
+
+                print(MCC(syn_Z,analysis_Z))
+                print(NMI(syn_A,analysis_A))
 
 
     dataframe = pd.DataFrame.from_dict({'sigma': s,
@@ -117,7 +125,9 @@ def result_helper_function2(params):
     'loss': losses_list, 
     'NMI': NMIs_list, 
     'MCC': MCCs_list,
-    'betas_RSS': betas_RSS_list})
+    'BDM': BDM_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + ".csv"
+    print(NMIs_list)
+
+    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"
     dataframe.to_csv(csv_name, index=False) 

@@ -8,11 +8,11 @@ if __name__ ==  '__main__':
     #sigma_vals = [-20, -3, -2.25,-1.5,-1]
     sigma_vals = [-20]
     #archetypes = [3,5,7]
-    archetypes = [3]
+    archetypes = [5]
     #a_param = [0.85, 1, 2]
-    a_param = [0.85]
+    a_param = [1]
     #b_param = [1, 10, 1000]
-    b_param = [1]
+    b_param = [1000]
     l = []
 
     for sigma in sigma_vals:

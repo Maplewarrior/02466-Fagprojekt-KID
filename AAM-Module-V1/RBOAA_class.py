@@ -129,7 +129,6 @@ class _RBOAA:
         
         
         ########## POST ANALYSIS ##########
-        loss_f = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J).item()
         Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         A_f = self._apply_constraints_AB(A_non_constraint).detach().numpy()
         B_f = self._apply_constraints_AB(B_non_constraint).detach().numpy()
