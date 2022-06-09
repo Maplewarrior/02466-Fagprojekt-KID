@@ -34,6 +34,9 @@
 
 
 
+from eval_measures import calcMI
+
+
 def result_helper_function2(params):
     from AAM import AA
     import numpy as np
@@ -108,24 +111,27 @@ def result_helper_function2(params):
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                 
                 losses_list.append(loss)
-                NMIs_list.append(NMI(syn_A,analysis_A))
-                MCCs_list.append(MCC(syn_Z,analysis_Z))
+                NMIs_list.append(NMI(analysis_A,syn_A))
+                MCCs_list.append(MCC(analysis_Z,syn_Z))
 
-                print(MCC(syn_Z,analysis_Z))
-                print(NMI(syn_A,analysis_A))
+                print("AA_TYPE: " + str(AA_type))
+                print(syn_betas)
+                print(analysis_betas)
 
 
-    dataframe = pd.DataFrame.from_dict({'sigma': s,
-    'synthetic_k': synthetic_arch,
-    'a_param': a_param,
-    'b_param': a_param,
-    'AA_type': AA_types_list, 
-    'analysis_k': analysis_archs_list, 
-    'rep': reps_list, 
-    'loss': losses_list, 
-    'NMI': NMIs_list, 
-    'MCC': MCCs_list,
-    'BDM': BDM_list})
+
+    dataframe = pd.DataFrame.from_dict({
+        'sigma': s,
+        'synthetic_k': synthetic_arch,
+        'a_param': a_param,
+        'b_param': a_param,
+        'AA_type': AA_types_list, 
+        'analysis_k': analysis_archs_list, 
+        'rep': reps_list, 
+        'loss': losses_list, 
+        'NMI': NMIs_list, 
+        'MCC': MCCs_list,
+        'BDM': BDM_list})
 
     print(NMIs_list)
 
