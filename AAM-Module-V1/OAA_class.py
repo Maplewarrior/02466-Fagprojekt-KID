@@ -6,6 +6,7 @@ import torch.optim as optim
 from timeit import default_timer as timer
 from AA_result_class import _OAA_result
 from loading_bar_class import _loading_bar
+from CAA_class import _CAA
 
 import matplotlib.pyplot as plt 
 
@@ -100,7 +101,7 @@ class _OAA:
         A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
         B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
         b_non_constraint = torch.autograd.Variable(torch.rand(J), requires_grad=True)
-        sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(1) * 1e-16, requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -126,6 +127,77 @@ class _OAA:
                         print("Analysis ended due to early stopping.\n")
                     break
             
+        
+        ########## POST ANALYSIS ##########
+        Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
+        A_f = self._apply_constraints_AB(A_non_constraint).detach().numpy()
+        B_f = self._apply_constraints_AB(B_non_constraint).detach().numpy()
+        b_f = self._apply_constraints_beta(b_non_constraint)
+        alphas_f = self._calculate_alpha(b_f,J)
+        X_tilde_f = self._calculate_X_tilde(Xt,alphas_f).detach().numpy()
+        Z_tilde_f = (X_tilde_f@self._apply_constraints_AB(B_non_constraint).detach().numpy())
+        X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
+        end = timer()
+        time = round(end-start,2)
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
+
+        if not mute:
+            result._print()
+        
+        return result
+
+    
+
+
+
+
+    def _compute_archetypes_with_CAA_initialization(self, X, K, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False):
+        CAA = _CAA()
+        initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = True)
+        
+        ########## INITIALIZATION ##########
+        self.N = len(X)
+        self.M = len(X[0,:])
+        self.N_arange = [n for n in range(self.N) for m in range(self.M)]
+        self.M_arange = [m for m in range(self.M) for n in range(self.N)]
+        self.loss = []
+        start = timer()
+        if not mute:
+            loading_bar = _loading_bar(n_iter, "Ordinal Archetypal Analysis")
+        N, _ = X.T.shape
+        J = int((np.max(X)-np.min(X))+1)
+        Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
+        A_non_constraint = torch.autograd.Variable(torch.from_numpy(initialization_result.A), requires_grad=True)
+        B_non_constraint = torch.autograd.Variable(torch.from_numpy(initialization_result.B), requires_grad=True)
+        b_non_constraint = torch.autograd.Variable(torch.rand(J), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(1) * 1e-16, requires_grad=True)
+        optimizer = optim.Adam([A_non_constraint, 
+                                B_non_constraint, 
+                                b_non_constraint, 
+                                sigma_non_constraint], amsgrad = True, lr = lr)
+        
+
+        ########## ANALYSIS ##########
+        for i in range(n_iter):
+            if not mute:
+                loading_bar._update()
+            optimizer.zero_grad()
+            L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J)
+            self.loss.append(L.detach().numpy())
+            L.backward()
+            optimizer.step() 
+
+
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.loss) > 200 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
+                    if not mute:
+                        loading_bar._kill()
+                        print("Analysis ended due to early stopping.\n")
+                    break
+        
+        print("HEYHEYHEYHEYHEYHEYHEYEHYE")
+        print(self._apply_constraints_beta(b_non_constraint))
         
         ########## POST ANALYSIS ##########
         Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())

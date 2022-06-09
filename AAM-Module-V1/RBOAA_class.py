@@ -101,7 +101,7 @@ class _RBOAA:
         A_non_constraint = torch.autograd.Variable(torch.rand(K, N), requires_grad=True)
         B_non_constraint = torch.autograd.Variable(torch.rand(N, K), requires_grad=True)
         b_non_constraint = torch.autograd.Variable(torch.rand(N,J), requires_grad=True)
-        sigma_non_constraint = torch.autograd.Variable(torch.rand(N), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(N) * 1e-16, requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -125,7 +125,7 @@ class _RBOAA:
                         loading_bar._kill()
                         print("Analysis ended due to early stopping.\n")
                     break
-
+        
         
         
         ########## POST ANALYSIS ##########

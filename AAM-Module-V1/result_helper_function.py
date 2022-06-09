@@ -96,7 +96,10 @@ def result_helper_function2(params):
                 analysis_archs_list.append(analysis_arch)
                 reps_list.append(rep)
 
-                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True)
+                if AA_type == "OAA":
+                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True)
+                else:
+                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True)
 
                 analysis_A = AAM._synthetic_results[AA_type][0].A
 

@@ -51,7 +51,8 @@ class _CAA:
                         loading_bar._kill()
                         print("Analysis ended due to early stopping.\n")
                     break
-            
+        
+        
 
         ########## POST ANALYSIS ##########
         A_f = self._apply_constraints(A).detach().numpy()
