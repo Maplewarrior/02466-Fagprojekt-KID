@@ -177,19 +177,22 @@ class _synthetic_data:
         file.close()
             
 #%%
-# N = 100
-# M = 10
+# N = 5000
+# M = 21
 # K = 5
 # p = 5
 
-# sigma = 1
-# a_param = 1
-# b_param = 1000
-# rb = True
+# # sigma = 1
+# # a_param = 1
+# # b_param = 1000
+# # rb = True
 
-# n_iter = 2000
+# # n_iter = 2000
 
-# S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+# # S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
 
+# #%%
+# B = np.random.uniform(0,1, (N,K))
+# X_tilde = np.random.uniform(0,1, (M,N))
 
-
+# print(X_tilde@B)
