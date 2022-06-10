@@ -40,12 +40,15 @@ class _OAA:
 
     def _calculate_X_hat(self,X_tilde,A,B):
         return B@A@X_tilde.T
+        # X@BA  
 
     def _calculate_D(self,b,X_hat,sigma):
         
         D = torch.rand(len(b)+2,len(X_hat),len(X_hat[0,:]))
+
         D[0] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (-np.inf)))
         D[-1] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (np.inf)))
+
         D[1:-1] = torch.div(b.expand(self.N,self.M,len(b)).T-X_hat,sigma+1e-16)
 
         return D
@@ -100,7 +103,7 @@ class _OAA:
         
         Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
-        sigma_non_constraint = torch.autograd.Variable(torch.tensor(-2.0), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.tensor(-4.6), requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
