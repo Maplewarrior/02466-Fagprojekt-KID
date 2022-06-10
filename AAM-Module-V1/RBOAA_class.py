@@ -1,4 +1,5 @@
 ########## IMPORTS ##########
+from tokenize import Double
 import numpy as np
 import torch
 import torch.nn as nn
@@ -9,6 +10,8 @@ from loading_bar_class import _loading_bar
 from CAA_class import _CAA
 
 
+# IMPORT TO TEST DIVERGENCE OF MODEL
+from synthetic_data_class import _synthetic_data
 
 ########## ORDINAL ARCHETYPAL ANALYSIS CLASS ##########
 class _RBOAA:
@@ -51,19 +54,19 @@ class _RBOAA:
         # D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat,sigma.unsqueeze(1).repeat(1,self.M))
 
         D = torch.rand(len(b[0,:])+2,self.N,self.M)
-        # D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-        # D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-        # D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
+        D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+        D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+        D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
 
-        for j in range(len(b[0,:])+2):
-            if j == 0:
-                D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
-            elif j == len(b[0,:])+1:
-                D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
-            else:
-                D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
+        # for j in range(len(b[0,:])+2):
+        #     if j == 0:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
+        #     elif j == len(b[0,:])+1:
+        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
+        #     else:
+        #         D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
-        return D
+        # return D
 
     def _calculate_loss(self,D,X):
     
@@ -107,18 +110,28 @@ class _RBOAA:
         Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
 
         if with_CAA_initialization:
-            CAA = _CAA()
-            initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, True,columns,with_synthetic_data = False, early_stopping = True)
-            A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
+            
+            # CAA = _CAA()
+            # initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, True,columns,with_synthetic_data = False, early_stopping = True)
+            # A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
+            # B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
+
+            syn = _synthetic_data(N=self.N, M = self.M, K =K, p = p, sigma=-20, a_param=1, b_param=1000, rb = False)
+            A_non_constraint = torch.autograd.Variable(torch.from_numpy(syn.get_A(self.N,K,1)).float(), requires_grad=True)
+            sigma_non_constraint = torch.autograd.Variable(torch.tensor(1.0).repeat(self.N), requires_grad=True)
+            b_non_constraint = torch.autograd.Variable(torch.from_numpy(np.ones(p)).float().unsqueeze(1).repeat(1,self.N).T, requires_grad=True)
+
             
         else:
             A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
 
-        b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
+        #b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
         ### REMOVING SIGMA INITIALIZATION ### sigma_non_constraint = torch.autograd.Variable(torch.tensor(-2.0).repeat(N), requires_grad=True) ###
-        sigma_non_constraint = torch.autograd.Variable(torch.rand(N), requires_grad=True)
+        #sigma_non_constraint = torch.autograd.Variable(torch.rand(N), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(N)*(-100), requires_grad=True)
+        #A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
+        B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -159,7 +172,13 @@ class _RBOAA:
         time = round(end-start,2)
         result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA",with_synthetic_data=with_synthetic_data)
 
+        print("ZTILDE FOR RBOAA")
+        print(Z_tilde_f)
+
+        print("Z FOR RBOAA")
+        print(Z_f)
+
         if not mute:
             result._print()
-        
+    
         return result
