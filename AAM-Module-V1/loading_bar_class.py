@@ -11,7 +11,7 @@ class _loading_bar:
         self.start = timer()
         print("\n{0} in progress...".format(headline))
         
-    def _update(self):
+    def _update(self, loss = None):
         self.current += 1
         if self.current == self.count:
             print("\r{0}".format(f"Finished Successfully after {round(timer()-self.start,1)} seconds!                               \n"))
@@ -21,6 +21,8 @@ class _loading_bar:
                 remaining = f"{round(remaining/60,1)} minutes remaining"
             else:
                 remaining = f"{round(remaining,1)} seconds remaining"
+            if not loss == None:
+                print("\r{0}".format("|{0}{1}|   {2}% finished // {3} (Loss: {4})".format("█"*int(round(self.current/self.count,1)*20),"-"*(20-int(round(self.current/self.count,1)*20)),round((self.current/self.count)*100,2),remaining, round(loss))), end = "", flush=True)
             print("\r{0}".format("|{0}{1}|   {2}% finished // {3}".format("█"*int(round(self.current/self.count,1)*20),"-"*(20-int(round(self.current/self.count,1)*20)),round((self.current/self.count)*100,2),remaining)), end = "", flush=True)
             self.skip = 0
         else:

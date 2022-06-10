@@ -46,12 +46,4 @@ def BDM(b_true, b_est, AA_type):
 
 #%%
 
-A1 = np.random.rand(3,21)*1000000000
-
-A2 = A1
-A2 = np.random.rand(7,21)*100000000
-
-print(NMI(A1,A2))
-print(NMI(A2,A1))
-
 
