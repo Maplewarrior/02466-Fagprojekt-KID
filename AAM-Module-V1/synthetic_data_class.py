@@ -50,48 +50,31 @@ class _synthetic_data:
         # Ensure reproducibility
         np.random.seed(42)
         
-        Z = np.empty((M,K))
         
+        
+        # Check to ensure that there are no NaN's
         if b_param < 0.01:
             b_param = 0.01
         
-        # Check if we want to model response bias
-        if not rb:
-            betas = np.ones(p)
-            betas = self.betaConstraints(betas)
-            alphas = np.empty(p)
-            alphas[0] = (0 + betas[0]) / 2
-            alphas[-1] = (1+ betas[-1]) / 2
-            for i in range(len(betas)-1):
-                alphas[i+1] = (betas[i] + betas[i+1]) / 2
-            
-            for i in range(M):
-                for j in range(K):
-                    Z[i,j] = np.random.choice(alphas, size=1)
-                    
+        betas = np.array([b_param]*p)
+        betas = self.betaConstraints(betas)
         
-        else:
+        alphas = np.empty(p)
+        alphas[0] = (0 + betas[0]) / 2
+        alphas[-1] = (1+ betas[-1]) / 2
+        for i in range(len(betas)-1):
+            alphas[i+1] = (betas[i] + betas[i+1]) / 2
+        
+        
+        Z_ordinal = np.ceil(np.random.uniform(0, 1, size = (M,K))*p).astype(int)
+        Z_alpha = alphas[Z_ordinal-1]
+        
+        
+        if rb == True:
             betas = self.biasedBetas(N=N, p=p, b_param=b_param)
             betas = self.betaConstraintsBias(betas)
-            alphas = np.empty((N,p))
             
-            for i in range(N):
-                # Set start and end values
-                alphas[i,0] = (0+betas[i,0])/2
-                alphas[i,-1] = (1 + betas[i,-1])/2
-                for j in range(p-2):
-                    alphas[i,j+1] = (betas[i,j]+betas[i,j+1]) / 2
-            
-            # Get Z matrix
-            Z = np.empty((M,K))
-            for m in range(M):
-                for l in range(K):
-                # for k in range(N):
-                    row_idx = np.random.randint(0, N)
-                    col_idx = np.random.randint(0, p)
-                                   
-                    Z[m,l] = alphas[row_idx, col_idx]
-        return Z, betas
+        return Z_ordinal, Z_alpha, betas
 
     def get_A(self, N, K, a_param):
         np.random.seed(42) # set another seed :)
@@ -176,16 +159,17 @@ class _synthetic_data:
     # function combining the previous methods to get X_thilde
     def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100):
         
-        Z, betas = self.get_Z(N=N,M=M, K=K, p=p, rb=rb, b_param=b_param)
+        Z_ordinal, Z_alpha, betas = self.get_Z(N=N,M=M, K=K, p=p, rb=rb, b_param=b_param)
         A = self.get_A(N, K, a_param=a_param)
-        X_rec = Z@A
+        X_rec = Z_alpha@A
         
         D = self.get_D(X_rec, betas, self.softplus(sigma), rb=rb)
         probs = self.Probs(D)
-        X_thilde = self.toCategorical(probs)
+        
+        X_final = self.toCategorical(probs)
         
         
-        return X_thilde, Z, A, betas
+        return X_final, Z_ordinal, A, betas
         
     def _save(self,type,filename):
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
@@ -193,18 +177,22 @@ class _synthetic_data:
         file.close()
             
 #%%
-# N = 40
+# N = 5000
 # M = 21
 # K = 5
-# p = 6
+# p = 5
 
-# sigma = 1
-# a_param = 1
-# b_param = 1000
-# rb = True
+# # sigma = 1
+# # a_param = 1
+# # b_param = 1000
+# # rb = True
 
-# n_iter = 2000
+# # n_iter = 2000
 
-# S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+# # S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
 
-# print(S.X)
+# #%%
+# B = np.random.uniform(0,1, (N,K))
+# X_tilde = np.random.uniform(0,1, (M,N))
+
+# print(X_tilde@B)
