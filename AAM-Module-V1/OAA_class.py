@@ -39,17 +39,15 @@ class _OAA:
         return X_tilde
 
     def _calculate_X_hat(self,X_tilde,A,B):
-        return B@A@X_tilde.T
-        # X@BA  
+        X_hat = B@A@X_tilde.T
+        return X_hat
 
     def _calculate_D(self,b,X_hat,sigma):
         
         D = torch.rand(len(b)+2,len(X_hat),len(X_hat[0,:]))
-
-        D[0] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (-np.inf)))
-        D[-1] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (np.inf)))
-
-        D[1:-1] = torch.div(b.expand(self.N,self.M,len(b)).T-X_hat,sigma+1e-16)
+        D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+        D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+        D[1:-1] = torch.div(b.expand(self.M,self.N,len(b)).T-X_hat,sigma+1e-16)
 
         return D
 
@@ -60,6 +58,14 @@ class _OAA:
         P = D_cdf[1:]-D_cdf[:len(D)-1]
         inverse_log_P = -torch.log(P+1e-16)
         loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.M_arange,self.N_arange])
+
+        #Find zeta values
+        # zetaNext = (torch.cat((torch.tensor([0.0]),b,torch.tensor([1.0])))[Xt.T] - X_hat)/sigma
+        # zetaPrev = (torch.cat((torch.tensor([0.0]),b,torch.tensor([1.0])))[Xt.T-1] - X_hat)/sigma
+        # zetaNext[Xt.T==len(b)+1] = float("Inf")
+        # zetaPrev[Xt.T == 1] = -float("Inf")
+        # logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
+        # loss = torch.sum(logP)
 
         return loss
 
@@ -83,10 +89,10 @@ class _OAA:
 
 
         ########## INITIALIZATION ##########
-        self.N = len(X)
-        self.M = len(X[0,:])
-        self.N_arange = [n for n in range(self.N) for m in range(self.M)]
-        self.M_arange = [m for m in range(self.M) for n in range(self.N)]
+        self.M = len(X)
+        self.N = len(X[0,:])
+        self.N_arange = [n for n in range(self.M) for m in range(self.N)]
+        self.M_arange = [m for m in range(self.N) for n in range(self.M)]
         self.loss = []
         start = timer()
         N, _ = X.T.shape
@@ -103,7 +109,7 @@ class _OAA:
         
         Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
-        sigma_non_constraint = torch.autograd.Variable(torch.tensor(-4.6), requires_grad=True)
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -135,7 +141,7 @@ class _OAA:
             
         
         ########## POST ANALYSIS ##########
-        Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
+        #Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         A_f = self._apply_constraints_AB(A_non_constraint).detach().numpy()
         B_f = self._apply_constraints_AB(B_non_constraint).detach().numpy()
         b_f = self._apply_constraints_beta(b_non_constraint)
@@ -145,6 +151,13 @@ class _OAA:
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
+        Z_f = (A_f@X_tilde_f.T).T
+        
+        print(X_hat_f)
+
+        print(b_f)
+        print(sigma_non_constraint)
+
         result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
 
         if not mute:

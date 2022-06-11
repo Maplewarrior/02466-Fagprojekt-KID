@@ -117,7 +117,7 @@ class _plots:
 
         df=pd.DataFrame(data,columns=names)
         df.plot(x="Attributes", y=names[1:], kind="bar",figsize=(10,10))
-        plt.ylim(np.floor(np.min(Z)), np.max(Z+0.2))
+        plt.ylim(0.0, np.max(Z)*1.1)
         plt.show()
 
 

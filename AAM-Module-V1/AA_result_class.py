@@ -111,7 +111,7 @@ class _OAA_result:
         elif plot_type == "barplot":
             self.plots._barplot(self.Z_tilde,self.columns,archetype_number,self.type)
         elif plot_type == "barplot_all":
-            self.plots._barplot_all(self.Z_tilde,self.columns)
+            self.plots._barplot_all(self.Z,self.columns)
         elif plot_type == "typal_plot":
             self.plots._typal_plot(self.Z_tilde,types,weighted)
 

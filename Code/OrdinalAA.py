@@ -43,7 +43,7 @@ def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False,
     i=np.random.randint(0,N,K,dtype=np.int64)
 
     #Initialize C~
-    Ctilde=torch._sparse_csr_tensor(torch.tensor(range(K+1)),torch.tensor(i),torch.ones(K),(K,N)).to_dense().to(device=device)
+    Ctilde=torch.sparse_csr_tensor(torch.tensor(range(K+1)),torch.tensor(i),torch.ones(K),(K,N)).to_dense().to(device=device)
     Ctilde = Ctilde*np.log(N*2)
     Ctilde.requires_grad=True
 
