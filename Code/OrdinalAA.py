@@ -4,13 +4,15 @@ Implementation of OAA and RB-OAA
 
 import torch
 import numpy as np
-torch.manual_seed(0)
+# torch.manual_seed(0)
 import time
 import json
 import os
 import matplotlib.pyplot as plt
 
 def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False, verbose=False, save=False, savedir="", fileName=""):
+    
+    print("Input data shape: ", data.shape)
     start_time = time.time()
     if device=="auto":
         if torch.cuda.is_available():
@@ -46,10 +48,12 @@ def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False,
     Ctilde=torch.sparse_csr_tensor(torch.tensor(range(K+1)),torch.tensor(i),torch.ones(K),(K,N)).to_dense().to(device=device)
     Ctilde = Ctilde*np.log(N*2)
     Ctilde.requires_grad=True
-
+    # print("Shape of C (our B): ", Ctilde.shape)
+    
     #Initilize s~
     Stilde=torch.rand(N,K).to(device=device)
     Stilde.requires_grad=True
+    # print("Shape of S (our A): ", Stilde.shape )
 
     optimiser = torch.optim.Adam([Ctilde, Stilde,gamma,sigmaTilde], lr=learning_rata)
 
@@ -60,12 +64,11 @@ def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False,
 
     for epoke in range(epokes):
 
-
+        # print("n_epoch:", epoke)
         sigma = torch.log(1 + torch.exp(sigmaTilde))
-
+        
         beta[1:J+1] = torch.cumsum(torch.nn.functional.softmax(gamma.clone(),dim=0), dim=0)
         alpha = (beta[:J] + beta[1:J+1]) / 2
-
         #Map X to Xtilde
         Xtilde=alpha[X]
 
@@ -76,8 +79,10 @@ def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False,
         #Perform AA
         A = torch.matmul(C,Xtilde)
         Xhat=torch.matmul(S,A)
-
+        # print("Shape of A (our Z)", A.shape)
+        # print("Shape of X_hat (Z @ A)", Xhat.shape)
         #Find zeta values
+        print("BETAAAA", beta)
         zetaNext = (beta[X+1] - Xhat)/sigma
         zetaPrev = (beta[X] - Xhat)/sigma
 

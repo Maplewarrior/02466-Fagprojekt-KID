@@ -11,22 +11,22 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-times=3
+times=2
 
 
 
 bias=False
-betaParm =[0.3,0.2,0.1,0.3,0.1]
+betaParm =1000
 alphaFalse=[0,1,2,3,4]
 K=4
-sigma_list=np.arange(0,0.5,0.05).round(2)
+sigma_list = [0.01] # sigma = -4.6
 N=10000
 M=21
 epokes=1000
 
-save=True
+save=False
 
-savedir=r"C:\Users\Andre\OneDrive - Danmarks Tekniske Universitet\Bachelor project\NewScaleExperiment"
+savedir=r"C:\Users\micha\OneDrive\Skrivebord\02466-Fagprojekt-KID\Code\NewScaleExperiment"
 
 
 loss_log_OAA=pd.DataFrame(columns=range(times), index=sigma_list)
@@ -40,9 +40,10 @@ run_loss_OAA = pd.DataFrame(columns=range(times), index=range(epokes))
 
 
 for sigma in sigma_list:
-
+    print("inside")
 
     dataSample,dataTrue,ATrue,STrue,beta=OrdinalSampler(N=N,M=M,sigma=sigma,K=K,alphaFalse=alphaFalse,betaParm=betaParm,bias=bias)
+    print("Created synthetic data")
     label,count=np.unique(dataSample, return_counts=True)
     plt.bar(label,count)
     plt.title(f"Simulated data densety sigma={sigma}")
@@ -58,12 +59,11 @@ for sigma in sigma_list:
     if save:
         with open(os.path.join(savedir, f"Sigma{sigma}true"), "w") as file:
             json.dump(saveDict, file)
-
-
-
+    print("SHAPE OF DATA:", dataSample.shape)
+    print("Further")
     for i in range(times):
         summery_OAA, result_OAA=Ordinal_AA(dataSample, K, learning_rata=0.01, epokes=epokes, verbose=False, save=save, savedir=savedir, fileName=f"sigma{sigma}sample{i}")
-
+        print("iter number: ",i)
         RBC_log_OAA.loc[sigma, i] = ResponsBiasCompereson(beta, result_OAA["beta"])[1]
 
         loss_log_OAA.loc[sigma, i]=summery_OAA["loss"]

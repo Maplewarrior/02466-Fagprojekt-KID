@@ -39,26 +39,42 @@ class _OAA:
         return X_tilde
 
     def _calculate_X_hat(self,X_tilde,A,B):
-        X_hat = B@A@X_tilde.T
+        # X_hat = B@A@X_tilde.T
+        X_hat = X_tilde @ B @ A
         return X_hat
 
-    def _calculate_D(self,b,X_hat,sigma):
+    # def _calculate_D(self,b,X_hat,sigma):
         
-        D = torch.rand(len(b)+2,len(X_hat),len(X_hat[0,:]))
-        D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-        D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-        D[1:-1] = torch.div(b.expand(self.M,self.N,len(b)).T-X_hat,sigma+1e-16)
+    #     D = torch.rand(len(b)+2,len(X_hat),len(X_hat[0,:]))
+    #     D[0] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (-np.inf)))
+    #     D[-1] = torch.tensor(np.matrix(np.ones((self.M,self.N)) * (np.inf)))
+    #     D[1:-1] = torch.div(b.expand(self.N,self.M,len(b)).T-X_hat,sigma+1e-16)
 
-        return D
+    #     return D
 
-    def _calculate_loss(self,D,X):
+    def _calculate_loss(self,X, X_hat, b, sigma):
 
-        stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
-        D_cdf = stand_norm.cdf(D)
-        P = D_cdf[1:]-D_cdf[:len(D)-1]
-        inverse_log_P = -torch.log(P+1e-16)
-        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.M_arange,self.N_arange])
+        # stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
+        # D_cdf = stand_norm.cdf(D)
+        # P = D_cdf[1:]-D_cdf[:len(D)-1]
+        # inverse_log_P = -torch.log(P+1e-16)
+        # loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
+        
+        # print("-log_P shape: ", inverse_log_P.shape)
+        
+        pad = nn.ConstantPad1d(1, 0)
+        b = pad(b)
+        b[-1] = 1.0
+        zetaNext = (b[X] - X_hat)/sigma
+        zetaPrev = (b[X-1] - X_hat)/sigma
+        zetaNext[X==len(b)+1] = float("Inf")
+        zetaPrev[X == 1] = -float("Inf")
 
+        #Do phi(zeta1)-phi(zeta2)
+        logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
+
+        loss = torch.sum(logP)
+        
         #Find zeta values
         # zetaNext = (torch.cat((torch.tensor([0.0]),b,torch.tensor([1.0])))[Xt.T] - X_hat)/sigma
         # zetaPrev = (torch.cat((torch.tensor([0.0]),b,torch.tensor([1.0])))[Xt.T-1] - X_hat)/sigma
@@ -71,23 +87,33 @@ class _OAA:
 
     def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint):
         
+        # print("A shape before:", A_non_constraint.shape)
+        
         A = self._apply_constraints_AB(A_non_constraint)
+        # print("A shape after", A.shape)
+        
+        # print("B before", B_non_constraint.shape)
         B = self._apply_constraints_AB(B_non_constraint)
+        # print("B shape after", B.shape)
         b = self._apply_constraints_beta(b_non_constraint)
         sigma = self._apply_constraints_sigma(sigma_non_constraint)
         alphas = self._calculate_alpha(b)
         
+        # print("X_shape", Xt.shape)
         X_tilde = self._calculate_X_tilde(Xt,alphas)
+        # print("X_tilde shape", X_tilde.shape)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
-        D = self._calculate_D(b,X_hat,sigma)
-        loss = self._calculate_loss(D,Xt)
+        # print("X_hat shape", X_hat.shape)
+        # D = self._calculate_D(b,X_hat,sigma)
+        # print("D shape", D.shape)
+        loss = self._calculate_loss(Xt, X_hat, b, sigma)
 
         return loss
         
 
     def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False):
 
-
+        
         ########## INITIALIZATION ##########
         self.M = len(X)
         self.N = len(X[0,:])
@@ -107,7 +133,7 @@ class _OAA:
             A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
         
-        Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
+        Xt = torch.tensor(X, dtype = torch.long)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
         sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 

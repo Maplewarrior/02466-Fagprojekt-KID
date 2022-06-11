@@ -44,37 +44,50 @@ class _RBOAA:
         return X_tilde@B@A
         ### REMOVING AGIN #### return B@A@X_tilde.T
 
-    def _calculate_D(self,b,X_hat,sigma):
+    # def _calculate_D(self,b,X_hat,sigma):
         
-        ### REMOVING DUE TO CHANGE IN CALC XHAT ###
-        # D = torch.rand(len(b[0,:])+2,self.N,self.M)
-        # D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-        # D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-        # D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat,sigma.unsqueeze(1).repeat(1,self.M))
+    #     ### REMOVING DUE TO CHANGE IN CALC XHAT ###
+    #     # D = torch.rand(len(b[0,:])+2,self.N,self.M)
+    #     # D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+    #     # D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+    #     # D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat,sigma.unsqueeze(1).repeat(1,self.M))
 
-        D = torch.rand(len(b[0,:])+2,self.N,self.M)
-        D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-        D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-        D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
+    #     D = torch.rand(len(b[0,:])+2,self.N,self.M)
+    #     D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
+    #     D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
+    #     D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
 
-        # for j in range(len(b[0,:])+2):
-        #     if j == 0:
-        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
-        #     elif j == len(b[0,:])+1:
-        #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
-        #     else:
-        #         D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
+    #     # for j in range(len(b[0,:])+2):
+    #     #     if j == 0:
+    #     #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
+    #     #     elif j == len(b[0,:])+1:
+    #     #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
+    #     #     else:
+    #     #         D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
-        return D
+    #     return D
 
-    def _calculate_loss(self,D,X):
+    def _calculate_loss(self,X, X_hat, b, sigma):
+        
+        pad = nn.ConstantPad1d(1, 0)
+        b = pad(b)
+        b[:,-1] = 1.0
+        
+        zetaNext = (torch.gather(b,1,X)-X_hat)/sigma
+        zetaPrev = (torch.gather(b,1,X-1)-X_hat)/sigma
+        zetaNext[X==len(b)+1] = float("Inf")
+        zetaPrev[X == 1] = -float("Inf")
     
-        stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
-        D_cdf = stand_norm.cdf(D)
-        P = D_cdf[1:]-D_cdf[:len(D)-1]
-        inverse_log_P = -torch.log(P+1e-16)
-        loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
+        # stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
+        # D_cdf = stand_norm.cdf(D)
+        # P = D_cdf[1:]-D_cdf[:len(D)-1]
+        # inverse_log_P = -torch.log(P+1e-16)
+        # loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
         
+        #Do phi(zeta1)-phi(zeta2)
+        logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
+
+        loss = torch.sum(logP)
         return loss
 
     def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J):
@@ -87,8 +100,8 @@ class _RBOAA:
         
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
-        D = self._calculate_D(b,X_hat,sigma)
-        loss = self._calculate_loss(D,Xt)
+        # D = self._calculate_D(b,X_hat,sigma)
+        loss = self._calculate_loss(Xt, X_hat, b, sigma)
 
         return loss
         
@@ -105,7 +118,7 @@ class _RBOAA:
         if not mute:
             loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Archetypal Analysis")
         N, _ = X.T.shape
-        Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
+        Xt = torch.tensor(X, dtype=torch.long)
 
         if with_CAA_initialization:
             
