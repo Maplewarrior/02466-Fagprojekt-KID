@@ -9,14 +9,15 @@ def MCC( A1, A2):
             for j in range(K2):
                 corr[i][j] = np.corrcoef(A1[:,i], A2[:,j])[0][1]
         
-        max_list = []
-        for _ in range(min(K1,K2)):
-            row, column = np.unravel_index(corr.argmax(), corr.shape)
-            max_list.append(corr[row][column])
-            corr = np.delete(corr, row, axis=0)
-            corr = np.delete(corr, column, axis=1)
+        # max_list = []
+        # for _ in range(min(K1,K2)):
+        #     row, column = np.unravel_index(corr.argmax(), corr.shape)
+        #     max_list.append(corr[row][column])
+        #     corr = np.delete(corr, row, axis=0)
+        #     corr = np.delete(corr, column, axis=1)
         
-        return np.mean(max_list)
+        # return np.mean(max_list)
+        return np.mean(corr.max(1))
 
 def calcMI(A1, A2):
     P = A1@A2.T
