@@ -7,7 +7,7 @@ class _synthetic_data:
     
     def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param):
         
-        self.X, self.Z, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param)
+        self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param)
         self.N = N
         self.M = M
         self.K = K
@@ -169,7 +169,7 @@ class _synthetic_data:
         X_final = self.toCategorical(probs)
         
         
-        return X_final, Z_ordinal, A, betas
+        return X_final, Z_ordinal, Z_alpha, A, betas
         
     def _save(self,type,filename):
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')

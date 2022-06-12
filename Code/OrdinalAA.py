@@ -77,12 +77,15 @@ def Ordinal_AA(data, K, epokes, learning_rata, device="auto", TildeOutput=False,
         S = torch.nn.functional.softmax(Stilde, dim=1)
 
         #Perform AA
+        
         A = torch.matmul(C,Xtilde)
+        print("ARCHETYPE MATRIX ZZZZZZ")
+        print(A)
         Xhat=torch.matmul(S,A)
         # print("Shape of A (our Z)", A.shape)
         # print("Shape of X_hat (Z @ A)", Xhat.shape)
         #Find zeta values
-        print("BETAAAA", beta)
+        # print("BETAAAA", beta)
         zetaNext = (beta[X+1] - Xhat)/sigma
         zetaPrev = (beta[X] - Xhat)/sigma
 
@@ -190,6 +193,8 @@ def RB_OAA(data, K, epokes, learning_rata, device="auto", verbose=False, save=Fa
 
         #Perform AA
         A = torch.matmul(C,XTilde)
+        print("ARCHETYPE MATRIX!!!")
+        print(A)
         Xhat=torch.matmul(S,A)
 
         #Find zeta values

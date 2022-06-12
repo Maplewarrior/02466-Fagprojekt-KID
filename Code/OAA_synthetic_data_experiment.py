@@ -41,6 +41,7 @@ A_correlation_OAA=pd.DataFrame(columns=range(times), index=sigma_list)
 run_loss_OAA = pd.DataFrame(columns=range(times), index=range(epokes))
 
 
+
 for sigma in sigma_list:
 
     syn = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=sigma, rb=rb, a_param = a_param, b_param = betaParm)
@@ -75,9 +76,16 @@ for sigma in sigma_list:
         loss_log_OAA.loc[sigma, i]=summery_OAA["loss"]
 
         NMI_log_OAA.loc[sigma, i]=NMI(STrue, result_OAA["S"])
-
+        
+        
+        print("TRUEEEEE Z:")
+        print(ATrue)
+        print(np.array(ATrue).shape)
+        print("ZZZZZZ FOR METHOD:")
+        print(result_OAA["A"])
+        print(np.array(result_OAA["A"]).shape)
         A_correlation_OAA.loc[sigma, i]=archetype_correlation(ATrue, result_OAA["A"])[2]
-
+        
         run_loss_OAA.iloc[:, i] = result_OAA["loss_log"]
 
     fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(20,10))

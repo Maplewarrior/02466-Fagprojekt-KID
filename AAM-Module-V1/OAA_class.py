@@ -123,15 +123,21 @@ class _OAA:
         start = timer()
         N, _ = X.T.shape
 
-        if with_CAA_initialization:
-            CAA = _CAA()
-            initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, True,columns,with_synthetic_data = False, early_stopping = True)
-            A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
+        # if with_CAA_initialization:
+        #     CAA = _CAA()
+        #     initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, True,columns,with_synthetic_data = False, early_stopping = True)
+        #     A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
+        #     B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
             
-        else:
-            A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
+    
+        A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
+        # B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True) ### OLD ###
+        
+        
+        B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
+        B_non_constraint = B_non_constraint*np.log(N*2)
+        B_non_constraint.requires_grad=True
+        
         
         Xt = torch.tensor(X, dtype = torch.long)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
@@ -179,10 +185,10 @@ class _OAA:
         time = round(end-start,2)
         Z_f = (A_f@X_tilde_f.T).T
         
-        print(X_hat_f)
+        # print(X_hat_f)
 
-        print(b_f)
-        print(sigma_non_constraint)
+        # print(b_f)
+        # print(sigma_non_constraint)
 
         result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",with_synthetic_data=with_synthetic_data)
 
