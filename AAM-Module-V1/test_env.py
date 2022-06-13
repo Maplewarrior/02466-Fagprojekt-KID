@@ -169,7 +169,6 @@ for betaParm in betaParms:
                 X = data.X
                 A_true = data.A
                 Z_true = data.Z
-                Z_true_alpha = data.Z_alpha
                 
                 # OAA
                 result_OAA = OAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.05, mute=True, columns=data.columns, with_synthetic_data = True, early_stopping = True, with_CAA_initialization = False)
@@ -189,14 +188,11 @@ for betaParm in betaParms:
                 MCC_OAA[k,i] =(MCC(Z_true, Z_OAA))
                 MCC_RBOAA[k,i] =(MCC(Z_true, Z_RBOAA))
                 
-                # with Z true in the alpha domain
-                MCC_OAA_alpha[k,i] =(MCC(Z_true_alpha, Z_OAA))
-                MCC_RBOAA_alpha[k,i] =(MCC(Z_true_alpha, Z_RBOAA))
                 
                 loss_f_OAA[k,i] =(result_OAA.loss[-1])
                 loss_f_RBOAA[k,i] =(result_RBOAA.loss[-1])
                 
-        print("Creating plots")
+
         ### NMI PLOT ###
         plt.scatter(sigmas_softplussed, np.mean(NMI_OAA,axis=1), label = "OAA")
         plt.plot(sigmas_softplussed, np.mean(NMI_OAA,axis=1), '--')
