@@ -131,6 +131,20 @@ reps = 3
 OAA = _OAA()
 RBOAA = _RBOAA()
 
+
+
+path = os.getcwd()
+foldername = "plots_test_OAA_RBOAA"
+path = os.path.join(path, foldername)
+
+
+def softplus(s):
+    return np.log(1+np.exp(s))
+
+sigmas_softplussed = [softplus(s) for s in sigmas]
+#%%
+
+
 NMI_OAA = np.empty((len(sigmas), reps))
 NMI_RBOAA = np.empty((len(sigmas), reps))
 MCC_OAA = np.empty((len(sigmas), reps))
@@ -144,22 +158,12 @@ loss_f_RBOAA =  np.empty((len(sigmas), reps))
 MCC_OAA_BB = np.empty((len(sigmas), reps))
 MCC_RBOAA_BB = np.empty((len(sigmas), reps))
 
-path = os.getcwd()
-foldername = "plots_test_OAA_RBOAA"
-path = os.path.join(path, foldername)
-
-
-def softplus(s):
-    return np.log(1+np.exp(s))
-
-sigmas_softplussed = [softplus(s) for s in sigmas]
-#%%
 
 for betaParm in betaParms:
     for a_param in a_params:
         for k, sigma in enumerate(sigmas):
             for i in range(reps):
-                print ("iteration {0} in progress".format(k+1))
+                
                 data = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=sigma, rb=rb, a_param = a_param, b_param = betaParm)
                 
                 X = data.X
@@ -168,12 +172,12 @@ for betaParm in betaParms:
                 Z_true_alpha = data.Z_alpha
                 
                 # OAA
-                result_OAA = OAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.05, mute=False, columns=data.columns, with_synthetic_data = True, early_stopping = True, with_CAA_initialization = False)
+                result_OAA = OAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.05, mute=True, columns=data.columns, with_synthetic_data = True, early_stopping = True, with_CAA_initialization = False)
                 A_OAA = result_OAA.A
                 Z_OAA = result_OAA.Z
                 
                 # RBOAA
-                result_RBOAA = RBOAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.01, mute=False, columns=data.columns, with_synthetic_data = True, early_stopping = True)
+                result_RBOAA = RBOAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.01, mute=True, columns=data.columns, with_synthetic_data = True, early_stopping = True)
                 A_RBOAA = result_RBOAA.A
                 Z_RBOAA = result_RBOAA.Z
                 
@@ -192,56 +196,59 @@ for betaParm in betaParms:
                 loss_f_OAA[k,i] =(result_OAA.loss[-1])
                 loss_f_RBOAA[k,i] =(result_RBOAA.loss[-1])
                 
-                
-                ### NMI PLOT ###
-                plt.scatter(sigmas_softplussed, np.mean(NMI_OAA,axis=1), label = "OAA")
-                plt.plot(sigmas_softplussed, np.mean(NMI_OAA,axis=1), '--')
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('NMI', fontsize=18)
-                
-                plt.scatter(sigmas_softplussed, np.mean(NMI_RBOAA,axis=1), label = "RBOAA")
-                plt.plot(sigmas_softplussed, np.mean(NMI_RBOAA,axis=1), '--')
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('NMI', fontsize=18)
-                plt.title('NMI plot for OAA, RBOAA', fontsize = 22)
-                plt.legend()
-                file = "NMI w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
-                plt.savefig(os.path.join(path, file))
-                
-                
-                ### MCC PLOT ###
-                plt.scatter(sigmas_softplussed, np.mean(MCC_OAA,axis=1), label = "OAA")
-                plt.plot(sigmas_softplussed, np.mean(MCC_OAA,axis=1), '--')
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('MCC', fontsize=18)
-                
-                
-                plt.scatter(sigmas_softplussed, np.mean(MCC_RBOAA,axis=1), label = "RBOAA")
-                plt.plot(sigmas_softplussed, np.mean(MCC_RBOAA,axis=1), '--')
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('MCC', fontsize=18)
-                plt.title('MCC ', fontsize = 22)
-            
-                plt.legend()
-                file = "MCC w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
-                plt.savefig(os.path.join(path, file))
-                
-                
-                
-                ### LOSS PLOT ###
-                plt.scatter(sigmas_softplussed, np.mean(loss_f_OAA, axis=1), label ="OAA")
-                plt.plot(sigmas_softplussed, np.mean(loss_f_OAA, axis=1))
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('loss', fontsize=18)
-                plt.scatter(sigmas_softplussed,  np.mean(loss_f_RBOAA, axis=1), label = "RBOAA")
-                plt.plot(sigmas_softplussed,  np.mean(loss_f_RBOAA, axis=1))
-                plt.xlabel('sigma', fontsize=18)
-                plt.ylabel('loss', fontsize=18)
-                
-                plt.legend()
-                plt.title('Loss for increasing noise no RB', fontsize = 22)
-                file = "Loss w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
-                plt.savefig(os.path.join(path, file))
+        print("Creating plots")
+        ### NMI PLOT ###
+        plt.scatter(sigmas_softplussed, np.mean(NMI_OAA,axis=1), label = "OAA")
+        plt.plot(sigmas_softplussed, np.mean(NMI_OAA,axis=1), '--')
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('NMI', fontsize=18)
+        
+        plt.scatter(sigmas_softplussed, np.mean(NMI_RBOAA,axis=1), label = "RBOAA")
+        plt.plot(sigmas_softplussed, np.mean(NMI_RBOAA,axis=1), '--')
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('NMI', fontsize=18)
+        plt.title('NMI plot for OAA, RBOAA', fontsize = 22)
+        plt.legend()
+        file = "NMI w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        # plt.savefig(os.path.join(path, file))
+        plt.show()
+        
+        
+        ### MCC PLOT ###
+        plt.scatter(sigmas_softplussed, np.mean(MCC_OAA,axis=1), label = "OAA")
+        plt.plot(sigmas_softplussed, np.mean(MCC_OAA,axis=1), '--')
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('MCC', fontsize=18)
+        
+        
+        plt.scatter(sigmas_softplussed, np.mean(MCC_RBOAA,axis=1), label = "RBOAA")
+        plt.plot(sigmas_softplussed, np.mean(MCC_RBOAA,axis=1), '--')
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('MCC', fontsize=18)
+        plt.title('MCC ', fontsize = 22)
+    
+        plt.legend()
+        file = "MCC w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        # plt.savefig(os.path.join(path, file))
+        plt.show()
+        
+        
+        
+        ### LOSS PLOT ###
+        plt.scatter(sigmas_softplussed, np.mean(loss_f_OAA, axis=1), label ="OAA")
+        plt.plot(sigmas_softplussed, np.mean(loss_f_OAA, axis=1))
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('loss', fontsize=18)
+        plt.scatter(sigmas_softplussed,  np.mean(loss_f_RBOAA, axis=1), label = "RBOAA")
+        plt.plot(sigmas_softplussed,  np.mean(loss_f_RBOAA, axis=1))
+        plt.xlabel('sigma', fontsize=18)
+        plt.ylabel('loss', fontsize=18)
+        
+        plt.legend()
+        plt.title('Loss for increasing noise no RB', fontsize = 22)
+        file = "Loss w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        plt.savefig(os.path.join(path, file))
+        plt.show()
                 
                 
             
