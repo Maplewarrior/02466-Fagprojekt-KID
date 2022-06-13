@@ -119,14 +119,14 @@ for rb in bias:
 rb = True
 betaParms = [10, 1000, 100000]
 K = 4
-N = 5000
-M = 15
+N = 1000
+M = 10
 sigmas = [-1000, -4.6, -2.97, -2.25, -1.82, -1.507, -1.05]
 # sigmas = [-1000, -4.6]
 p = 5
 a_params = [0.85, 1]
 
-reps = 3
+reps = 2
 
 OAA = _OAA()
 RBOAA = _RBOAA()
@@ -225,7 +225,7 @@ for betaParm in betaParms:
         plt.plot(sigmas_softplussed, np.mean(MCC_RBOAA,axis=1), '--')
         plt.xlabel('sigma', fontsize=18)
         plt.ylabel('MCC', fontsize=18)
-        plt.title('MCC ', fontsize = 22)
+        plt.title('MCC plot for OAA and RBOAA', fontsize = 22)
     
         plt.legend()
         file = "MCC w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
