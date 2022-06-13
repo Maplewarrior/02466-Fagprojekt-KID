@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.csv
+AAM-Module-V1/result_plots_final/Loss CAA+TSAA, a=0.5, b=1, k_syn=5.0, k_anal=5.0, s_std=0.0.png
