@@ -9,6 +9,7 @@ from eval_measures import MCC
 
 from OAA_class import _OAA
 from RBOAA_class import _RBOAA
+from TSAA_class import _TSAA
 
 
 ### Bachelor børges archetype correlation (MCC) ###
@@ -35,6 +36,56 @@ def archetype_correlation(AT1,AT2):
 
 #%%
 
+
+rb = False
+betaParm = 100
+K = 4
+N = 1000
+M = 21
+sigmas = [-1000, -4.6, -2.97, -2.25, -1.82, -1.507, -1.05 ]
+# sigmas = [-1000, -4.6]
+p = 5
+a_param = 1
+data = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=-4.6, rb=rb, a_param = a_param, b_param = betaParm)        
+X = data.X
+A_true = data.A
+Z_true = data.Z
+Z_true_alpha = data.Z_alpha
+
+
+NMI_TSAA = []
+MCC_TSAA_hat = []
+MCC_TSAA_hat_alpha = []
+
+MCC_TSAA = []
+MCC_TSAA_alpha = []
+
+
+
+
+
+TSAA = _TSAA()
+result_TSAA = TSAA._compute_archetypes(X=X, K=K, n_iter=1000, lr=0.01, mute=False, columns=data.columns)
+
+
+
+
+Z_hat_TSAA = result_TSAA.X_hat @ result_TSAA.B
+Z_TSAA = result_TSAA.Z
+A_TSAA = result_TSAA.A
+
+NMI_TSAA.append(NMI(A_true, A_TSAA))
+
+MCC_TSAA.append(MCC(Z_true, Z_TSAA))
+MCC_TSAA_alpha.append(MCC(Z_true_alpha, Z_TSAA))
+
+MCC_TSAA_hat.append(MCC(Z_true, Z_hat_TSAA))
+MCC_TSAA_hat_alpha.append(MCC(Z_true_alpha, Z_hat_TSAA))
+
+
+
+
+#%%
 rb = False
 betaParm = 100
 K = 4
