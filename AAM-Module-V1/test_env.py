@@ -142,25 +142,23 @@ def softplus(s):
     return np.log(1+np.exp(s))
 
 sigmas_softplussed = [softplus(s) for s in sigmas]
-#%%
 
-
-NMI_OAA = np.empty((len(sigmas), reps))
-NMI_RBOAA = np.empty((len(sigmas), reps))
-MCC_OAA = np.empty((len(sigmas), reps))
-MCC_RBOAA = np.empty((len(sigmas), reps))
-MCC_OAA_alpha = np.empty((len(sigmas), reps))
-MCC_RBOAA_alpha = np.empty((len(sigmas), reps))
-
-loss_f_OAA =  np.empty((len(sigmas), reps))
-loss_f_RBOAA =  np.empty((len(sigmas), reps))
-
-MCC_OAA_BB = np.empty((len(sigmas), reps))
-MCC_RBOAA_BB = np.empty((len(sigmas), reps))
 
 
 for betaParm in betaParms:
-    for a_param in a_params:
+    for iter, a_param in enumerate(a_params):
+        NMI_OAA = np.empty((len(sigmas), reps))
+        NMI_RBOAA = np.empty((len(sigmas), reps))
+        MCC_OAA = np.empty((len(sigmas), reps))
+        MCC_RBOAA = np.empty((len(sigmas), reps))
+        MCC_OAA_alpha = np.empty((len(sigmas), reps))
+        MCC_RBOAA_alpha = np.empty((len(sigmas), reps))
+        
+        loss_f_OAA =  np.empty((len(sigmas), reps))
+        loss_f_RBOAA =  np.empty((len(sigmas), reps))
+        
+        MCC_OAA_BB = np.empty((len(sigmas), reps))
+        MCC_RBOAA_BB = np.empty((len(sigmas), reps))
         for k, sigma in enumerate(sigmas):
             for i in range(reps):
                 
@@ -205,9 +203,9 @@ for betaParm in betaParms:
         plt.ylabel('NMI', fontsize=18)
         plt.title('NMI plot for OAA, RBOAA', fontsize = 22)
         plt.legend()
-        file = "NMI w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        file = "NMI w. a_param={a_param} and b_param={betaParm}.png".format(a_param=a_param, betaParm=betaParm)
         plt.savefig(os.path.join(path, file))
-        # plt.show()
+        plt.close()
         
         
         ### MCC PLOT ###
@@ -224,8 +222,9 @@ for betaParm in betaParms:
         plt.title('MCC plot for OAA and RBOAA', fontsize = 22)
     
         plt.legend()
-        file = "MCC w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        file = "MCC w. a_param={a_param} and b_param={betaParm}.png".format(a_param=a_param, betaParm=betaParm)
         plt.savefig(os.path.join(path, file))
+        plt.close()
         # plt.show()
         
         
@@ -242,8 +241,9 @@ for betaParm in betaParms:
         
         plt.legend()
         plt.title('Loss for increasing noise no RB', fontsize = 22)
-        file = "Loss w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
+        file = "Loss w. a_param={a_param} and b_param={betaParm}.png".format(a_param=a_param, betaParm=betaParm)
         plt.savefig(os.path.join(path, file))
+        plt.close()
         # plt.show()
                 
                 
