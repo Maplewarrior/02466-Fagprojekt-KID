@@ -42,6 +42,7 @@ def result_helper_function(params):
 
     AAM = AA()
     if b_param == "RB_false":
+        print("HERE")
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
@@ -53,12 +54,11 @@ def result_helper_function(params):
         if AA_type == "CAA":
             lr = 0.05
         elif AA_type == "TSAA":
-            ## NOT FOUND YET.
             lr = 0.01
         elif AA_type == "OAA":
             lr = 0.05
         elif AA_type == "RBOAA":
-            lr = 0.01
+            lr = 0.025
         
         for analysis_arch in analysis_archs:
             for rep in range(reps):
@@ -88,6 +88,7 @@ def result_helper_function(params):
 
     dataframe = pd.DataFrame.from_dict({
         'sigma': s,
+        'sigma_std': sigma_std,
         'synthetic_k': synthetic_arch,
         'a_param': a_param,
         'b_param': b_param,
@@ -100,5 +101,5 @@ def result_helper_function(params):
         'BDM': BDM_list,
         'Est. sigma': sigma_est_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"
+    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + ".csv"
     dataframe.to_csv(csv_name, index=False) 

@@ -102,7 +102,7 @@ class _RBOAA:
             if not mute:
                 print("\nPerforming OAA for initialization of ROBAA.")
             OAA = _OAA()
-            A_hot, B_hot, sigma_hot, b_hot = OAA._compute_archetypes(X, K, p, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
+            A_hot, B_hot, sigma_hot, b_hot = OAA._compute_archetypes(X, K, p, n_iter, 0.05, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
             A_non_constraint = torch.autograd.Variable(torch.tensor(A_hot), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.tensor(B_hot), requires_grad=True)
             sigma_non_constraint = torch.autograd.Variable(torch.tensor(sigma_hot).repeat_interleave(N), requires_grad=True)
