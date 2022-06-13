@@ -210,8 +210,8 @@ for betaParm in betaParms:
         plt.title('NMI plot for OAA, RBOAA', fontsize = 22)
         plt.legend()
         file = "NMI w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
-        # plt.savefig(os.path.join(path, file))
-        plt.show()
+        plt.savefig(os.path.join(path, file))
+        # plt.show()
         
         
         ### MCC PLOT ###
@@ -229,8 +229,8 @@ for betaParm in betaParms:
     
         plt.legend()
         file = "MCC w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
-        # plt.savefig(os.path.join(path, file))
-        plt.show()
+        plt.savefig(os.path.join(path, file))
+        # plt.show()
         
         
         
@@ -248,7 +248,7 @@ for betaParm in betaParms:
         plt.title('Loss for increasing noise no RB', fontsize = 22)
         file = "Loss w. a_param={0} and b_param={1}.png".format(a_param, betaParm)
         plt.savefig(os.path.join(path, file))
-        plt.show()
+        # plt.show()
                 
                 
             
