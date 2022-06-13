@@ -7,7 +7,7 @@ import torch.optim as optim
 from timeit import default_timer as timer
 from AA_result_class import _OAA_result
 from loading_bar_class import _loading_bar
-from CAA_class import _CAA
+from OAA_class import _OAA
 
 
 # IMPORT TO TEST DIVERGENCE OF MODEL
@@ -18,55 +18,38 @@ class _RBOAA:
 
     loss = []
 
+    ########## HELPER FUNCTION // A AND B ##########
     def _apply_constraints_AB(self,A):
         m = nn.Softmax(dim=0)
         return m(A)
 
+    ########## HELPER FUNCTION // BETAS ##########
     def _apply_constraints_beta(self,b,J):    
         m = nn.Softmax(dim=1)
         return torch.cumsum(m(b), dim=1)[:,:J-1]
 
+    ########## HELPER FUNCTION // SIGMA ##########
     def _apply_constraints_sigma(self,sigma):
         m = nn.Softplus()
         return m(sigma)
 
+    ########## HELPER FUNCTION // ALPHAS ##########
     def _calculate_alpha(self,b,J):
         b_j = torch.cat((torch.zeros((len(b),1)),b),1)
         b_j_plus1 = torch.cat((b,torch.ones((len(b),1))),1)
         alphas = (b_j_plus1+b_j)/2
         return alphas
 
+    ########## HELPER FUNCTION // X TILDE ##########
     def _calculate_X_tilde(self,X,alphas):
         X_tilde = torch.reshape(alphas[self.N_arange,torch.flatten(X.long()-1)],(X.shape))
         return X_tilde
-        
+    
+    ########## HELPER FUNCTION // X HAT ##########
     def _calculate_X_hat(self,X_tilde,A,B):
         return X_tilde@B@A
-        ### REMOVING AGIN #### return B@A@X_tilde.T
 
-    # def _calculate_D(self,b,X_hat,sigma):
-        
-    #     ### REMOVING DUE TO CHANGE IN CALC XHAT ###
-    #     # D = torch.rand(len(b[0,:])+2,self.N,self.M)
-    #     # D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-    #     # D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-    #     # D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat,sigma.unsqueeze(1).repeat(1,self.M))
-
-    #     D = torch.rand(len(b[0,:])+2,self.N,self.M)
-    #     D[0] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (-np.inf)))
-    #     D[-1] = torch.tensor(np.matrix(np.ones((self.N,self.M)) * (np.inf)))
-    #     D[1:-1] = torch.div(torch.unsqueeze(b.T, 2).repeat(1,1,self.M)-X_hat.T,torch.unsqueeze(sigma, 1).repeat(1,self.M))
-
-    #     # for j in range(len(b[0,:])+2):
-    #     #     if j == 0:
-    #     #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (-np.inf)))
-    #     #     elif j == len(b[0,:])+1:
-    #     #         D[j] = torch.tensor(np.matrix(np.ones((self.M)) * (np.inf)))
-    #     #     else:
-    #     #         D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
-        
-    #     return D
-
+    ########## HELPER FUNCTION // LOSS ##########
     def _calculate_loss(self,X, X_hat, b, sigma):
         
         pad = nn.ConstantPad1d(1, 0)
@@ -77,19 +60,13 @@ class _RBOAA:
         zetaPrev = (torch.gather(b,1,X-1)-X_hat)/sigma
         zetaNext[X==len(b)+1] = float("Inf")
         zetaPrev[X == 1] = -float("Inf")
-    
-        # stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
-        # D_cdf = stand_norm.cdf(D)
-        # P = D_cdf[1:]-D_cdf[:len(D)-1]
-        # inverse_log_P = -torch.log(P+1e-16)
-        # loss = torch.sum(inverse_log_P[torch.flatten(X.long())-1,self.N_arange,self.M_arange])
-        
-        #Do phi(zeta1)-phi(zeta2)
-        logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
 
+        logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
         loss = torch.sum(logP)
+
         return loss
 
+    ########## HELPER FUNCTION // ERROR ##########
     def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J):
         
         A = self._apply_constraints_AB(A_non_constraint)
@@ -100,12 +77,12 @@ class _RBOAA:
         
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
-        # D = self._calculate_D(b,X_hat,sigma)
         loss = self._calculate_loss(Xt, X_hat, b, sigma)
 
         return loss
-        
-    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False):
+    
+    ########## PERFORMING ARCHEYPAL ANALYSIS ##########
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, with_OAA_initialization: bool = False):
 
         ########## INITIALIZATION ##########
         self.N = len(X[0,:])
@@ -120,26 +97,22 @@ class _RBOAA:
         N, _ = X.T.shape
         Xt = torch.tensor(X, dtype=torch.long)
 
-        if with_CAA_initialization:
-            
-            CAA = _CAA()
-            initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, True,columns,with_synthetic_data = False, early_stopping = True)
+        ########## CAA INITIALIZATION ##########
+        if with_OAA_initialization:
+            if not mute:
+                print("Performing OAA for initialization of ROBAA.")
+            OAA = _OAA()
+            initialization_result = OAA._compute_archetypes(X, K, p, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping)
             A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
-
-            # syn = _synthetic_data(N=self.N, M = self.M, K =K, p = p, sigma=-20, a_param=1, b_param=1000, rb = False)
-            # A_non_constraint = torch.autograd.Variable(torch.from_numpy(syn.get_A(self.N,K,1)).float(), requires_grad=True)
-            # sigma_non_constraint = torch.autograd.Variable(torch.tensor(1.0).repeat(self.N), requires_grad=True)
-            # b_non_constraint = torch.autograd.Variable(torch.from_numpy(np.ones(p)).float().unsqueeze(1).repeat(1,self.N).T, requires_grad=True)
-
-            
+            sigma_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.sigma).repeat_interleave(N), requires_grad=True)
         else:
             A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
+            sigma_non_constraint = torch.autograd.Variable(torch.rand(N)*(-4), requires_grad=True)
 
+        ########## INITIALIZATION OF GENERAL VARIABLES ##########
         b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
-        sigma_non_constraint = torch.autograd.Variable(torch.rand(N)*(-4), requires_grad=True)
-        B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -176,9 +149,10 @@ class _RBOAA:
         X_tilde_f = self._calculate_X_tilde(Xt,alphas_f).detach().numpy()
         Z_tilde_f = (X_tilde_f@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
+        sigma_f = self._apply_constraints_sigma(sigma_non_constraint).detach().numpy()
         end = timer()
         time = round(end-start,2)
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA",with_synthetic_data=with_synthetic_data)
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA",sigma_f, with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()

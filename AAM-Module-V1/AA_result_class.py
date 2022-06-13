@@ -67,12 +67,13 @@ class _OAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type, with_synthetic_data = False):
+    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type,sigma, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
         self.n_iter = len(loss)
         self.b = b
+        self.sigma = sigma
         self.X_tilde = X_tilde
         self.Z_tilde = Z_tilde
         self.X_hat = X_hat
@@ -111,7 +112,7 @@ class _OAA_result:
         elif plot_type == "barplot":
             self.plots._barplot(self.Z_tilde,self.columns,archetype_number,self.type)
         elif plot_type == "barplot_all":
-            self.plots._barplot_all(self.Z,self.columns)
+            self.plots._barplot_all(self.Z_tilde,self.columns)
         elif plot_type == "typal_plot":
             self.plots._typal_plot(self.Z_tilde,types,weighted)
 

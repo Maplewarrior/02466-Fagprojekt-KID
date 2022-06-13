@@ -14,14 +14,12 @@ class _TSAA:
     RSS = []    
     
     def _logOdds(self, X):
-        
-        
+
         Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
-        
         probs = [(np.count_nonzero(X.flatten() == e))/len(X.flatten()) for e in Ordinals]
         baseline = max(probs)
-    
         logvals = [np.log(probs[i]/baseline) for i in range(len(probs))]
+
         return logvals
     
     def _applySoftmax(self,M):
@@ -30,13 +28,8 @@ class _TSAA:
     def _projectOrdinals(self, X):
         
         M, N = X.shape
-        
         X_thilde = np.empty((M, N))
-        
         theta = self._applySoftmax(self._logOdds(X))
-        
-        
-        
         Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         for i in range(M):
             for j in range(N):

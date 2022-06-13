@@ -7,7 +7,7 @@ def learning_rate_test_helper_function(input):
     lr = input[0]
     AA_type = input[1]
     reps = 10
-
+    
     AAM.create_synthetic_data(N = 5000, M=21,K=5,sigma=-20,a_param=1,b_param=1000, mute=True)
 
     losses = []
