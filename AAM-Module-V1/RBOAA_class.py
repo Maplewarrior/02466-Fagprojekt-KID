@@ -135,7 +135,6 @@ class _RBOAA:
                     if not mute:
                         loading_bar._kill()
                         print("Analysis ended due to early stopping.\n")
-                    print(self._apply_constraints_AB(A_non_constraint)[0,0])
                     break
         
         
