@@ -12,7 +12,7 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 100
+    N = 10000
     M = 21
     p = 6
     n_iter = 2000
