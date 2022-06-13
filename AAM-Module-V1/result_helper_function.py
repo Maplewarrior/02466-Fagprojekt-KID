@@ -4,7 +4,7 @@ from telnetlib import OLD_ENVIRON
 from eval_measures import calcMI
 
 
-def result_helper_function2(params):
+def result_helper_function(params):
     from AAM import AA
     import numpy as np
     import pandas as pd
@@ -29,7 +29,7 @@ def result_helper_function2(params):
         synthetic_arch = params[1]
     else:
         analysis_archs = [5]
-        synthetic_arch = [5]
+        synthetic_arch = 5
 
     AA_types_list = []
     analysis_archs_list = []
@@ -67,7 +67,7 @@ def result_helper_function2(params):
                 analysis_archs_list.append(analysis_arch)
                 reps_list.append(rep)
 
-                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, mute=True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_hot_start=True, p=p)
+                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, mute=True, K=analysis_arch, n_iter = n_iter, early_stopping=True, with_hot_start=True, p=p)
                 analysis_A = AAM._synthetic_results[AA_type][0].A
                 analysis_Z = AAM._synthetic_results[AA_type][0].Z
 

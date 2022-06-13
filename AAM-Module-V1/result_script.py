@@ -1,6 +1,6 @@
 
 if __name__ ==  '__main__':
-    from result_helper_function import result_helper_function2
+    from result_helper_function import result_helper_function
     from ast import arg
     import multiprocessing
 
@@ -12,7 +12,7 @@ if __name__ ==  '__main__':
     # 2:
     #a_param = [1]
     # 3:
-    #a_param = [2]
+    a_param = [2]
     b_param = [1, 10, 1000, "RB_false"]
     sigma_stds = [0,0.5,1]
     varying_archetypes = False
@@ -27,4 +27,4 @@ if __name__ ==  '__main__':
 
     
     with multiprocessing.Pool(multiprocessing.cpu_count()-1) as p:
-        p.map(result_helper_function2, l)
+        p.map(result_helper_function, l)
