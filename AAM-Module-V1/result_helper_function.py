@@ -12,9 +12,8 @@ def result_helper_function2(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 5000
+    N = 10000
     M = 21
-    K = 5
     p = 6
     n_iter = 2000
     reps = 10
@@ -97,7 +96,8 @@ def result_helper_function2(params):
         'loss': losses_list, 
         'NMI': NMIs_list, 
         'MCC': MCCs_list,
-        'BDM': BDM_list})
+        'BDM': BDM_list,
+        'Est. sigma': sigma_est_list})
 
     csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"
     dataframe.to_csv(csv_name, index=False) 
