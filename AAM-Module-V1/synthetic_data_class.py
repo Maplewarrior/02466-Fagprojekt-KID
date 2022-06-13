@@ -5,14 +5,14 @@ import torch
 
 class _synthetic_data:
     
-    def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param):
+    def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param, sigma_std = 0):
         
-        self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param)
         self.N = N
         self.M = M
         self.K = K
         self.p = p
         self.columns = ["SQ"+str(i) for i in range(1, M+1)]
+        self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param, sigma_std = sigma_std)
         
     # If there's response bias, sample from a dirichlet distribution.
     def biasedBetas(self, N, p, b_param):
@@ -42,8 +42,16 @@ class _synthetic_data:
    
        return new_betas[:-1]
    
-    def softplus(self, sigma):
-        return np.log(1 + np.exp(sigma))
+    def softplus(self, sigma, sigma_std):
+        if sigma_std == 0:
+            return np.log(1 + np.exp(sigma))
+        else:
+            sigmas = []
+            for n in range(self.N):
+                sigmas.append(np.log(1 + np.exp(sigma + np.random.uniform(-1,1,1)*sigma_std)))
+            sigmasMatrix  = np.repeat(sigmas, self.M, axis=1)
+            return sigmasMatrix
+
 
     # rb = response bias
     def get_Z(self, N, M, K, p, rb, b_param):
@@ -95,11 +103,6 @@ class _synthetic_data:
         
             J = len(betas)    
             D = np.empty((J+2, M, N))
-
-            # D = torch.rand(len(betas)+2,len(X_rec),len(X_rec[0,:]))
-            # D[0] = torch.tensor(np.matrix(np.ones((M,N)) * (-np.inf)))
-            # D[-1] = torch.tensor(np.matrix(np.ones((M,N)) * (np.inf)))
-            # D[1:-1] = torch.div(torch.tensor(betas).expand(N,M,len(betas)).T-X_rec,sigma+1e-16)
             
             for j in range(J+2):
                 # Left-most tail
@@ -109,7 +112,7 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[j-1] - X_rec)/(sigma+1e-16) ## Add softplus(sigma)
+                    D[j] = (betas[j-1] - X_rec)/(sigma.T+1e-16) ## Add softplus(sigma)
                     
         else:
             J = len(betas[0,:])
@@ -126,7 +129,7 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[:,j-1] - X_rec)/(sigma+1e-16) ## Add softplus(sigma)
+                    D[j] = (betas[:,j-1] - X_rec)/(sigma.T+1e-16) ## Add softplus(sigma)
                     # D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
         return D
@@ -157,13 +160,13 @@ class _synthetic_data:
         return X_cat
     
     # function combining the previous methods to get X_thilde
-    def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100):
+    def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100, sigma_std = 0):
         
         Z_ordinal, Z_alpha, betas = self.get_Z(N=N,M=M, K=K, p=p, rb=rb, b_param=b_param)
         A = self.get_A(N, K, a_param=a_param)
         X_rec = Z_alpha@A
         
-        D = self.get_D(X_rec, betas, self.softplus(sigma), rb=rb)
+        D = self.get_D(X_rec, betas, self.softplus(sigma, sigma_std), rb=rb)
         probs = self.Probs(D)
         
         X_final = self.toCategorical(probs)
@@ -176,23 +179,3 @@ class _synthetic_data:
         pickle.dump(self, file)
         file.close()
             
-#%%
-# N = 5000
-# M = 21
-# K = 5
-# p = 5
-
-# # sigma = 1
-# # a_param = 1
-# # b_param = 1000
-# # rb = True
-
-# # n_iter = 2000
-
-# # S = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
-
-# #%%
-# B = np.random.uniform(0,1, (N,K))
-# X_tilde = np.random.uniform(0,1, (M,N))
-
-# print(X_tilde@B)

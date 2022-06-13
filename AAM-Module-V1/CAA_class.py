@@ -20,7 +20,7 @@ class _CAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, for_hotstart_usage = False):
 
         ########## INITIALIZATION ##########
         self.RSS = []
@@ -66,4 +66,7 @@ class _CAA:
         if not mute:
             result._print()
 
-        return result
+        if not for_hotstart_usage:
+            return result
+        else:
+            return A.detach().numpy(), B.detach().numpy()

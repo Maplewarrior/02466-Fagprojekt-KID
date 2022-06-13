@@ -16,20 +16,21 @@ def result_helper_function2(params):
     M = 21
     K = 5
     p = 6
-    rb = True
     n_iter = 2000
-
-    #reps = 10
-    reps = 2
-    #analysis_archs = np.arange(3,11)
-    analysis_archs = [5]
-    AA_types = ["CAA","RBOAA", "OAA"]
+    reps = 10
+    AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
-    synthetic_arch = params[1]
     a_param = params[2]
     b_param = params[3]
     
+    if params[4]:
+        analysis_archs = np.arange(3,11)
+        synthetic_arch = params[1]
+    else:
+        analysis_archs = [5]
+        synthetic_arch = [5]
+
     AA_types_list = []
     analysis_archs_list = []
     reps_list = []
@@ -37,25 +38,28 @@ def result_helper_function2(params):
     NMIs_list = []
     MCCs_list = []
     BDM_list = []
+    sigma_est_list = []
 
     AAM = AA()
-
-    AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=rb, a_param=a_param, b_param=b_param,mute=True)
+    if b_param == "RB_false":
+        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True)
+    else:
+        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True)
     syn_A = AAM._synthetic_data.A
     syn_Z = AAM._synthetic_data.Z
     syn_betas = AAM._synthetic_data.betas
 
-    done = False
-
     for AA_type in AA_types:
         if AA_type == "CAA":
-            lr = 0.01
+            lr = 0.05
         elif AA_type == "TSAA":
+            ## NOT FOUND YET.
             lr = 0.01
         elif AA_type == "OAA":
-            lr = 0.01
+            lr = 0.05
         elif AA_type == "RBOAA":
             lr = 0.01
+        
         for analysis_arch in analysis_archs:
             for rep in range(reps):
 
@@ -63,30 +67,19 @@ def result_helper_function2(params):
                 analysis_archs_list.append(analysis_arch)
                 reps_list.append(rep)
 
-                if AA_type == "OAA":
-                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True, p=p)
-                elif AA_type == "RBOAA":
-                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_CAA_initialization=True,p=p)
-                else:
-                    AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True)
-
+                AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, mute=True, K=analysis_arch, n_iter = n_iter, mute=False, early_stopping=True, with_hot_start=True, p=p)
                 analysis_A = AAM._synthetic_results[AA_type][0].A
-
-                if AA_type == "RBOAA":
-                    print("A ANAL")
-                    print(analysis_A[0,0])
-                    print("A TRUE")
-                    print(syn_A[0,0])
+                analysis_Z = AAM._synthetic_results[AA_type][0].Z
 
                 if AA_type in ["CAA","TSAA"]:
-                    analysis_Z = AAM._synthetic_results[AA_type][0].Z
                     loss = AAM._synthetic_results[AA_type][0].RSS[-1]
                     BDM_list.append("NaN")
+                    sigma_est_list.append("NaN")
                 else:
-                    analysis_Z = AAM._synthetic_results[AA_type][0].Z
                     loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     analysis_betas = AAM._synthetic_results[AA_type][0].b
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
+                    sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
                 
                 losses_list.append(loss)
                 NMIs_list.append(NMI(analysis_A,syn_A))
@@ -97,7 +90,7 @@ def result_helper_function2(params):
         'sigma': s,
         'synthetic_k': synthetic_arch,
         'a_param': a_param,
-        'b_param': a_param,
+        'b_param': b_param,
         'AA_type': AA_types_list, 
         'analysis_k': analysis_archs_list, 
         'rep': reps_list, 

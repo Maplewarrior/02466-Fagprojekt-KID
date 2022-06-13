@@ -83,7 +83,7 @@ class _OAA:
         return loss
         
     ########## PERFORMING ARCHETYPAL ANALYSIS ##########
-    def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False):
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False, for_hotstart_usage = False):
 
         
         ########## INITIALIZATION ##########
@@ -98,19 +98,18 @@ class _OAA:
         ########## CAA INITIALIZATION ##########
         if with_CAA_initialization:
             if not mute:
-                print("Performing CAA for initialization of OAA.")
+                print("\nPerforming CAA for initialization of OAA.")
             CAA = _CAA()
-            initialization_result = CAA._compute_archetypes(X, K, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping)
-            A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
+            A_hot, B_hot = CAA._compute_archetypes(X, K, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
+            A_non_constraint = torch.autograd.Variable(torch.tensor(A_hot), requires_grad=True)
+            B_non_constraint = torch.autograd.Variable(torch.tensor(B_hot), requires_grad=True)
         else:
             A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
+            B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
+            B_non_constraint = B_non_constraint*np.log(N*2)
+            B_non_constraint.requires_grad=True
         
         ########## INITIALIZATION OF GENERAL VARIABLES ##########
-        B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
-        B_non_constraint = B_non_constraint*np.log(N*2)
-        B_non_constraint.requires_grad=True
         Xt = torch.tensor(X, dtype = torch.long)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
         sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
@@ -162,4 +161,7 @@ class _OAA:
         if not mute:
             result._print()
         
-        return result
+        if not for_hotstart_usage:
+            return result
+        else:
+            return A_non_constraint.detach().numpy(), B_non_constraint.detach().numpy(), sigma_non_constraint.detach().numpy(), b_non_constraint.detach().numpy()
