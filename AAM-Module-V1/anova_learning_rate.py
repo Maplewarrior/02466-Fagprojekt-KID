@@ -1,122 +1,166 @@
-
+#%%
 import pandas as pd
-import scipy.stats as stats
-from statsmodels.formula.api import ols
-
-
-"""
-TYPE: CAA LR: 0.1 LOSSES: [7348.1294, 10245.341, 8275.244, 7345.002, 12029.563, 7342.9375, 7360.4204, 7344.203, 7353.2075, 7357.486] 
-TYPE: CAA LR: 0.05 LOSSES: [7362.49, 7352.0225, 11730.464, 7370.56, 7338.704, 7353.043, 7367.2163, 7351.9453, 10245.03, 7340.014] 
-TYPE: TSAA LR: 0.1 LOSSES: [345.25162, 347.99533, 345.65924, 325.87677, 346.3425, 345.5557, 327.23264, 335.14468, 328.8155, 346.3307] 
-TYPE: TSAA LR: 0.05 LOSSES: [344.9433, 340.88763, 338.3244, 341.6535, 344.25818, 327.43335, 335.6389, 325.6068, 324.91946, 348.55658] 
-TYPE: CAA LR: 0.01 LOSSES: [7391.1455, 7360.876, 7350.8096, 7383.813, 7354.8867, 8477.262, 10232.6875, 7370.593, 7359.2397, 7355.549] 
-TYPE: TSAA LR: 0.01 LOSSES: [339.18524, 348.89746, 338.3844, 330.08368, 348.93094, 342.02274, 348.76428, 344.75513, 342.3697, 334.2396] 
-TYPE: OAA LR: 0.1 LOSSES: [133659.19, 146200.42, 136766.06, 139834.69, 136030.25, 143897.08, 138910.97, 134840.16, 143756.56, 137839.83] 
-TYPE: CAA LR: 0.005 LOSSES: [7379.0923, 7358.309, 7347.0005, 7335.2563, 7378.995, 7373.58, 9414.122, 7338.806, 7348.799, 7326.845] 
-TYPE: RBOAA LR: 0.05 LOSSES: [94527.18, 94527.68, 94526.305, 94527.49, 94526.664, 94527.46, 94526.984, 94527.32, 94526.81, 94527.] 
-TYPE: RBOAA LR: 0.1 LOSSES: [94503.29, 94505.88, 94504.266, 94502.35, 94505.7, 94504.5, 94515.625, 94503.19, 94502.91, 94502.45] 
-TYPE: OAA LR: 0.05 LOSSES: [103154.31, 103152.83, 103152.51, 103153.984, 103152.59, 103154.7, 103152.555, 103152.87, 103152.03, 103152.34] 
-TYPE: TSAA LR: 0.005 LOSSES: [344.7484, 330.98035, 326.57858, 344.4033, 338.97424, 343.7975, 345.89764, 340.98608, 343.6969, 326.32446] 
-TYPE: CAA LR: 0.001 LOSSES: [11538.77, 7363.065, 7360.1665, 9346.861, 7345.2847, 7349.58, 11874.908, 8139.2207, 7337.764, 7794.774] 
-TYPE: TSAA LR: 0.001 LOSSES: [344.56738, 333.68436, 342.98676, 346.13742, 343.09018, 332.13382, 349.8848, 346.22885, 350.0755, 331.8332] 
-TYPE: OAA LR: 0.01 LOSSES: [103233.125, 103218.09, 103314.42, 103275.66, 103267.98, 103300.23, 103298.01, 103275.39, 103286.79, 103241.25] 
-TYPE: RBOAA LR: 0.01 LOSSES: [95065.1, 95069.25, 95068.27, 95061.15, 95067.34, 95059.66, 95066.055, 95066.06, 95065.83, 95060.266] 
-TYPE: OAA LR: 0.005 LOSSES: [103248.92, 103254.7, 103255.21, 103321.89, 103270.12, 103276.81, 103305.48, 103249.2, 103300.83, 103273.97] 
-TYPE: RBOAA LR: 0.005 LOSSES: [95125.45, 95126.43, 95122.51, 95127.17, 95126.945, 95126.98, 95126.73, 95122.12, 95124.59, 95125.07]
-TYPE: OAA LR: 0.001 LOSSES: [103319.914, 103306.22, 103290.37, 103310.91, 103318.53, 103286.516, 103306.875, 103311.81, 103310.97, 103306.34]
-TYPE: RBOAA LR: 0.001 LOSSES: [95154.7, 95157.88, 95159.34, 95161.59, 95161.55, 95162.41, 95160.97, 95160.33, 95156.766, 95159.02]
-"""
-
-
-#%%
-type_list = ["CAA", "CAA", "TSAA", "TSAA", "CAA", "TSAA", "OAA", "CAA", "RBOAA", "RBOAA", "OAA", "TSAA", "CAA", "TSAA", "OAA", "RBOAA", "OAA", "RBOAA", "OAA", "RBOAA"]
-lr_list = [0.1, 0.05, 0.1, 0.05, 0.01, 0.01, 0.1, 0.005, 0.05, 0.1, 0.05, 0.005, 0.001, 0.001, 0.01, 0.01, 0.005, 0.005, 0.001, 0.001]
-loss_list =  [[7348.1294, 10245.341, 8275.244, 7345.002, 12029.563, 7342.9375, 7360.4204, 7344.203, 7353.2075, 7357.486],
-[7362.49, 7352.0225, 11730.464, 7370.56, 7338.704, 7353.043, 7367.2163, 7351.9453, 10245.03, 7340.014],
-[345.25162, 347.99533, 345.65924, 325.87677, 346.3425, 345.5557, 327.23264, 335.14468, 328.8155, 346.3307],
-[344.9433, 340.88763, 338.3244, 341.6535, 344.25818, 327.43335, 335.6389, 325.6068, 324.91946, 348.55658],
-[7391.1455, 7360.876, 7350.8096, 7383.813, 7354.8867, 8477.262, 10232.6875, 7370.593, 7359.2397, 7355.549], 
-[339.18524, 348.89746, 338.3844, 330.08368, 348.93094, 342.02274, 348.76428, 344.75513, 342.3697, 334.2396], 
-[133659.19, 146200.42, 136766.06, 139834.69, 136030.25, 143897.08, 138910.97, 134840.16, 143756.56, 137839.83], 
-[7379.0923, 7358.309, 7347.0005, 7335.2563, 7378.995, 7373.58, 9414.122, 7338.806, 7348.799, 7326.845], 
-[94527.18, 94527.68, 94526.305, 94527.49, 94526.664, 94527.46, 94526.984, 94527.32, 94526.81, 94527.], 
-[94503.29, 94505.88, 94504.266, 94502.35, 94505.7, 94504.5, 94515.625, 94503.19, 94502.91, 94502.45], 
-[103154.31, 103152.83, 103152.51, 103153.984, 103152.59, 103154.7, 103152.555, 103152.87, 103152.03, 103152.34], 
-[344.7484, 330.98035, 326.57858, 344.4033, 338.97424, 343.7975, 345.89764, 340.98608, 343.6969, 326.32446],
-[11538.77, 7363.065, 7360.1665, 9346.861, 7345.2847, 7349.58, 11874.908, 8139.2207, 7337.764, 7794.774],
-[344.56738, 333.68436, 342.98676, 346.13742, 343.09018, 332.13382, 349.8848, 346.22885, 350.0755, 331.8332], 
-[103233.125, 103218.09, 103314.42, 103275.66, 103267.98, 103300.23, 103298.01, 103275.39, 103286.79, 103241.25], 
-[95065.1, 95069.25, 95068.27, 95061.15, 95067.34, 95059.66, 95066.055, 95066.06, 95065.83, 95060.266],
-[103248.92, 103254.7, 103255.21, 103321.89, 103270.12, 103276.81, 103305.48, 103249.2, 103300.83, 103273.97],
-[95125.45, 95126.43, 95122.51, 95127.17, 95126.945, 95126.98, 95126.73, 95122.12, 95124.59, 95125.07],
-[103319.914, 103306.22, 103290.37, 103310.91, 103318.53, 103286.516, 103306.875, 103311.81, 103310.97, 103306.34],
-[95154.7, 95157.88, 95159.34, 95161.59, 95161.55, 95162.41, 95160.97, 95160.33, 95156.766, 95159.02]]
-
-
-data = {"Loss" : loss_list, "LR" : lr_list, "Type" : type_list }
-df = pd.DataFrame(data=data)
-
-col_lr, col_type = [], []
-all_loss = []
-for i, list in enumerate(loss_list):
-    for j in list:
-        col_lr.append(lr_list[i])
-        col_type.append(type_list[i])
-        all_loss.append(j)
-dat = {"loss": all_loss, "lr": col_lr, "type": col_type}
-
-df_big = pd.DataFrame(dat)
-print(df_big.head)
-
-
-df_caa = df_big[df_big["type"]=="CAA"]
-df_tsaa = df_big[df_big["type"]=="TSAA"]
-df_oaa = df_big[df_big["type"]=="OAA"]
-df_rboaa = df_big[df_big["type"]=="RBOAA"]
-
-#### PLOT ####
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-ax = sns.boxplot(x='lr', y='loss', data=df_caa, color='#99c2a2')
-ax = sns.swarmplot(x="lr", y="loss", data=df_caa, color='#7d0013')
-plt.show()
-
-ax = sns.boxplot(x='lr', y='loss', data=df_tsaa, color='#99c2a2')
-ax = sns.swarmplot(x="lr", y="loss", data=df_tsaa, color='#7d0013')
-plt.show()
-
-ax = sns.boxplot(x='lr', y='loss', data=df_oaa, color='#99c2a2')
-ax = sns.swarmplot(x="lr", y="loss", data=df_oaa, color='#7d0013')
-plt.show()
-
-ax = sns.boxplot(x='lr', y='loss', data=df_rboaa, color='#99c2a2')
-ax = sns.swarmplot(x="lr", y="loss", data=df_rboaa, color='#7d0013')
-plt.show()
-
-#%%
-#### ANOVA ####
-
+import os
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
-model = ols('loss ~ lr', data=df_caa).fit()
-anova_table = sm.stats.anova_lm(model, typ=2)
-print(anova_table)
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-model = ols('loss ~ lr', data=df_tsaa).fit()
-anova_table = sm.stats.anova_lm(model, typ=2)
-print(anova_table)
+results = {"Type": [], "LR": [], "DataSize": [], "Loss": []}
+directory = 'LR results'
+for filename in os.listdir(directory):
+    filepath = os.path.join(directory, filename)
+    if os.path.isfile(filepath) and ".csv" in filepath:
+        data = pd.read_csv(filepath)
 
-model = ols('loss ~ lr', data=df_oaa).fit()
-anova_table = sm.stats.anova_lm(model, typ=2)
-print(anova_table)
+        AA_type = filename.split("_")[0]
+        LR = float(filename.split("_")[1])
+        data_size = int(filename.split("_")[2].split(".")[0])
+        losses = data["Losses"]
 
-model = ols('loss ~ lr', data=df_rboaa).fit()
-anova_table = sm.stats.anova_lm(model, typ=2)
-print(anova_table)
+        for loss in losses:
+            results["Type"].append(AA_type)
+            results["LR"].append(LR)
+            results["DataSize"].append(data_size)
+            results["Loss"].append(loss)
+
+#print(results["Loss"])
+
+df = pd.DataFrame(results)
+#print(df.head)
+
+#df = pd.read_csv('data.csv')
+df_caa1 = df[(df["Type"]=="CAA") & (df["DataSize"] == 1000)]
+df_caa2 = df[(df["Type"]=="CAA") & (df["DataSize"] == 10000)]
+df_caa3 = df[(df["Type"]=="CAA") & (df["DataSize"] == 40000)]
+df_tsaa1 = df[(df["Type"]=="TSAA") & (df["DataSize"] == 1000)]
+df_tsaa2 = df[(df["Type"]=="TSAA") & (df["DataSize"] == 10000)]
+df_tsaa3 = df[(df["Type"]=="TSAA") & (df["DataSize"] == 40000)]
+df_oaa1 = df[(df["Type"]=="OAA") & (df["DataSize"] == 1000)]
+df_oaa2 = df[(df["Type"]=="OAA") & (df["DataSize"] == 10000)]
+df_oaa3 = df[(df["Type"]=="OAA") & (df["DataSize"] == 40000)]
+df_rboaa1 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 1000)]
+df_rboaa2 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 10000)]
+df_rboaa3 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 40000)]
+
+
+df_caa = df[(df["Type"]=="CAA")]
+df_tsaa = df[(df["Type"]=="TSAA")]
+df_oaa = df[(df["Type"]=="OAA")]
+df_rboaa = df[(df["Type"]=="RBOAA")]
+
+#%%
+####  BOXPLOTS ####
+sns.set()
+"""
+fig, axes = plt.subplots(1, 3)
+sns.boxplot(x='LR', y='Loss', data=df_caa1, color='#99c2a2', ax=axes[0])
+sns.boxplot(x='LR', y='Loss', data=df_caa2, color='#99c2a2', ax=axes[1])
+sns.boxplot(x='LR', y='Loss', data=df_caa3, color='#99c2a2', ax=axes[2])
+fig.suptitle("CAA", fontsize=16)
+axes[0].set_title("1k")
+axes[1].set_title("10k")
+axes[2].set_title("40k")
+#plt.show()
+
+#%%
+fig, axes = plt.subplots(1, 3)
+sns.boxplot(x='LR', y='Loss', data=df_tsaa1, color='#99c2a2', ax=axes[0])
+sns.boxplot(x='LR', y='Loss', data=df_tsaa2, color='#99c2a2', ax=axes[1])
+sns.boxplot(x='LR', y='Loss', data=df_tsaa3, color='#99c2a2', ax=axes[2])
+fig.suptitle("TSAA", fontsize=16)
+axes[0].set_title("1k")
+axes[1].set_title("10k")
+axes[2].set_title("40k")
+#plt.show()
+
+#%%
+fig, axes = plt.subplots(1, 3)
+sns.boxplot(x='LR', y='Loss', data=df_oaa1, color='#99c2a2', ax=axes[0])
+sns.boxplot(x='LR', y='Loss', data=df_oaa2, color='#99c2a2', ax=axes[1])
+sns.boxplot(x='LR', y='Loss', data=df_oaa3, color='#99c2a2', ax=axes[2])
+fig.suptitle("OAA", fontsize=16)
+axes[0].set_title("1k")
+axes[1].set_title("10k")
+axes[2].set_title("40k")
+#plt.show()
+
+#%%
+fig, axes = plt.subplots(1, 3)
+sns.boxplot(x='LR', y='Loss', data=df_rboaa1, color='#99c2a2', ax=axes[0])
+sns.boxplot(x='LR', y='Loss', data=df_rboaa2, color='#99c2a2', ax=axes[1])
+sns.boxplot(x='LR', y='Loss', data=df_rboaa3, color='#99c2a2', ax=axes[2])
+fig.suptitle("RBOAA", fontsize=16)
+axes[0].set_title("1k")
+axes[1].set_title("10k")
+axes[2].set_title("40k")
+#plt.show()
+"""
+#%%
+#### 1-way ANOVA ####
+#model type 1-4 and data size 1-3
 
 
 
+model_caa1 = ols('Loss ~ LR', data=df_caa1).fit()
+model_caa2 = ols('Loss ~ LR', data=df_caa2).fit()
+model_caa3 = ols('Loss ~ LR', data=df_caa3).fit()
+model_tsaa1 = ols('Loss ~ LR', data=df_tsaa1).fit()
+model_tsaa2 = ols('Loss ~ LR', data=df_tsaa2).fit()
+model_tsaa3 = ols('Loss ~ LR', data=df_tsaa3).fit()
+model_oaa1 = ols('Loss ~ LR', data=df_oaa1).fit()
+model_oaa2 = ols('Loss ~ LR', data=df_oaa2).fit()
+model_oaa3 = ols('Loss ~ LR', data=df_oaa3).fit()
+model_rboaa1 = ols('Loss ~ LR', data=df_rboaa1).fit()
+model_rboaa2 = ols('Loss ~ LR', data=df_rboaa2).fit()
+model_rboaa3 = ols('Loss ~ LR', data=df_rboaa3).fit()
+
+model_names = ["model_caa1", "model_caa2", "model_caa3", "model_tsaa1", "model_tsaa2", "model_tsaa3", "model_oaa1", "model_oaa2", 
+          "model_oaa3", "model_rboaa1", "model_rboaa2", "model_rboaa3"]
+linear_models = [model_caa1, model_caa2, model_caa3, model_tsaa1, model_tsaa2, model_tsaa3, model_oaa1, model_oaa2, 
+          model_oaa3, model_rboaa1, model_rboaa2, model_rboaa3]
+
+anova_tables = {}
+for i in range(len(model_names)):
+    anova_tables[model_names[i]] = sm.stats.anova_lm(linear_models[i], typ=1)
+    print("\n \n ####", model_names[i])
+    print(anova_tables[model_names[i]])
+ 
 
 
-# %%
+### flere plots
+sns.scatterplot(x='LR', y='Loss', data=df_caa2, color='#99c2a2')
+plt.title("CAA", fontsize=16)
+plt.savefig("LR results/scat_CAA.png")
+plt.show()
+
+sns.scatterplot(x='LR', y='Loss', data=df_tsaa2, color='#99c2a2')
+plt.title("TSAA", fontsize=16)
+plt.savefig("LR results/scat_TSAA.png")
+plt.show()
+
+sns.scatterplot(x='LR', y='Loss', data=df_oaa2, color='#99c2a2')
+plt.title("OAA", fontsize=16)
+plt.savefig("LR results/scat_OAA.png")
+plt.show()
+
+sns.scatterplot(x='LR', y='Loss', data=df_rboaa2, color='#99c2a2')
+plt.title("RBOAA", fontsize=16)
+plt.savefig("LR results/scat_RBOAA.png")
+plt.show()
+
+
+model_caa = ols('Loss ~ LR + DataSize + LR:DataSize', data=df_caa).fit()
+model_tsaa = ols('Loss ~ LR + DataSize + LR:DataSize', data=df_tsaa).fit()
+model_oaa = ols('Loss ~ LR + DataSize + LR:DataSize', data=df_oaa).fit()
+model_rboaa = ols('Loss ~ LR + DataSize + LR:DataSize', data=df_rboaa).fit()
+
+m1 = sm.stats.anova_lm(model_caa, typ=2)
+m2= sm.stats.anova_lm(model_tsaa, typ=2)
+m3= sm.stats.anova_lm(model_oaa, typ=2)
+m4= sm.stats.anova_lm(model_rboaa, typ=2)
+print("\n\n\n\n\n YEEAAAH BUDDDY")
+print("\n \n &&&&&& CAA\n",m1)
+print("\n \n &&&&&& TSAA\n",m2)
+print("\n \n &&&&&& OAA\n",m3)
+print("\n \n &&&&&& RBOAA\n",m4)
