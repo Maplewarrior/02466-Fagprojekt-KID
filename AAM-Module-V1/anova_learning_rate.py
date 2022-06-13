@@ -24,12 +24,25 @@ for filename in os.listdir(directory):
             results["DataSize"].append(data_size)
             results["Loss"].append(loss)
 
+    """if os.path.isfile(filepath) and ".xlsx" in filepath:
+        data = pd.read_excel(filepath)
+
+        AA_type = filename.split("_")[0]
+        LR = float(filename.split("_")[1])
+        data_size = int(filename.split("_")[2].split(".")[0])
+        losses = data["Losses"]
+
+        for loss in losses:
+            results["Type"].append(AA_type)
+            results["LR"].append(LR)
+            results["DataSize"].append(data_size)
+            results["Loss"].append(loss)"""
+
 #print(results["Loss"])
 
 df = pd.DataFrame(results)
 #print(df.head)
 
-#df = pd.read_csv('data.csv')
 df_caa1 = df[(df["Type"]=="CAA") & (df["DataSize"] == 1000)]
 df_caa2 = df[(df["Type"]=="CAA") & (df["DataSize"] == 10000)]
 df_caa3 = df[(df["Type"]=="CAA") & (df["DataSize"] == 40000)]
@@ -43,7 +56,6 @@ df_rboaa1 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 1000)]
 df_rboaa2 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 10000)]
 df_rboaa3 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 40000)]
 
-
 df_caa = df[(df["Type"]=="CAA")]
 df_tsaa = df[(df["Type"]=="TSAA")]
 df_oaa = df[(df["Type"]=="OAA")]
@@ -52,7 +64,6 @@ df_rboaa = df[(df["Type"]=="RBOAA")]
 #%%
 ####  BOXPLOTS ####
 sns.set()
-"""
 fig, axes = plt.subplots(1, 3)
 sns.boxplot(x='LR', y='Loss', data=df_caa1, color='#99c2a2', ax=axes[0])
 sns.boxplot(x='LR', y='Loss', data=df_caa2, color='#99c2a2', ax=axes[1])
@@ -61,18 +72,20 @@ fig.suptitle("CAA", fontsize=16)
 axes[0].set_title("1k")
 axes[1].set_title("10k")
 axes[2].set_title("40k")
-#plt.show()
-
+plt.savefig("LR results/box_caa.png")
+plt.show()
 #%%
+
 fig, axes = plt.subplots(1, 3)
 sns.boxplot(x='LR', y='Loss', data=df_tsaa1, color='#99c2a2', ax=axes[0])
 sns.boxplot(x='LR', y='Loss', data=df_tsaa2, color='#99c2a2', ax=axes[1])
-sns.boxplot(x='LR', y='Loss', data=df_tsaa3, color='#99c2a2', ax=axes[2])
+sns.boxplot(x='LR', y='Loss', data=df_tsaa3, color='#99c2a2', ax=axes[2]) #color='#99c2a2'
 fig.suptitle("TSAA", fontsize=16)
 axes[0].set_title("1k")
 axes[1].set_title("10k")
 axes[2].set_title("40k")
-#plt.show()
+plt.savefig("LR results/box_tsaa.png")
+plt.show()
 
 #%%
 fig, axes = plt.subplots(1, 3)
@@ -83,7 +96,8 @@ fig.suptitle("OAA", fontsize=16)
 axes[0].set_title("1k")
 axes[1].set_title("10k")
 axes[2].set_title("40k")
-#plt.show()
+plt.savefig("LR results/box_oaa.png")
+plt.show()
 
 #%%
 fig, axes = plt.subplots(1, 3)
@@ -94,8 +108,9 @@ fig.suptitle("RBOAA", fontsize=16)
 axes[0].set_title("1k")
 axes[1].set_title("10k")
 axes[2].set_title("40k")
-#plt.show()
-"""
+plt.savefig("LR results/box_rboaa.png")
+plt.show()
+
 #%%
 #### 1-way ANOVA ####
 #model type 1-4 and data size 1-3
@@ -118,7 +133,8 @@ model_rboaa3 = ols('Loss ~ LR', data=df_rboaa3).fit()
 model_names = ["model_caa1", "model_caa2", "model_caa3", "model_tsaa1", "model_tsaa2", "model_tsaa3", "model_oaa1", "model_oaa2", 
           "model_oaa3", "model_rboaa1", "model_rboaa2", "model_rboaa3"]
 linear_models = [model_caa1, model_caa2, model_caa3, model_tsaa1, model_tsaa2, model_tsaa3, model_oaa1, model_oaa2, 
-          model_oaa3, model_rboaa1, model_rboaa2, model_rboaa3]
+                 model_oaa3, model_rboaa1, model_rboaa2, model_rboaa3]
+#linear_models = [model_caa1, model_caa2, model_caa3, model_oaa1, model_oaa2, model_oaa3, model_rboaa1, model_rboaa2, model_rboaa3]
 
 anova_tables = {}
 for i in range(len(model_names)):
@@ -129,25 +145,25 @@ for i in range(len(model_names)):
 
 
 ### flere plots
-sns.scatterplot(x='LR', y='Loss', data=df_caa2, color='#99c2a2')
+"""sns.scatterplot(x='LR', y='Loss', data=df_caa2, color='#99c2a2')
 plt.title("CAA", fontsize=16)
-plt.savefig("LR results/scat_CAA.png")
-plt.show()
+#plt.savefig("LR results/scat_CAA.png")
+plt.show()"""
 
-sns.scatterplot(x='LR', y='Loss', data=df_tsaa2, color='#99c2a2')
-plt.title("TSAA", fontsize=16)
-plt.savefig("LR results/scat_TSAA.png")
-plt.show()
+#sns.scatterplot(x='LR', y='Loss', data=df_tsaa, color='#99c2a2')
+#plt.title("TSAA all", fontsize=16)
+#plt.savefig("LR results/scat_TSAA.png")
+#plt.show()
 
-sns.scatterplot(x='LR', y='Loss', data=df_oaa2, color='#99c2a2')
+"""sns.scatterplot(x='LR', y='Loss', data=df_oaa2, color='#99c2a2')
 plt.title("OAA", fontsize=16)
-plt.savefig("LR results/scat_OAA.png")
+#plt.savefig("LR results/scat_OAA.png")
 plt.show()
 
 sns.scatterplot(x='LR', y='Loss', data=df_rboaa2, color='#99c2a2')
 plt.title("RBOAA", fontsize=16)
-plt.savefig("LR results/scat_RBOAA.png")
-plt.show()
+#plt.savefig("LR results/scat_RBOAA.png")
+plt.show()"""
 
 
 model_caa = ols('Loss ~ LR + DataSize + LR:DataSize', data=df_caa).fit()

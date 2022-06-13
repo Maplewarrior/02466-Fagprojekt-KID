@@ -23,13 +23,12 @@ def result_helper_function(params):
     a_param = params[2]
     b_param = params[3]
     sigma_std = params[5]
+    synthetic_arch = params[1]
     
     if params[4]:
-        analysis_archs = np.arange(3,11)
-        synthetic_arch = params[1]
+        analysis_archs = np.arange(2,11)
     else:
         analysis_archs = [5]
-        synthetic_arch = 5
 
     AA_types_list = []
     analysis_archs_list = []
@@ -53,12 +52,11 @@ def result_helper_function(params):
         if AA_type == "CAA":
             lr = 0.05
         elif AA_type == "TSAA":
-            ## NOT FOUND YET.
             lr = 0.01
         elif AA_type == "OAA":
             lr = 0.05
         elif AA_type == "RBOAA":
-            lr = 0.01
+            lr = 0.025
         
         for analysis_arch in analysis_archs:
             for rep in range(reps):
@@ -84,10 +82,12 @@ def result_helper_function(params):
                 losses_list.append(loss)
                 NMIs_list.append(NMI(analysis_A,syn_A))
                 MCCs_list.append(MCC(analysis_Z,syn_Z))
+                print(MCC(analysis_Z,syn_Z))
 
 
     dataframe = pd.DataFrame.from_dict({
         'sigma': s,
+        'sigma_std': sigma_std,
         'synthetic_k': synthetic_arch,
         'a_param': a_param,
         'b_param': b_param,
@@ -100,5 +100,8 @@ def result_helper_function(params):
         'BDM': BDM_list,
         'Est. sigma': sigma_est_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"
+    if not params[4]:
+        csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
+    else:
+        csv_name = 'result dataframes/' + 'VARYINGARCHETYPES' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
     dataframe.to_csv(csv_name, index=False) 

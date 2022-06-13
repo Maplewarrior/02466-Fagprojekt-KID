@@ -1,40 +1,39 @@
 import os
-import pickle
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import math 
 
+### sigma,sigma_std,synthetic_k,a_param,b_param,AA_type,analysis_k,rep,loss,NMI,MCC,BDM,Est. sigma
 
-results = {}
-directory = 'synthetic_results'
+results = {
+    'sigma': np.array([]),
+    'sigma_std': np.array([]),
+    'synthetic_k': np.array([]),
+    'a_param': np.array([]),
+    'b_param': np.array([]),
+    'AA_type': np.array([]),
+    'analysis_k': np.array([]),
+    'rep': np.array([]),
+    'loss': np.array([]),
+    'NMI': np.array([]),
+    'MCC': np.array([]),
+    'BDM': np.array([]),
+    'Est. sigma': np.array([]),
+}
+
+directory = 'AA Results Folder'
 for filename in os.listdir(directory):
     filepath = os.path.join(directory, filename)
     if os.path.isfile(filepath):
         file = open(filepath,'rb')
-        result = pickle.load(file)
+        data = pd.read_csv(filepath)
 
-        AA_type = filename.split("_")[0]
-        sigma = float(filename.split("_")[2])
-        k = int(filename.split("_")[4])
-        a = float(filename.split("_")[6])
-        b = float(filename.split("_")[8])
-        
-        if not AA_type in results:
-            results[AA_type] = {}
-        if not sigma in results[AA_type]:
-            results[AA_type][sigma] = {}
-        if not k in results[AA_type][sigma]:
-            results[AA_type][sigma][k] = {}
-        if not a in results[AA_type][sigma][k]:
-            results[AA_type][sigma][k][a] = {}
-        if not b in results[AA_type][sigma][k][a]:
-            results[AA_type][sigma][k][a][b] = {}
-        if "metadata" in filename:
-            if not "metadata" in results[AA_type][sigma][k][a][b]:
-                results[AA_type][sigma][k][a][b]["metadata"] = []
-            results[AA_type][sigma][k][a][b]["metadata"].append(result)
-        elif not "metadata" in filename:
-            if not "analysis" in results[AA_type][sigma][k][a][b]:
-                results[AA_type][sigma][k][a][b]["analysis"] = []
-            results[AA_type][sigma][k][a][b]["analysis"].append(result)
-        
-        print(AA_type + "_" + str(sigma) + "_" + str(k) + "_" + str(a) + "_" + str(b))
+        for key in list(results.keys()):
+            for i in range(len(data[key])):
+                results[key] = np.append(results[key], data[key][i])
 
-print(results["CAA"][-0.43][3][0.85][1.0])
+dataframe = pd.DataFrame.from_dict(results)
+csv_name = "full_result_dataset.csv"
+dataframe.to_csv(csv_name, index=False) 
+
