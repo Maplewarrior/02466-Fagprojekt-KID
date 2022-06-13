@@ -26,7 +26,7 @@ def result_helper_function(params):
     synthetic_arch = params[1]
     
     if params[4]:
-        analysis_archs = np.arange(3,11)
+        analysis_archs = np.arange(2,11)
     else:
         analysis_archs = [5]
 
@@ -82,6 +82,7 @@ def result_helper_function(params):
                 losses_list.append(loss)
                 NMIs_list.append(NMI(analysis_A,syn_A))
                 MCCs_list.append(MCC(analysis_Z,syn_Z))
+                print(MCC(analysis_Z,syn_Z))
 
 
     dataframe = pd.DataFrame.from_dict({
@@ -99,5 +100,8 @@ def result_helper_function(params):
         'BDM': BDM_list,
         'Est. sigma': sigma_est_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
+    if not params[4]:
+        csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
+    else:
+        csv_name = 'result dataframes/' + 'VARYINGARCHETYPES' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
     dataframe.to_csv(csv_name, index=False) 
