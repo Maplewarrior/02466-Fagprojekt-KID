@@ -54,7 +54,7 @@ def result_helper_function2(params):
             lr = 0.01
         elif AA_type == "OAA":
             lr = 0.01
-        else:
+        elif AA_type == "RBOAA":
             lr = 0.01
         for analysis_arch in analysis_archs:
             for rep in range(reps):
@@ -92,8 +92,6 @@ def result_helper_function2(params):
                 NMIs_list.append(NMI(analysis_A,syn_A))
                 MCCs_list.append(MCC(analysis_Z,syn_Z))
 
-                print(NMI(analysis_A,syn_A))
-
 
     dataframe = pd.DataFrame.from_dict({
         'sigma': s,
@@ -107,9 +105,6 @@ def result_helper_function2(params):
         'NMI': NMIs_list, 
         'MCC': MCCs_list,
         'BDM': BDM_list})
-
-    print(BDM_list)
-    print(NMIs_list)
 
     csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "HEY" + ".csv"
     dataframe.to_csv(csv_name, index=False) 
