@@ -113,6 +113,16 @@ class _RBOAA:
 
         ########## INITIALIZATION OF GENERAL VARIABLES ##########
         b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
+<<<<<<< HEAD
+=======
+        sigma_non_constraint = torch.autograd.Variable(torch.rand(N)*(-4), requires_grad=True)
+        
+        # B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True) ### OLD ###
+        # INITIALIZE B AS SPARSE 
+        B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
+        B_non_constraint = B_non_constraint*np.log(N*2)
+        B_non_constraint.requires_grad=True
+>>>>>>> 23716acf68c5412467c4f59acdef0ad2d77b6dd4
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
