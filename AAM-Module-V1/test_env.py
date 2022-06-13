@@ -39,14 +39,14 @@ def archetype_correlation(AT1,AT2):
 plots = _plots()
 rb = False
 betaParm = 100
-K = 4
-N = 10000
+K = 10
+N = 25000
 M = 21
 sigmas = [-1000, -4.6, -2.97, -2.25, -1.82, -1.507, -1.05 ]
 # sigmas = [-1000, -4.6]
 p = 5
 a_param = 1
-data = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=-4.6, rb=rb, a_param = a_param, b_param = betaParm)        
+data = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=-1.507, rb=rb, a_param = a_param, b_param = betaParm)        
 X = data.X
 A_true = data.A
 Z_true = data.Z
@@ -59,9 +59,6 @@ MCC_TSAA_hat_alpha = []
 
 MCC_TSAA = []
 MCC_TSAA_alpha = []
-
-
-
 
 
 TSAA = _TSAA()
@@ -82,13 +79,34 @@ MCC_TSAA_alpha.append(MCC(Z_true_alpha, Z_TSAA))
 
 
 
+#%%   TEST FOR b_param = high, rb = True and rb = False
 
+bias = [True, False]
+b_param = 100000
+OAA = _OAA()
+RBOAA = _RBOAA()
 
+for rb in bias:
+    data = _synthetic_data(N=N, M=M ,K=K, p=p, sigma=-4.6, rb=rb, a_param = a_param, b_param = betaParm)    
+    X = data.X
+    A_true = data.A
+    Z_true = data.Z
+    
+    result_OAA = OAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.01, mute=False, columns=data.columns, with_synthetic_data = True, early_stopping = True, with_CAA_initialization = False)
+    A_OAA = result_OAA.A
+    Z_OAA = result_OAA.Z
+    loss_OAA = result_OAA.loss
+    
+    result_RBOAA = RBOAA._compute_archetypes(X=X, K=K, p=p, n_iter=10000, lr=0.01, mute=False, columns=data.columns, with_synthetic_data = True, early_stopping = True)
+    A_RBOAA = result_RBOAA.A
+    Z_RBOAA = result_RBOAA.Z
+    loss_RBOAA = result_RBOAA.loss
+    
+    
+    
 
 #%%
-print("NMI:", NMI_TSAA)
-print("MCC:", MCC_TSAA)
-print("MCC_alpha", MCC_TSAA_alpha)
+
 #%%
 rb = False
 betaParm = 100
