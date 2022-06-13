@@ -37,14 +37,18 @@ def NMI(A1, A2):
 
 # AA_type in ["OAA", "RBOAA"]
 # Boundary difference measure
-def BDM(b_true, b_est, AA_type):
+# def BDM(b_true, b_est, AA_type):
     
+#     N, J = b_true.shape
+#     if AA_type == "OAA":
+#         b_est = np.array([b_est[:] for _ in range(N)])
+    
+#     return (np.sum(np.abs(b_true-b_est)))/(N*J)
+
+def BDM(b_true, b_est, AA_type):
+
     N, J = b_true.shape
     if AA_type == "OAA":
         b_est = np.array([b_est[:] for _ in range(N)])
     
-    return (np.sum(np.abs(b_true-b_est)))/(N*J)
-
-#%%
-
-
+    return (np.sum((b_true-b_est)**2))/(N*J)

@@ -68,7 +68,7 @@ class AA:
         return column_names, M, N, X
     
 
-    def create_synthetic_data(self, N: int = 1000, M: int = 10, K: int = 3, p: int = 6, sigma: int = 1, rb: bool = False, b_param: int = 100, a_param: int = 1, mute = False):
+    def create_synthetic_data(self, N: int = 1000, M: int = 10, K: int = 3, p: int = 6, sigma: int = 1, rb: bool = False, b_param: int = 100, a_param: int = 1, mute = False, sigma_std: int = 0):
         if N < 2:
             print("The value of N can't be less than 2. The value specified was {0}".format(N))
         elif M < 2:
@@ -78,7 +78,7 @@ class AA:
         elif p < 2:
             print("The value of p can't be less than 2. The value specified was {0}".format(p))
         else:
-            self._synthetic_data = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+            self._synthetic_data = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param, sigma_std = sigma_std)
             self.has_synthetic_data = True
             self._synthetic_results = {"CAA": [], "OAA": [], "RBOAA": [], "TSAA": []}
             if not mute:

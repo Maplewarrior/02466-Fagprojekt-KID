@@ -100,19 +100,22 @@ class _RBOAA:
         ########## CAA INITIALIZATION ##########
         if with_OAA_initialization:
             if not mute:
-                print("Performing OAA for initialization of ROBAA.")
+                print("\nPerforming OAA for initialization of ROBAA.")
             OAA = _OAA()
-            initialization_result = OAA._compute_archetypes(X, K, p, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping)
-            A_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.A), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.B), requires_grad=True)
-            sigma_non_constraint = torch.autograd.Variable(torch.tensor(initialization_result.sigma).repeat_interleave(N), requires_grad=True)
+            A_hot, B_hot, sigma_hot, b_hot = OAA._compute_archetypes(X, K, p, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
+            A_non_constraint = torch.autograd.Variable(torch.tensor(A_hot), requires_grad=True)
+            B_non_constraint = torch.autograd.Variable(torch.tensor(B_hot), requires_grad=True)
+            sigma_non_constraint = torch.autograd.Variable(torch.tensor(sigma_hot).repeat_interleave(N), requires_grad=True)
+            b_non_constraint = torch.autograd.Variable(torch.tensor(b_hot).unsqueeze(1).repeat(1,N).T, requires_grad=True)
         else:
             A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.randn(N, K), requires_grad=True)
+            B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
+            B_non_constraint = B_non_constraint*np.log(N*2)
+            B_non_constraint.requires_grad=True
             sigma_non_constraint = torch.autograd.Variable(torch.rand(N)*(-4), requires_grad=True)
+            b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
 
-        ########## INITIALIZATION OF GENERAL VARIABLES ##########
-        b_non_constraint = torch.autograd.Variable(torch.rand(N,p), requires_grad=True)
+        ########## DEFINING ADAM OPTIMIZER ##########
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -155,5 +158,5 @@ class _RBOAA:
 
         if not mute:
             result._print()
-    
+
         return result
