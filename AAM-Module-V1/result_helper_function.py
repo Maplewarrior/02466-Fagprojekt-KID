@@ -12,11 +12,11 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 10000
+    N = 100
     M = 21
     p = 6
     n_iter = 2000
-    reps = 10
+    reps = 2
     AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
@@ -42,7 +42,6 @@ def result_helper_function(params):
 
     AAM = AA()
     if b_param == "RB_false":
-        print("HERE")
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
