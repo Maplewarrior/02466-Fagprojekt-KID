@@ -12,24 +12,23 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 100
+    N = 10000
     M = 21
     p = 6
     n_iter = 2000
-    reps = 2
+    reps = 10
     AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
     a_param = params[2]
     b_param = params[3]
     sigma_std = params[5]
+    synthetic_arch = params[1]
     
     if params[4]:
-        analysis_archs = np.arange(3,11)
-        synthetic_arch = params[1]
+        analysis_archs = np.arange(2,11)
     else:
         analysis_archs = [5]
-        synthetic_arch = 5
 
     AA_types_list = []
     analysis_archs_list = []
@@ -83,6 +82,7 @@ def result_helper_function(params):
                 losses_list.append(loss)
                 NMIs_list.append(NMI(analysis_A,syn_A))
                 MCCs_list.append(MCC(analysis_Z,syn_Z))
+                print(MCC(analysis_Z,syn_Z))
 
 
     dataframe = pd.DataFrame.from_dict({
@@ -100,5 +100,8 @@ def result_helper_function(params):
         'BDM': BDM_list,
         'Est. sigma': sigma_est_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + ".csv"
+    if not params[4]:
+        csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
+    else:
+        csv_name = 'result dataframes/' + 'VARYINGARCHETYPES' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
     dataframe.to_csv(csv_name, index=False) 

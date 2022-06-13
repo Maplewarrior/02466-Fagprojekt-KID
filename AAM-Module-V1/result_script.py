@@ -4,18 +4,16 @@ if __name__ ==  '__main__':
     from ast import arg
     import multiprocessing
 
-    sigma_vals = [-20, -3, -2.25,-1.5,-1]
-    archetypes = [3,5,7]
-    # ALL a_param = [0.85, 1, 2]
-    # 1:
-    #a_param = [0.85]
-    # 2:
-    #a_param = [1]
-    # 3:
+    #### ONLY CHANGE THIS VARIABLE ####
+    archetypes = [2,3,4]
+    # archetypes = [5,6,7]
+    # archetypes = [8,9,10]
+
     a_param = [2]
-    b_param = [1, 10, 1000, "RB_false"]
-    sigma_stds = [0,0.5,1]
-    varying_archetypes = False
+    sigma_vals = [-2.25]
+    b_param = [10]
+    sigma_stds = [0.5]
+    varying_archetypes = True
     l = []
 
     for sigma in sigma_vals:
