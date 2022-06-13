@@ -22,6 +22,7 @@ for filename in os.listdir(directory):
             results["Loss"].append(loss)
 
 print(results["Loss"])
+print(results["Loss"][0]+results["Loss"][1])
 
 
         
