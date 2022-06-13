@@ -36,7 +36,6 @@ class _TSAA:
         
     def _projectOrdinals(self, X):
         
-        print("IN PROJECT ORDINALS")
         M, N = X.shape
         X_hat = np.empty((M, N))
         
@@ -46,7 +45,6 @@ class _TSAA:
             for j in range(N):
                 idx = X[i,j]-1
                 X_hat[i,j] = scores[idx]
-        print("X_HAT SHAPE: ", X_hat.shape)
         return X_hat
     
     def _error(self, X,B,A):
@@ -102,7 +100,6 @@ class _TSAA:
         Z_f = X @ self._apply_constraints(B).detach().numpy()
         
         X_hat_f = X_hat.detach().numpy()
-        print("X HAT SHAPE POST ANALYSIS: ", X_hat_f.shape)
         end = timer()
         time = round(end-start,2)
         result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"TSAA", with_synthetic_data = with_synthetic_data)

@@ -36,11 +36,11 @@ def archetype_correlation(AT1,AT2):
 
 #%%
 
-
+plots = _plots()
 rb = False
 betaParm = 100
 K = 4
-N = 1000
+N = 10000
 M = 21
 sigmas = [-1000, -4.6, -2.97, -2.25, -1.82, -1.507, -1.05 ]
 # sigmas = [-1000, -4.6]
@@ -65,8 +65,9 @@ MCC_TSAA_alpha = []
 
 
 TSAA = _TSAA()
-result_TSAA = TSAA._compute_archetypes(X=X, K=K, n_iter=1000, lr=0.01, mute=False, columns=data.columns)
+result_TSAA = TSAA._compute_archetypes(X=X, K=K, n_iter=5000, lr=0.005, mute=False, columns=data.columns)
 
+plots._loss_plot(loss=result_TSAA.RSS, type="TSAA")
 
 
 
@@ -74,17 +75,20 @@ Z_hat_TSAA = result_TSAA.X_hat @ result_TSAA.B
 Z_TSAA = result_TSAA.Z
 A_TSAA = result_TSAA.A
 
-NMI_TSAA.append(NMI(A_true, A_TSAA))
+NMI_TSAA.append(NMI(A_TSAA, A_true))
 
 MCC_TSAA.append(MCC(Z_true, Z_TSAA))
 MCC_TSAA_alpha.append(MCC(Z_true_alpha, Z_TSAA))
 
-MCC_TSAA_hat.append(MCC(Z_true, Z_hat_TSAA))
-MCC_TSAA_hat_alpha.append(MCC(Z_true_alpha, Z_hat_TSAA))
 
 
 
 
+
+#%%
+print("NMI:", NMI_TSAA)
+print("MCC:", MCC_TSAA)
+print("MCC_alpha", MCC_TSAA_alpha)
 #%%
 rb = False
 betaParm = 100
