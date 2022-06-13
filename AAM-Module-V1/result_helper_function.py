@@ -16,20 +16,19 @@ def result_helper_function(params):
     M = 21
     p = 6
     n_iter = 2000
-    reps = 2
+    reps = 10
     AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
     a_param = params[2]
     b_param = params[3]
     sigma_std = params[5]
+    synthetic_arch = params[1]
     
     if params[4]:
         analysis_archs = np.arange(3,11)
-        synthetic_arch = params[1]
     else:
         analysis_archs = [5]
-        synthetic_arch = 5
 
     AA_types_list = []
     analysis_archs_list = []
@@ -100,5 +99,5 @@ def result_helper_function(params):
         'BDM': BDM_list,
         'Est. sigma': sigma_est_list})
 
-    csv_name = 'result dataframes/' + str(s) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + ".csv"
+    csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
     dataframe.to_csv(csv_name, index=False) 
