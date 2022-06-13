@@ -22,7 +22,8 @@ if __name__ ==  '__main__':
         for arch in archetypes:
             for a in a_param:
                 for b in b_param:
-                    l.append([sigma,arch,a,b,varying_archetypes])
+                    for sigma_std in sigma_stds:
+                        l.append([sigma,arch,a,b,varying_archetypes,sigma_std])
 
     
     with multiprocessing.Pool(multiprocessing.cpu_count()-1) as p:

@@ -22,6 +22,7 @@ def result_helper_function2(params):
     s = params[0]
     a_param = params[2]
     b_param = params[3]
+    sigma_std = params[5]
     
     if params[4]:
         analysis_archs = np.arange(3,11)
@@ -41,9 +42,9 @@ def result_helper_function2(params):
 
     AAM = AA()
     if b_param == "RB_false":
-        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True)
+        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
-        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True)
+        AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
     syn_A = AAM._synthetic_data.A
     syn_Z = AAM._synthetic_data.Z
     syn_betas = AAM._synthetic_data.betas
