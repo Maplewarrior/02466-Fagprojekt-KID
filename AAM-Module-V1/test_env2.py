@@ -12,15 +12,15 @@ from RBOAA_class import _RBOAA
 
 
 AAM = AA()
-AAM.create_synthetic_data(40000,5,3,6,-4.6,True,10,1,False)
+AAM.create_synthetic_data(10000,21,3,6,-4.6,True,1000000,1,True)
 
 plotter = _plots()
 plotter._barplot_all(AAM._synthetic_data.Z,AAM._synthetic_data.columns)
 
-AAM.analyse(3,6,10000,True,"OAA",0.001,False,True,True)
+AAM.analyse(3,6,10000,True,"RBOAA",0.01,False,True,False)
 
-AAM.plot("OAA","loss_plot",with_synthetic_data=True)
-AAM.plot("OAA","barplot_all",with_synthetic_data=True)
+AAM.plot("RBOAA","loss_plot",with_synthetic_data=True)
+AAM.plot("RBOAA","barplot_all",with_synthetic_data=True)
 
-print(MCC(AAM._synthetic_results["OAA"][0].Z,AAM._synthetic_data.Z))
-print(NMI(AAM._synthetic_results["OAA"][0].A,AAM._synthetic_data.A))
+print(MCC(AAM._synthetic_results["RBOAA"][0].Z,AAM._synthetic_data.Z))
+print(NMI(AAM._synthetic_results["RBOAA"][0].A,AAM._synthetic_data.A))
