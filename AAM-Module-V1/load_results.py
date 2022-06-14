@@ -22,18 +22,19 @@ results = {
     'Est. sigma': np.array([]),
 }
 
-directory = 'AA Results Folder'
+directory = 'Varying Archetypes Results'
 for filename in os.listdir(directory):
     filepath = os.path.join(directory, filename)
-    if os.path.isfile(filepath):
+    if os.path.isfile(filepath) and not filename == ".DS_Store":
         file = open(filepath,'rb')
-        data = pd.read_csv(filepath)
+        data = pd.read_csv(filepath,encoding = "ISO-8859-1")
+
 
         for key in list(results.keys()):
             for i in range(len(data[key])):
                 results[key] = np.append(results[key], data[key][i])
 
 dataframe = pd.DataFrame.from_dict(results)
-csv_name = "full_result_dataset.csv"
+csv_name = "full_varying_archetypes_dataset.csv"
 dataframe.to_csv(csv_name, index=False) 
 

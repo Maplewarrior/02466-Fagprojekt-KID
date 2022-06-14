@@ -2,13 +2,14 @@ from telnetlib import OLD_ENVIRON
 from eval_measures import calcMI
 
 
-def result_helper_function(params):
+def result_helper_function_model_stability(params):
     from AAM import AA
     import numpy as np
     import pandas as pd
     from eval_measures import NMI
     from eval_measures import MCC
     from eval_measures import BDM
+    from eval_measures import MSMD
     
     N = 10000
     M = 21
@@ -32,19 +33,16 @@ def result_helper_function(params):
     analysis_archs_list = []
     reps_list = []
     losses_list = []
-    NMIs_list = []
-    MCCs_list = []
-    BDM_list = []
     sigma_est_list = []
+    A_MSMD = []
+    Z_MSMD = []
+    beta_MSMD = []
 
     AAM = AA()
     if b_param == "RB_false":
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
-    syn_A = AAM._synthetic_data.A
-    syn_Z = AAM._synthetic_data.Z
-    syn_betas = AAM._synthetic_data.betas
 
     for AA_type in AA_types:
         if AA_type == "CAA":
@@ -55,33 +53,37 @@ def result_helper_function(params):
             lr = 0.05
         elif AA_type == "RBOAA":
             lr = 0.025
+
+        A_list = []
+        Z_list = []
+        beta_list = []
         
         for analysis_arch in analysis_archs:
             for rep in range(reps):
 
-                AA_types_list.append(AA_type)
-                analysis_archs_list.append(analysis_arch)
-                reps_list.append(rep)
-
                 AAM.analyse(AA_type = AA_type, lr=lr, with_synthetic_data = True, mute=True, K=analysis_arch, n_iter = n_iter, early_stopping=True, with_hot_start=True, p=p)
-                analysis_A = AAM._synthetic_results[AA_type][0].A
-                analysis_Z = AAM._synthetic_results[AA_type][0].Z
-
-                if AA_type in ["CAA","TSAA"]:
-                    loss = AAM._synthetic_results[AA_type][0].RSS[-1]
-                    BDM_list.append("NaN")
-                    sigma_est_list.append("NaN")
+                A_list.append(AAM._synthetic_results[AA_type][0].A)
+                Z_list.append(AAM._synthetic_results[AA_type][0].Z)
+                if AA_type in ["OAA","RBOAA"]:
+                    beta_list.append(AAM._synthetic_results[AA_type][0].b)
                 else:
-                    loss = AAM._synthetic_results[AA_type][0].loss[-1]
-                    analysis_betas = AAM._synthetic_results[AA_type][0].b
-                    BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
-                    sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
-                
-                losses_list.append(loss)
-                NMIs_list.append(NMI(analysis_A,syn_A))
-                MCCs_list.append(MCC(analysis_Z,syn_Z))
-                print(MCC(analysis_Z,syn_Z))
+                    beta_list.append("NaN")
 
+        AA_types_list.append(AA_type)
+        if AA_type in ["OAA"]:
+            loss = AAM._synthetic_results[AA_type][0].loss[-1]
+            beta_MSMD.append(MSMD(beta_list)[0])
+        elif AA_type in ["RBOAA"]:
+            beta_MSMD.append(MSMD(beta_list))
+        else:
+            beta_MSMD.append("NaN")
+            loss = AAM._synthetic_results[AA_type][0].RSS[-1]
+        losses_list.append(loss)
+        Z_MSMD.append(MSMD(Z_list))
+        A_MSMD.append(MSMD(A_list))
+        analysis_archs_list.append(analysis_arch)
+        reps_list.append("NaN")
+        sigma_est_list.append("NaN")
 
     dataframe = pd.DataFrame.from_dict({
         'sigma': s,
@@ -93,13 +95,11 @@ def result_helper_function(params):
         'analysis_k': analysis_archs_list, 
         'rep': reps_list, 
         'loss': losses_list, 
-        'NMI': NMIs_list, 
-        'MCC': MCCs_list,
-        'BDM': BDM_list,
-        'Est. sigma': sigma_est_list})
+        'Est. sigma': sigma_est_list,
+        'AA_type': AA_types_list, 
+        'A_SDM': A_MSMD,
+        'Z_SDM': Z_MSMD,
+        'beta_SDM': beta_MSMD})
 
-    if not params[4]:
-        csv_name = 'result dataframes/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
-    else:
-        csv_name = 'result dataframes/' + 'VARYINGARCHETYPES' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
+    csv_name = 'result stability/' + str(s) + "_" + str(sigma_std) + "_" + str(synthetic_arch) + "_" + str(a_param) + "_" + str(b_param) + "_" + str(synthetic_arch) + ".csv"
     dataframe.to_csv(csv_name, index=False) 
