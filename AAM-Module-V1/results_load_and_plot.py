@@ -89,9 +89,11 @@ for a_param in a_params:
                                             data_dict[a_param][b_param][k][s_std][type][k_anal][metric][sigma].append("NaN")
 print("Created data dictionary succesfully")                              
 
+#%%
 ######## MAKE PLOTS ######### 
 # a, b, syn_k, s_std, type, anal_k, metrics, sigmas
-
+pointScale = 80
+lineScale = 3
 def softplus(s):
     return np.log(1 + np.exp(s))
 
@@ -144,15 +146,15 @@ for a_param in a_params:
 
                     
                     # Make combined NMI and MCC plots for OAA and RBOAA
-                    plt.scatter(sigmas_softplussed, NMI_OAA, label = "OAA " + "NMI")
-                    plt.plot(sigmas_softplussed, NMI_OAA, '--')
-                    plt.scatter(sigmas_softplussed, NMI_RBOAA, label = "RBOAA " + "NMI")
-                    plt.plot(sigmas_softplussed, NMI_RBOAA, '--')
+                    plt.scatter(sigmas_softplussed, NMI_OAA, label = "OAA " + "NMI",s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_OAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, NMI_RBOAA, label = "RBOAA " + "NMI", s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_RBOAA, '--', linewidth = lineScale)
                     
-                    plt.scatter(sigmas_softplussed, MCC_OAA, label = "OAA " + "MCC")
-                    plt.plot(sigmas_softplussed, MCC_OAA, '--')
-                    plt.scatter(sigmas_softplussed, MCC_RBOAA, label = "RBOAA " + "MCC")
-                    plt.plot(sigmas_softplussed, MCC_RBOAA, '--')                    
+                    plt.scatter(sigmas_softplussed, MCC_OAA, label = "OAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_OAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, MCC_RBOAA, label = "RBOAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_RBOAA, '--', linewidth = lineScale)                    
                     
                     plt.xlabel('sigma', fontsize=14)
                     plt.ylabel('NMI and MCC', fontsize=14)
@@ -164,15 +166,15 @@ for a_param in a_params:
                     plt.close()
 
                     # Make combined NMI and MCC plots for CAA and TSAA
-                    plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI")
-                    plt.plot(sigmas_softplussed, NMI_CAA, '--')
-                    plt.scatter(sigmas_softplussed, NMI_TSAA, label = "TSAA " + "NMI")
-                    plt.plot(sigmas_softplussed, NMI_TSAA, '--')
+                    plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, NMI_TSAA, label = "TSAA " + "NMI",s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_TSAA, '--', linewidth = lineScale)
                     
-                    plt.scatter(sigmas_softplussed, MCC_CAA, label = "CAA" + "MCC")
-                    plt.plot(sigmas_softplussed, MCC_CAA, '--')
-                    plt.scatter(sigmas_softplussed, MCC_TSAA, label = "TSAA " + "MCC")
-                    plt.plot(sigmas_softplussed, MCC_TSAA, '--')                
+                    plt.scatter(sigmas_softplussed, MCC_CAA, label = "CAA" + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, MCC_TSAA, label = "TSAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_TSAA, '--', linewidth = lineScale)                
                     
                     plt.xlabel('sigma', fontsize=14)
                     plt.ylabel('NMI and MCC', fontsize=14)
@@ -183,10 +185,10 @@ for a_param in a_params:
                     plt.close()                        
 
                     # Make loss plots for RBOAA, OAA
-                    plt.scatter(sigmas_softplussed, loss_OAA, label = "OAA ")
-                    plt.plot(sigmas_softplussed, loss_OAA, '--')
-                    plt.scatter(sigmas_softplussed, loss_RBOAA, label = "RBOAA ")
-                    plt.plot(sigmas_softplussed, loss_RBOAA, '--')
+                    plt.scatter(sigmas_softplussed, loss_OAA, label = "OAA ",s=pointScale)
+                    plt.plot(sigmas_softplussed, loss_OAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, loss_RBOAA, label = "RBOAA ",s=pointScale)
+                    plt.plot(sigmas_softplussed, loss_RBOAA, '--', linewidth = lineScale)
 
                     plt.xlabel('sigma', fontsize=13)
                     plt.ylabel('loss', fontsize=13)
@@ -201,10 +203,10 @@ for a_param in a_params:
                     
                     
                     # Make loss plots for CAA and TSAA
-                    plt.scatter(sigmas_softplussed, loss_CAA, label = "CAA ")
-                    plt.plot(sigmas_softplussed, loss_CAA, '--')
-                    plt.scatter(sigmas_softplussed, loss_TSAA, label = "TSAA ")
-                    plt.plot(sigmas_softplussed, loss_TSAA, '--')
+                    plt.scatter(sigmas_softplussed, loss_CAA, label = "CAA ",s=pointScale)
+                    plt.plot(sigmas_softplussed, loss_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, loss_TSAA, label = "TSAA ",s=pointScale)
+                    plt.plot(sigmas_softplussed, loss_TSAA, '--', linewidth = lineScale)
 
                     plt.xlabel('sigma', fontsize=14)
                     plt.ylabel('loss', fontsize=14)
@@ -217,10 +219,10 @@ for a_param in a_params:
                     
                         
                     ## Make sigma plot
-                    plt.scatter(sigmas_softplussed, sigma_est_OAA, label = "OAA" )
-                    plt.plot(sigmas_softplussed, sigma_est_OAA, '--')
-                    plt.scatter(sigmas_softplussed, sigma_est_RBOAA, label = "RBOAA ")
-                    plt.plot(sigmas_softplussed, sigma_est_RBOAA, '--')
+                    plt.scatter(sigmas_softplussed, sigma_est_OAA, label = "OAA",s=3)
+                    plt.plot(sigmas_softplussed, sigma_est_OAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, sigma_est_RBOAA, label = "RBOAA ",s=3)
+                    plt.plot(sigmas_softplussed, sigma_est_RBOAA, '--', linewidth = lineScale)
                     
                     plt.xlabel('true sigma', fontsize=14)
                     plt.ylabel('est. sigma', fontsize=14)
@@ -232,10 +234,10 @@ for a_param in a_params:
                     
                     
                     # Make BDM plot
-                    plt.scatter(sigmas_softplussed, BDM_OAA, label = "OAA" )
-                    plt.plot(sigmas_softplussed, BDM_OAA, '--')
-                    plt.scatter(sigmas_softplussed, BDM_RBOAA, label = "RBOAA ")
-                    plt.plot(sigmas_softplussed, BDM_RBOAA, '--')
+                    plt.scatter(sigmas_softplussed, BDM_OAA, label = "OAA" ,s=pointScale)
+                    plt.plot(sigmas_softplussed, BDM_OAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, BDM_RBOAA, label = "RBOAA ",s=pointScale)
+                    plt.plot(sigmas_softplussed, BDM_RBOAA, '--', linewidth = lineScale)
                     
                     plt.xlabel('sigma', fontsize=14)
                     plt.ylabel('BDM', fontsize=14)
