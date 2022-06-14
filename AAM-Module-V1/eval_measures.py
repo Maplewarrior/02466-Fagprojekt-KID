@@ -51,3 +51,18 @@ def BDM(b_true, b_est, AA_type):
             b_true = np.array([b_true[:] for _ in range(N)])
     
     return (np.sum((b_true-b_est)**2))/(N*J)
+
+def SMD(A,B):
+    if A.ndim > 1:
+        x,y = A.shape
+    else:
+        x = A.shape
+        y = 1
+    return np.sum(abs(A-B)**2)/(x*y)
+
+def MSMD(list):
+    MSMD = 0
+    for i in range(len(list)):
+        for j in range(len(list)):
+            MSMD += SMD(list[i],list[j])
+    return MSMD/(len(list)**2)
