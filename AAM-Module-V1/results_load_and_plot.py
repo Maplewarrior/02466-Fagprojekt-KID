@@ -88,23 +88,7 @@ for a_param in a_params:
                                         else:
                                             data_dict[a_param][b_param][k][s_std][type][k_anal][metric][sigma].append("NaN")
 print("Created data dictionary succesfully")                              
-#%% 
-# print(df['a_param'][0])
-# print(df['b_param'][0])
-# print(df['synthetic_k'][0])
-# print(df['sigma_std'][0])
-# print(df['AA_type'][0])
-# print(df['analysis_k'][0])
-# print(df['sigma'][0])
-# print(df['rep'][0])
-# print(df["BDM"][110])
 
-m = df.loc[(df['a_param'] == 1) & (df['b_param'] == 'RB_false') 
-             & (df['synthetic_k'] == 5) & (df['sigma_std'] == 1.0) 
-              & (df["AA_type"] == "RBOAA") & (df["sigma"]==-20.0)]
-print(m["NMI"])
-
-#%%
 ######## MAKE PLOTS ######### 
 # a, b, syn_k, s_std, type, anal_k, metrics, sigmas
 
@@ -115,12 +99,6 @@ sigmas_softplussed = [softplus(s) for s in sigmas]
 
 
 
-# print(flatten(list(data_dict[a_params[0]][b_params[0]][synthetic_ks[0]][sigma_stds[0]][AA_types[0]][analysis_ks[0]][metrics[0]].values())))
-
-# print(data_dict[a_params[0]][b_params[0]][synthetic_ks[0]][sigma_stds[0]]["CAA"][5]["NMI"][-20.0])
-
-print("max val:", np.max(data_dict[a_params[0]][b_params[0]][synthetic_ks[0]][sigma_stds[0]]["CAA"][5]["NMI"][-20.0]))
-#%%
 
 path = os.getcwd()
 foldername = "result_plots_final"
@@ -136,13 +114,12 @@ for a_param in a_params:
                     
                     NMI_CAA, MCC_CAA, loss_CAA = [], [], []
                     NMI_TSAA, MCC_TSAA, loss_TSAA = [], [], []
-
                     for sigma in sigmas:
                         
                         # Calc values for OAA
                         NMI_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["NMI"][sigma]))))
                         MCC_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["MCC"][sigma]))))
-                        loss_OAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["loss"][sigma]))))
+                        loss_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["loss"][sigma]))))
                         BDM_OAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["BDM"][sigma]))))
                         sigma_est_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["Est. sigma"][sigma]))))
                         
@@ -163,7 +140,7 @@ for a_param in a_params:
                         MCC_TSAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["MCC"][sigma]))))
                         loss_TSAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["loss"][sigma]))))
                         
-                        
+                    
 
                     
                     # Make combined NMI and MCC plots for OAA and RBOAA
@@ -272,8 +249,7 @@ for a_param in a_params:
                     
                     
 print("plots created and saved in folder {}".format(path))
-#%%
-# print(data_dict[0.5]['1'][5.0][0]["RBOAA"][5.0]["BDM"][-20.0])
+
 
                             
                                 
