@@ -445,7 +445,6 @@ def plot_loss(Ls):
 #                     Ls[type][s] = {}
                     
                     
-                    
 #                 for k in self.archetypes:
 #                      if not k in Z_NMI_results[type][s]:
 #                          Z_NMI_results[type][s][k] = {}

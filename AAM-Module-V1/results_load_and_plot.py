@@ -92,7 +92,7 @@ for a_param in a_params:
 # print(df['analysis_k'][0])
 # print(df['sigma'][0])
 # print(df['rep'][0])
-# print(df["NMI"][0])
+# print(df["BDM"][110])
 
 # print(data_dict[2.0]["RB_false"][5.0][0.0]["CAA"][5.0]["NMI"][-20.0])
 #%%
@@ -103,9 +103,6 @@ def softplus(s):
     return np.log(1 + np.exp(s))
 
 sigmas_softplussed = [softplus(s) for s in sigmas]
-
-folder1 = "Plots_syn_K = anal_K"
-folder2 = "Plots_syn_K != anal_K"
 
 
 
@@ -124,6 +121,8 @@ for a_param in a_params:
             for s_std in sigma_stds:
                 for k_anal in analysis_ks:
                     # for sigma in sigmas:
+                        
+                   
                     
                     # Make combined NMI and MCC plots for OAA and RBOAA
                     plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["NMI"].values())), label = "OAA " + "NMI")
@@ -136,11 +135,13 @@ for a_param in a_params:
                     plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["MCC"].values())), label = "RBOAA " + "MCC")
                     plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["MCC"].values())), '--')
                     
-                    plt.xlabel('sigma', fontsize=18)
-                    plt.ylabel('NMI and MCC', fontsize=18)
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('NMI and MCC', fontsize=14)
                     plt.title("NMI and MCC plot OAA & RBOAA", fontsize = 20)
                     plt.legend()
                     file = ("OAA+RBOAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
+                   
+                   
                     plt.savefig(os.path.join(path,file))
                     plt.close()
 
@@ -156,8 +157,8 @@ for a_param in a_params:
                     plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["MCC"].values())), label = "TSAA " + "MCC")
                     plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["MCC"].values())), '--')
                     
-                    plt.xlabel('sigma', fontsize=18)
-                    plt.ylabel('NMI and MCC', fontsize=18)
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('NMI and MCC', fontsize=14)
                     plt.title("NMI and MCC plot CAA & TSAA", fontsize = 20)
                     plt.legend()
                     file = ("NMI+MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
@@ -170,12 +171,15 @@ for a_param in a_params:
                     plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["loss"].values())), label = "RBOAA ")
                     plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["loss"].values())), '--')
 
-                    plt.xlabel('sigma', fontsize=18)
-                    plt.ylabel('loss', fontsize=18)
-                    plt.title("Loss plot for OAA and RBOAA", fontsize = 22)
+                    plt.xlabel('sigma', fontsize=13)
+                    plt.ylabel('loss', fontsize=13)
+                    plt.title("Loss plot for OAA and RBOAA", fontsize = 18)
+                    plt.ticklabel_format(axis = 'y', style = 'sci', scilimits=(6,6))
+                    
                     plt.legend()
                     file = ("Loss OAA+RBOAA, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
                     plt.savefig(os.path.join(path,file))
+                    
                     plt.close()
                     
                     
@@ -185,8 +189,8 @@ for a_param in a_params:
                     plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["loss"].values())), label = "TSAA ")
                     plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["loss"].values())), '--')
 
-                    plt.xlabel('sigma', fontsize=18)
-                    plt.ylabel('loss', fontsize=18)
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('loss', fontsize=14)
 
                     plt.title("Loss plot for CAA and TSAA", fontsize = 22)
                     plt.legend()
@@ -195,14 +199,36 @@ for a_param in a_params:
                     plt.close()
                     
                         
-                        
-                        
-
-
-                        
-                        
-                        
-                        
+                    ## Make sigma plot
+                    plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["Est. sigma"].values())), label = "OAA" )
+                    plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["Est. sigma"].values())), '--')
+                    plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["Est. sigma"].values())), label = "RBOAA ")
+                    plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["Est. sigma"].values())), '--')
+                    
+                    plt.xlabel('true sigma', fontsize=14)
+                    plt.ylabel('est. sigma', fontsize=14)
+                    plt.title("Est. & true sigma for OAA & RBOAA", fontsize = 20)
+                    plt.legend()
+                    file = ("Sigma plot, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
+                    plt.savefig(os.path.join(path,file))
+                    plt.close()
+                    
+                    
+                    # Make BDM plot
+                    plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["BDM"].values())), label = "OAA" )
+                    plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["BDM"].values())), '--')
+                    plt.scatter(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["BDM"].values())), label = "RBOAA ")
+                    plt.plot(sigmas_softplussed, flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["BDM"].values())), '--')
+                    
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('BDM', fontsize=14)
+                    plt.title("Boundary difference plot for varying sigmas", fontsize = 20)
+                    plt.legend()
+                    file = ("BDM plot, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
+                    plt.savefig(os.path.join(path,file))
+                    plt.close()
+                    
+                    
                     
                     
                     
@@ -212,8 +238,9 @@ for a_param in a_params:
                     
                     
         
-        
-   
+#%%
+print(data_dict[0.5]['1'][5.0][0]["RBOAA"][5.0]["BDM"][-20.0])
+
                             
                                 
                             
