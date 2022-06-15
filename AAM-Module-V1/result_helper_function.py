@@ -10,13 +10,12 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 100
+    N = 10000
     M = 21
     p = 6
     n_iter = 2000
-    reps = 2
-    #AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
-    AA_types = ["RBOAA", "OAA"]
+    reps = 10
+    AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
     a_param = params[2]
@@ -79,15 +78,11 @@ def result_helper_function(params):
                 else:
                     loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     analysis_betas = AAM._synthetic_results[AA_type][0].b
-                    print(AA_type)
-                    print(analysis_betas.shape)
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                     sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
                     losses_list.append(loss)
                     NMIs_list.append(NMI(analysis_A,syn_A.T))
                     MCCs_list.append(MCC(analysis_Z,syn_Z.T))
-                    print(BDM(syn_betas,analysis_betas,AA_type))
-                    print(NMI(analysis_A,syn_A.T))
 
 
     dataframe = pd.DataFrame.from_dict({
