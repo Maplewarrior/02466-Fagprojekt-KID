@@ -67,3 +67,45 @@ def OrdinalSampler(N,M,alphaFalse,sigma,K,achetypeParm=1,betaParm=1,bias=True):
     Xnew=alphaFalse[index]
 
     return Xnew,Xhat.numpy(),archetypes.numpy(),S.numpy(),beta.numpy()
+
+
+
+# if __name__ == '__main__':
+#     data=OrdinalSampler(N=100,M=10,alphaTrue=[0,3,5,8,9],alphaFalse=[10,15,100,110,190],sigma=1.2,K=3,J=4,direcleParm=1)
+#     print(data)
+
+#%%    TESTING SYNTHETIC DATA CLASS
+M = 10
+N = 10000
+alphaFalse = [1,2,3,4,5]
+sigma_BB = 0.01
+sigma = -4.6
+b_param = 10
+a_param = 1
+bias = False # CHECK FOR FALSE ALSO!!!
+K=4
+p = len(alphaFalse)
+
+syn = _synthetic_data(N=N, M=M, p=p,K=K, sigma=sigma, a_param = a_param, b_param = b_param, rb = bias)
+X_syn =syn.X
+
+
+
+X_BB, _, _, _, _ =  OrdinalSampler(N=N, M=M, alphaFalse=alphaFalse, sigma = sigma_BB,K=K ,achetypeParm=1,betaParm=b_param,bias=bias)
+#%%
+
+BB_dist = [len(X_BB[X_BB ==1]), len(X_BB[X_BB ==2]), len(X_BB[X_BB ==3]), len(X_BB[X_BB ==4]), len(X_BB[X_BB ==5])]
+s_dist = [len(X_syn[X_syn ==1]), len(X_syn[X_syn ==2]), len(X_syn[X_syn ==3]), len(X_syn[X_syn ==4]), len(X_syn[X_syn ==5])]
+
+
+import matplotlib.pyplot as plt
+
+label_BB,count_BB = np.unique(X_BB, return_counts=True)
+plt.bar(label_BB,count_BB)
+plt.title(f"Bachelor børge plot sigma={sigma_BB}")
+plt.show()
+
+label,count = np.unique(X_syn, return_counts=True)
+plt.bar(label,count)
+plt.title(f"VORES plot sigma={sigma_BB}")
+plt.show()
