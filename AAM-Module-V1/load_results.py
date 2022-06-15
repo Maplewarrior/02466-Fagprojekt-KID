@@ -22,7 +22,26 @@ results = {
     'Est. sigma': np.array([]),
 }
 
-directory = 'Varying Archetypes Results'
+# sigma,sigma_std,synthetic_k,a_param,b_param,AA_type,analysis_k,rep,loss,Est. sigma,A_SDM,Z_SDM,beta_SDM
+
+results2 = {
+    'sigma': np.array([]),
+    'sigma_std': np.array([]),
+    'synthetic_k': np.array([]),
+    'a_param': np.array([]),
+    'b_param': np.array([]),
+    'AA_type': np.array([]),
+    'analysis_k': np.array([]),
+    'rep': np.array([]),
+    'loss': np.array([]),
+    'Est. sigma': np.array([]),
+    'A_SDM': np.array([]),
+    'Z_SDM': np.array([]),
+    'beta_SDM': np.array([])
+}
+
+
+directory = 'result stability'
 for filename in os.listdir(directory):
     filepath = os.path.join(directory, filename)
     if os.path.isfile(filepath) and not filename == ".DS_Store":
@@ -30,11 +49,11 @@ for filename in os.listdir(directory):
         data = pd.read_csv(filepath,encoding = "ISO-8859-1")
 
 
-        for key in list(results.keys()):
+        for key in list(results2.keys()):
             for i in range(len(data[key])):
-                results[key] = np.append(results[key], data[key][i])
+                results2[key] = np.append(results2[key], data[key][i])
 
-dataframe = pd.DataFrame.from_dict(results)
-csv_name = "full_varying_archetypes_dataset.csv"
+dataframe = pd.DataFrame.from_dict(results2)
+csv_name = "full_stability_dataset.csv"
 dataframe.to_csv(csv_name, index=False) 
 
