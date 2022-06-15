@@ -1,3 +1,4 @@
+from re import S
 import numpy as np
 from scipy.stats import norm
 import pickle
@@ -5,14 +6,14 @@ import torch
 
 class _synthetic_data:
     
-    def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param, sigma_std = 0):
+    def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param, sigma_std = 0, centralization: bool = False):
         
         self.N = N
         self.M = M
         self.K = K
         self.p = p
         self.columns = ["SQ"+str(i) for i in range(1, M+1)]
-        self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param, sigma_std = sigma_std)
+        self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param, sigma_std = sigma_std, centralization = centralization)
         
     # If there's response bias, sample from a dirichlet distribution.
     def biasedBetas(self, N, p, b_param):
@@ -94,7 +95,7 @@ class _synthetic_data:
         alpha = np.array([a_param]*K)
         return np.random.dirichlet(alpha, size=N).transpose()
     
-    def get_D(self, X_rec, betas, sigma, rb):
+    def get_D(self, X_rec, betas, sigma, rb,centralization):
         
         M, N = X_rec.shape
         
@@ -117,11 +118,6 @@ class _synthetic_data:
         else:
             J = len(betas[0,:])
             D = np.empty((J+2, M, N))
-
-            # D = torch.rand(len(betas[0,:])+2,M,N)
-            # D[0] = torch.tensor(np.matrix(np.ones((N)) * (-np.inf)))
-            # D[-1] = torch.tensor(np.matrix(np.ones((N)) * (np.inf)))
-            # D[1:-1] = torch.div(torch.unsqueeze(betas.T, 2).repeat(1,1,N)-X_rec.T,torch.unsqueeze(sigma+1e-16, 1).repeat(1,N))
             
             for j in range(J+2):
                 if j == 0:
@@ -129,10 +125,12 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[:,j-1] - X_rec)/(sigma.T+1e-16) ## Add softplus(sigma)
-                    # D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
-        
-        return D
+                    D[j] = (betas[:,j-1] - X_rec)/(sigma.T+1e-16)
+
+        if centralization:
+            return D - np.mean(D[1:-1])
+        else:
+            return D 
 
     def Probs(self, D):
         
@@ -160,13 +158,13 @@ class _synthetic_data:
         return X_cat
     
     # function combining the previous methods to get X_thilde
-    def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100, sigma_std = 0):
+    def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100, sigma_std = 0, centralization = False):
         
         Z_ordinal, Z_alpha, betas = self.get_Z(N=N,M=M, K=K, p=p, rb=rb, b_param=b_param)
         A = self.get_A(N, K, a_param=a_param)
         X_rec = Z_alpha@A
         
-        D = self.get_D(X_rec, betas, self.softplus(sigma, sigma_std), rb=rb)
+        D = self.get_D(X_rec, betas, self.softplus(sigma, sigma_std), rb=rb, centralization = centralization)
         probs = self.Probs(D)
         
         X_final = self.toCategorical(probs)

@@ -50,7 +50,7 @@ class _RBOAA:
         return X_tilde@B@A
 
     ########## HELPER FUNCTION // LOSS ##########
-    def _calculate_loss(self,X, X_hat, b, sigma):
+    def _calculate_loss(self,X, X_hat, b, sigma, centralization):
         
         pad = nn.ConstantPad1d(1, 0)
         b = pad(b)
@@ -58,6 +58,12 @@ class _RBOAA:
         
         zetaNext = (torch.gather(b,1,X)-X_hat)/sigma
         zetaPrev = (torch.gather(b,1,X-1)-X_hat)/sigma
+
+        if centralization:
+            mean_zeta = (torch.mean(zetaNext) + torch.mean(zetaPrev))/2
+            zetaNext = zetaNext - mean_zeta
+            zetaPrev = zetaPrev - mean_zeta
+
         zetaNext[X==len(b)+1] = float("Inf")
         zetaPrev[X == 1] = -float("Inf")
 
@@ -67,7 +73,7 @@ class _RBOAA:
         return loss
 
     ########## HELPER FUNCTION // ERROR ##########
-    def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J):
+    def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J,centralization):
         
         A = self._apply_constraints_AB(A_non_constraint)
         B = self._apply_constraints_AB(B_non_constraint)
@@ -77,12 +83,12 @@ class _RBOAA:
         
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
-        loss = self._calculate_loss(Xt, X_hat, b, sigma)
+        loss = self._calculate_loss(Xt, X_hat, b, sigma,centralization)
 
         return loss
     
     ########## PERFORMING ARCHEYPAL ANALYSIS ##########
-    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, with_OAA_initialization: bool = False):
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, with_OAA_initialization: bool = False, centralization: bool = False):
 
         ########## INITIALIZATION ##########
         self.N = len(X[0,:])
@@ -102,7 +108,7 @@ class _RBOAA:
             if not mute:
                 print("\nPerforming OAA for initialization of ROBAA.")
             OAA = _OAA()
-            A_hot, B_hot, sigma_hot, b_hot = OAA._compute_archetypes(X, K, p, n_iter, 0.05, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
+            A_hot, B_hot, sigma_hot, b_hot = OAA._compute_archetypes(X, K, p, n_iter, 0.05, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True, centralization=centralization)
             A_non_constraint = torch.autograd.Variable(torch.tensor(A_hot), requires_grad=True)
             B_non_constraint = torch.autograd.Variable(torch.tensor(B_hot), requires_grad=True)
             sigma_non_constraint = torch.autograd.Variable(torch.tensor(sigma_hot).repeat_interleave(N), requires_grad=True)
@@ -127,7 +133,7 @@ class _RBOAA:
             if not mute:
                 loading_bar._update()
             optimizer.zero_grad()
-            L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,p)
+            L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,p,centralization)
             self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step() 

@@ -50,7 +50,7 @@ class _OAA:
         return X_hat
 
     ########## HELPER FUNCTION // LOSS ##########
-    def _calculate_loss(self,X, X_hat, b, sigma):
+    def _calculate_loss(self,X, X_hat, b, sigma,centralization):
         
         pad = nn.ConstantPad1d(1, 0)
         b = pad(b)
@@ -58,6 +58,12 @@ class _OAA:
 
         zetaNext = (b[X] - X_hat)/sigma
         zetaPrev = (b[X-1] - X_hat)/sigma
+
+        if centralization:
+            mean_zeta = (torch.mean(zetaNext) + torch.mean(zetaPrev))/2
+            zetaNext = zetaNext - mean_zeta
+            zetaPrev = zetaPrev - mean_zeta
+
         zetaNext[X==len(b)+1] = float("Inf")
         zetaPrev[X == 1] = -float("Inf")
 
@@ -67,7 +73,7 @@ class _OAA:
         return loss
 
     ########## HELPER FUNCTION // ERROR ##########
-    def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint):
+    def _error(self,Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,centralization):
 
         A = self._apply_constraints_AB(A_non_constraint)
         B = self._apply_constraints_AB(B_non_constraint)
@@ -78,12 +84,12 @@ class _OAA:
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
 
-        loss = self._calculate_loss(Xt, X_hat, b, sigma)
+        loss = self._calculate_loss(Xt, X_hat, b, sigma,centralization)
 
         return loss
         
     ########## PERFORMING ARCHETYPAL ANALYSIS ##########
-    def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False, for_hotstart_usage = False):
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False, for_hotstart_usage = False, centralization: bool = False):
 
         
         ########## INITIALIZATION ##########
@@ -128,7 +134,7 @@ class _OAA:
             if not mute:
                 loading_bar._update()
             optimizer.zero_grad()
-            L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint)
+            L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,centralization)
             self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step()

@@ -2,6 +2,7 @@
 if __name__ ==  '__main__':
     from result_helper_function import result_helper_function
     from result_helper_function_model_stability import result_helper_function_model_stability
+    from result_helper_function_centralization import result_helper_function_centralization
     from ast import arg
     import multiprocessing
 
@@ -12,9 +13,9 @@ if __name__ ==  '__main__':
     archetypes = [5]
 
     a_param = [1]
-    sigma_vals = [-20,3.0,-2.25,-1.5,-1.0]
-    b_param = [10]
-    sigma_stds = [0.5]
+    sigma_vals = [-100,-4.6,-2.97,-2.25,-1.5,-1.259,-1.05]
+    b_param = [1,10]
+    sigma_stds = [0,0.5]
     varying_archetypes = False
     l = []
 
@@ -27,5 +28,6 @@ if __name__ ==  '__main__':
 
     
     with multiprocessing.Pool(multiprocessing.cpu_count()-1) as p:
-        p.map(result_helper_function_model_stability, l)
+        p.map(result_helper_function_centralization, l)
+        #p.map(result_helper_function_model_stability, l)
         #p.map(result_helper_function, l)
