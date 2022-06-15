@@ -159,7 +159,7 @@ def RB_OAA(data, K, epokes, learning_rata, device="auto", verbose=False, save=Fa
     #Duplicate paremeter
     gamma=gamma.repeat(N,1)
     gamma.requires_grad=True
-
+    
     sigmaTilde=sigmaTilde.repeat(N,1)
     sigmaTilde.requires_grad=True
 

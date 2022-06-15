@@ -6,10 +6,8 @@ if __name__ ==  '__main__':
     import multiprocessing
 
     lrs = [0.1, 0.05, 0.01, 0.005, 0.001]
-    #lrs = [0.05, 0.01, 0.005]
-    #AA_types = ["CAA","TSAA","RBOAA","OAA"]
     AA_types = ["CAA","TSAA","RBOAA","OAA"]
-    dataframe_sizes = [1000,10000,40000]
+    dataframe_sizes = [1000,5000,10000]
 
     l = []
     for lr in lrs:

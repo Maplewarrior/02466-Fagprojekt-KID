@@ -9,14 +9,6 @@ def MCC( A1, A2):
             for j in range(K2):
                 corr[i][j] = np.corrcoef(A1[:,i], A2[:,j])[0][1]
         
-        # max_list = []
-        # for _ in range(min(K1,K2)):
-        #     row, column = np.unravel_index(corr.argmax(), corr.shape)
-        #     max_list.append(corr[row][column])
-        #     corr = np.delete(corr, row, axis=0)
-        #     corr = np.delete(corr, column, axis=1)
-        
-        # return np.mean(max_list)
         return np.mean(corr.max(1))
 
 def calcMI(A1, A2):
@@ -28,6 +20,7 @@ def calcMI(A1, A2):
     return MI
 
 
+
 # Normalized mutual information function
 def NMI(A1, A2):
     #krav at værdierne i række summer til 1 ???
@@ -35,6 +28,8 @@ def NMI(A1, A2):
     return NMI
 
 
+
+# Boundary Measure
 def BDM(b_true, b_est, AA_type):
 
     if b_true.ndim > 1:
@@ -52,6 +47,8 @@ def BDM(b_true, b_est, AA_type):
     
     return (np.sum((b_true-b_est)**2))/(N*J)
 
+
+# Squared Mean Distance
 def SMD(A,B):
     if A.ndim > 1:
         x,y = A.shape
@@ -60,6 +57,7 @@ def SMD(A,B):
         y = 1
     return np.sum(abs(A-B)**2)/(x*y)
 
+# Mean Squared Mean Distance
 def MSMD(list):
     MSMD = 0
     for i in range(len(list)):

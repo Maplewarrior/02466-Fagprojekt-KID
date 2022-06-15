@@ -42,6 +42,7 @@ def result_helper_function(params):
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
+    
     syn_A = AAM._synthetic_data.A
     syn_Z = AAM._synthetic_data.Z
     syn_betas = AAM._synthetic_data.betas
