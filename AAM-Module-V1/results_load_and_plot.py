@@ -119,27 +119,27 @@ for a_param in a_params:
                     for sigma in sigmas:
                         
                         # Calc values for OAA
-                        NMI_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["NMI"][sigma]))))
-                        MCC_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["MCC"][sigma]))))
+                        NMI_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["NMI"][sigma]))))
+                        MCC_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["MCC"][sigma]))))
                         loss_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["loss"][sigma]))))
                         BDM_OAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["BDM"][sigma]))))
                         sigma_est_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["Est. sigma"][sigma]))))
                         
                          # Calc values for RBOAA
-                        NMI_RBOAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["NMI"][sigma]))))
-                        MCC_RBOAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["MCC"][sigma]))))
+                        NMI_RBOAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["NMI"][sigma]))))
+                        MCC_RBOAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["MCC"][sigma]))))
                         loss_RBOAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["loss"][sigma]))))
                         BDM_RBOAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["BDM"][sigma]))))
                         sigma_est_RBOAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["RBOAA"][k_anal]["Est. sigma"][sigma]))))
                         
                         # Calc values for CAA
-                        NMI_CAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["CAA"][k_anal]["NMI"][sigma]))))
-                        MCC_CAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["CAA"][k_anal]["MCC"][sigma]))))
+                        NMI_CAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["CAA"][k_anal]["NMI"][sigma]))))
+                        MCC_CAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["CAA"][k_anal]["MCC"][sigma]))))
                         loss_CAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["CAA"][k_anal]["loss"][sigma]))))
                         
                         # Calc values for TSAA
-                        NMI_TSAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["NMI"][sigma]))))
-                        MCC_TSAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["MCC"][sigma]))))
+                        NMI_TSAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["NMI"][sigma]))))
+                        MCC_TSAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["MCC"][sigma]))))
                         loss_TSAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["TSAA"][k_anal]["loss"][sigma]))))
                         
                     
@@ -248,9 +248,57 @@ for a_param in a_params:
                     plt.close()
                     
                     
+                    # Make combined NMI and MCC plots for OAA and RBOAA
+                    plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, NMI_RBOAA, label = "RBOAA " + "NMI", s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_RBOAA, '--', linewidth = lineScale)
+                    
+                    plt.scatter(sigmas_softplussed, MCC_CAA, label = "CAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, MCC_RBOAA, label = "RBOAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_RBOAA, '--', linewidth = lineScale)                    
+                    
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('NMI and MCC', fontsize=14)
+                    plt.title("NMI and MCC plot CAA & RBOAA", fontsize = 20)
+                    plt.legend()
+                    file = ("CAA+RBOAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
+                   
+                    plt.savefig(os.path.join(path,file))
+                    plt.close()
+                    
+                    
+                    plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, NMI_OAA, label = "OAA " + "NMI", s=pointScale)
+                    plt.plot(sigmas_softplussed, NMI_OAA, '--', linewidth = lineScale)
+                    
+                    plt.scatter(sigmas_softplussed, MCC_CAA, label = "CAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_CAA, '--', linewidth = lineScale)
+                    plt.scatter(sigmas_softplussed, MCC_OAA, label = "OAA " + "MCC",s=pointScale)
+                    plt.plot(sigmas_softplussed, MCC_OAA, '--', linewidth = lineScale)                    
+                    
+                    plt.xlabel('sigma', fontsize=14)
+                    plt.ylabel('NMI and MCC', fontsize=14)
+                    plt.title("NMI and MCC plot CAA & OAA", fontsize = 20)
+                    plt.legend()
+                    file = ("CAA+OAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
+                   
+                    plt.savefig(os.path.join(path,file))
+                    plt.close()
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     
 print("plots created and saved in folder {}".format(path))
+
 
 
                             
