@@ -98,8 +98,6 @@ class _RBOAA:
         self.loss = []
         start = timer()
 
-        if not mute:
-            loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Archetypal Analysis")
         N, _ = X.T.shape
         Xt = torch.tensor(X, dtype=torch.long)
 
@@ -126,6 +124,9 @@ class _RBOAA:
                                 B_non_constraint, 
                                 b_non_constraint, 
                                 sigma_non_constraint], amsgrad = True, lr = lr)
+        
+        if not mute:
+            loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Archetypal Analysis")
         
 
         ########## ANALYSIS ##########

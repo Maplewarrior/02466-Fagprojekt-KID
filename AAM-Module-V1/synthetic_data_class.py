@@ -37,7 +37,6 @@ class _synthetic_data:
    
        new_betas = np.empty(len(betas))
        denom = sum(betas)
-       
        for i in range(len(new_betas)):
            new_betas[i] = np.sum(betas[:i+1]) / denom
    
