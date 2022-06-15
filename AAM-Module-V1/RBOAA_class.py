@@ -154,7 +154,7 @@ class _RBOAA:
         alphas_f = self._calculate_alpha(b_f)
         X_tilde_f = self._calculate_X_tilde(Xt,alphas_f).detach().numpy()
         Z_tilde_f = (self._apply_constraints_AB(B_non_constraint).detach().numpy() @ X_tilde_f)
-        sigma_f = self._apply_constraints_sigma(sigma_non_constraint)
+        sigma_f = self._apply_constraints_sigma(sigma_non_constraint).detach().numpy()
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
@@ -167,7 +167,7 @@ class _RBOAA:
             B_f,
             X,
             n_iter,
-            b_f.detach().numpy(),
+            b_f.detach().numpy()[:,1:-1],
             Z_f,
             X_tilde_f,
             Z_tilde_f,

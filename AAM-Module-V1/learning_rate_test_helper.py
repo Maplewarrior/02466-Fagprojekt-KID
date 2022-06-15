@@ -8,7 +8,7 @@ def learning_rate_test_helper_function(input):
     lr = input[0]
     AA_type = input[1]
     dataframe_size = input[2]
-    reps = 2
+    reps = 30
 
     AAM.create_synthetic_data(N = dataframe_size, M=21,K=5,sigma=-20,a_param=1,b_param=1000, mute=True)
 

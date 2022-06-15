@@ -10,12 +10,13 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 10000
+    N = 100
     M = 21
     p = 6
     n_iter = 2000
-    reps = 30
-    AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
+    reps = 2
+    #AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
+    AA_types = ["RBOAA", "OAA"]
 
     s = params[0]
     a_param = params[2]
@@ -49,13 +50,13 @@ def result_helper_function(params):
 
     for AA_type in AA_types:
         if AA_type == "CAA":
-            lr = 0.05
+            lr = 0.1
         elif AA_type == "TSAA":
             lr = 0.01
         elif AA_type == "OAA":
-            lr = 0.05
+            lr = 0.01
         elif AA_type == "RBOAA":
-            lr = 0.025
+            lr = 0.01
         
         for analysis_arch in analysis_archs:
             for rep in range(reps):
@@ -72,16 +73,21 @@ def result_helper_function(params):
                     loss = AAM._synthetic_results[AA_type][0].RSS[-1]
                     BDM_list.append("NaN")
                     sigma_est_list.append("NaN")
+                    losses_list.append(loss)
+                    NMIs_list.append(NMI(analysis_A,syn_A))
+                    MCCs_list.append(MCC(analysis_Z,syn_Z))
                 else:
                     loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     analysis_betas = AAM._synthetic_results[AA_type][0].b
+                    print(AA_type)
+                    print(analysis_betas.shape)
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                     sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
-                
-                losses_list.append(loss)
-                NMIs_list.append(NMI(analysis_A,syn_A))
-                MCCs_list.append(MCC(analysis_Z,syn_Z))
-                print(MCC(analysis_Z,syn_Z))
+                    losses_list.append(loss)
+                    NMIs_list.append(NMI(analysis_A,syn_A.T))
+                    MCCs_list.append(MCC(analysis_Z,syn_Z.T))
+                    print(BDM(syn_betas,analysis_betas,AA_type))
+                    print(NMI(analysis_A,syn_A.T))
 
 
     dataframe = pd.DataFrame.from_dict({

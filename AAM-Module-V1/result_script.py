@@ -7,14 +7,12 @@ if __name__ ==  '__main__':
     import multiprocessing
 
     #### ONLY CHANGE THIS VARIABLE ####
-    # archetypes = [2,3,4]
-    # archetypes = [5,6,7]
-    # archetypes = [8,9,10]
-    archetypes = [5]
+    #a_param = [0.85,1,2]
+    a_param = [0.85]
 
-    a_param = [0.85,1,2]
-    sigma_vals = [-100,-4.6,-2.97,-2.25,-1.5,-1.259,-1.05]
-    b_param = [1,10,100]
+    archetypes = [5]
+    sigma_vals = [-100,-2.97,-2.25,-1.82,-1.5,-1.259,-1.05]
+    b_param = [1,5,10,"RB_false"]
     sigma_stds = [0,1]
     varying_archetypes = False
     l = []
