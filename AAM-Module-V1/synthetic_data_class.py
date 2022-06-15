@@ -129,10 +129,17 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[:,j-1] - X_rec)/(sigma.T+1e-16) ## Add softplus(sigma)
+                    D[j] = (betas[:,j-1] - X_rec)/((sigma.T+1e-16)) ## Add softplus(sigma)
                     # D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
-        return D
+        # print("SHAPEEEE", D.shape)
+        # min = np.min(D[(D > -np.inf) & (D < np.inf)]) 
+        # max = np.max(D[(D > -np.inf) & (D < np.inf)])
+        # D[J+1] = np.ones((M,N))*(max + (max-min)/J)
+        # D[0] = np.ones((M,N))*(min - (max-min)/J)
+        # print("min, max:", min, max)
+        # print("D_0", D[0])
+        return D - np.mean(D[1:-1])
 
     def Probs(self, D):
         
@@ -178,4 +185,40 @@ class _synthetic_data:
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
         pickle.dump(self, file)
         file.close()
-            
+#%%
+N = 5000
+M = 21
+K = 5
+p = 6
+sigma = -100
+rb=True
+a_param = 1
+b_param = 10
+
+syn = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+
+X = syn.X
+answer_dist = [len(X[X == i+1]) for i in range(max(X.flatten()))]
+
+print("Answer dist sigma: ")
+print(answer_dist)
+print("Sigma val: ", np.log(1+np.exp(sigma)))
+#%%
+
+
+# N = 50
+# M = 21
+# K = 5
+# p = 6
+# sigma = -0.432
+# rb=True
+# a_param = 1
+# b_param = 1
+
+# syn = _synthetic_data(N, M, K, p, sigma, rb, a_param, b_param)
+
+# X = syn.X
+# answer_dist = [len(X[X == i+1]) for i in range(max(X.flatten()))]
+
+# print("Answer dist sigma=: ")
+# print(answer_dist)
