@@ -10,11 +10,11 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 10000
+    N = 100
     M = 21
     p = 6
     n_iter = 2000
-    reps = 10
+    reps = 2
     AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]

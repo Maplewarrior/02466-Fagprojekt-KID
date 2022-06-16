@@ -42,5 +42,6 @@ if __name__ ==  '__main__':
     
     with multiprocessing.Pool(multiprocessing.cpu_count()-1) as p:
         #p.map(result_helper_function_centralization, l)
-        p.map(result_helper_function_model_stability, l)
+        #p.map(result_helper_function_model_stability, l)
         #p.map(result_helper_function, l)
+        p.map_async(result_helper_function, l)
