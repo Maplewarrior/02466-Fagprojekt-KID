@@ -74,6 +74,7 @@ def result_helper_function_model_stability(params):
             loss = AAM._synthetic_results[AA_type][0].loss[-1]
             beta_MSMD.append(MSMD(beta_list)[0])
         elif AA_type in ["RBOAA"]:
+            loss = AAM._synthetic_results[AA_type][0].loss[-1]
             beta_MSMD.append(MSMD(beta_list))
         else:
             beta_MSMD.append("NaN")
