@@ -39,9 +39,9 @@ class _CAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z,self.X_hat)
+            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes)
+            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type)
         elif plot_type == "loss_plot":
             self.plots._loss_plot(self.RSS,self.type)
         elif plot_type == "mixture_plot":
@@ -102,9 +102,9 @@ class _OAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z_tilde,self.X_hat)
+            self.plots._PCA_scatter_plot(self.Z_tilde,self.X_hat,self.type)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z_tilde,self.X_hat,attributes)
+            self.plots._attribute_scatter_plot(self.Z_tilde,self.X_hat,attributes,self.type)
         elif plot_type == "loss_plot":
             self.plots._loss_plot(self.loss,self.type)
         elif plot_type == "mixture_plot":

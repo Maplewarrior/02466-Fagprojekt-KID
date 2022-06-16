@@ -27,7 +27,6 @@ class _TSAA:
     
     def _convertScores(self, X):
         
-        
         Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         thetas = self._applySoftmax(self._logOdds(X))
         scores = [1+((k+1)-1)*thetas[k] for k in range(len(Ordinals))]

@@ -14,7 +14,6 @@ attributeNames = list(df.columns)
 df = df.sort_values(["sigma", "a_param", "b_param", "synthetic_k", "sigma_std", "rep"], ascending = [True, True, True, True, True, True])
 
 
-
 # Find the number of unique parameter values
 sigmas = list(df["sigma"].unique())
 a_params = list(df["a_param"].unique())
@@ -121,7 +120,7 @@ for a_param in a_params:
                         # Calc values for OAA
                         NMI_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["NMI"][sigma]))))
                         MCC_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["MCC"][sigma]))))
-                        loss_OAA.append(np.max(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["loss"][sigma]))))
+                        loss_OAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["loss"][sigma]))))
                         BDM_OAA.append(np.min(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["BDM"][sigma]))))
                         sigma_est_OAA.append(np.mean(flatten(list(data_dict[a_param][b_param][k_syn][s_std]["OAA"][k_anal]["Est. sigma"][sigma]))))
                         

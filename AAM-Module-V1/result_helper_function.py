@@ -81,8 +81,8 @@ def result_helper_function(params):
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                     sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
                     losses_list.append(loss)
-                    NMIs_list.append(NMI(analysis_A,syn_A.T))
-                    MCCs_list.append(MCC(analysis_Z,syn_Z.T))
+                    NMIs_list.append(NMI(analysis_A,syn_A))
+                    MCCs_list.append(MCC(analysis_Z,syn_Z))
 
 
     dataframe = pd.DataFrame.from_dict({

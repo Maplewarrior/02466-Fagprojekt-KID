@@ -60,7 +60,7 @@ results3 = {
 }
 
 
-directory = 'centralization results'
+directory = 'result dataframes'
 for filename in os.listdir(directory):
     filepath = os.path.join(directory, filename)
     if os.path.isfile(filepath) and not filename == ".DS_Store":
@@ -68,11 +68,11 @@ for filename in os.listdir(directory):
         data = pd.read_csv(filepath,encoding = "ISO-8859-1")
 
 
-        for key in list(results2.keys()):
+        for key in list(results.keys()):
             for i in range(len(data[key])):
-                results2[key] = np.append(results2[key], data[key][i])
+                results[key] = np.append(results[key], data[key][i])
 
-dataframe = pd.DataFrame.from_dict(results2)
-csv_name = "full_centralization_dataset.csv"
+dataframe = pd.DataFrame.from_dict(results)
+csv_name = "full_result_dataset.csv"
 dataframe.to_csv(csv_name, index=False) 
 

@@ -119,7 +119,7 @@ class AA:
             model_type: str = "CAA", 
             plot_type: str = "PCA_scatter_plot", 
             result_number: int = 0, 
-            attributes: list() = [0,1], 
+            attributes: list() = [1,2], 
             archetype_number: int = 0, 
             types: dict = {},
             weighted: str = "equal_norm",

@@ -11,6 +11,8 @@ path = os.getcwd()
 foldername = "stability plots"
 path = os.path.join(path, foldername)
 
+data["sigma"] = np.log(1+np.exp(data["sigma"]))
+
 CAA = data[data["AA_type"] == "CAA"]
 TSAA = data[data["AA_type"] == "TSAA"]
 OAA = data[data["AA_type"] == "OAA"]
@@ -32,7 +34,7 @@ plt.scatter(RBOAA["sigma"],RBOAA["A_SDM"], label = "RBOAA")
 plt.plot(RBOAA["sigma"],RBOAA["A_SDM"], '--')
 
 plt.xlabel('sigma', fontsize=14)
-plt.ylabel('Mean Square Distance', fontsize=14)
+plt.ylabel('Mean Squared Distance', fontsize=14)
 plt.title("MSD of A over 30 itterations", fontsize = 20)
 plt.legend()
 file = ("A MSD over Sigma.png")
@@ -56,9 +58,9 @@ plt.scatter(RBOAA["sigma"],RBOAA["Z_SDM"], label = "RBOAA")
 plt.plot(RBOAA["sigma"],RBOAA["Z_SDM"], '--')
 
 plt.xlabel('sigma', fontsize=14)
-plt.ylabel('Mean Square Distance', fontsize=14)
+plt.ylabel('Mean Squared Distance', fontsize=14)
 plt.title("MSD of Z over 30 itterations", fontsize = 20)
 plt.legend()
 file = ("Z MSD over Sigma.png")
-fig.savefig(os.path.join(path,file),dpi=100)
+fig.savefig(os.path.join(path,file),dpi=200)
 plt.close()

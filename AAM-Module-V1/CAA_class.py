@@ -10,8 +10,6 @@ from AA_result_class import _CAA_result
 
 ########## CONVENTIONAL ARCHETYPAL ANALYSIS CLASS ##########
 class _CAA:
-    
-    RSS = []
 
     def _error(self, X,B,A):
         return torch.norm(X - X@B@A, p='fro')**2

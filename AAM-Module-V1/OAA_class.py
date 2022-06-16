@@ -1,4 +1,5 @@
 ########## IMPORTS ##########
+from re import T
 import numpy as np
 import torch
 import torch.nn as nn
@@ -159,16 +160,17 @@ class _OAA:
 
         ########## CREATE RESULT INSTANCE ##########
         result = _OAA_result(
-            A_f,
-            B_f,
+            A_f.T,
+            B_f.T,
             X,
             n_iter,
             b_f.detach().numpy(),
-            Z_f,
-            X_tilde_f,
-            Z_tilde_f,
-            X_hat_f,
-            self.loss,K,
+            Z_f.T,
+            X_tilde_f.T,
+            Z_tilde_f.T,
+            X_hat_f.T,
+            self.loss,
+            K,
             time,
             columns,
             "OAA",

@@ -14,7 +14,6 @@ def learning_rate_test_helper_function(input):
 
     losses = []
     for i in range(reps):
-        print(i)
         AAM.analyse(AA_type = AA_type, mute=True, with_synthetic_data=True,K=5,lr=lr, n_iter=5000, early_stopping=True, with_hot_start=True)
         if AA_type in ["CAA","TSAA"]:
             losses.append(AAM._synthetic_results[AA_type][0].RSS[-1])
