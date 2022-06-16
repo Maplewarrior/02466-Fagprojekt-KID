@@ -57,13 +57,11 @@ class _RBOAA:
 
         z_next = (torch.gather(b,1,Xt)-X_hat)/sigma
         z_prev = (torch.gather(b,1,Xt-1)-X_hat)/sigma
-
         z_next[Xt == len(b[0,:])+1] = np.inf
         z_prev[Xt == 1] = -np.inf
 
         P_next = torch.distributions.normal.Normal(0, 1).cdf(z_next)
         P_prev = torch.distributions.normal.Normal(0, 1).cdf(z_prev)
-
         neg_logP = -torch.log(( P_next - P_prev ) +1e-10)
         loss = torch.sum(neg_logP)
 
@@ -122,10 +120,10 @@ class _RBOAA:
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
-                                sigma_non_constraint], amsgrad = True, lr = lr)
+                                sigma_non_constraint], amsgrad = False, lr = lr)
 
         if not mute:
-            loading_bar = _loading_bar(n_iter, "Ordinal Archetypal Analysis")
+            loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Archetypal Analysis")
 
         
         ########## ANALYSIS ##########

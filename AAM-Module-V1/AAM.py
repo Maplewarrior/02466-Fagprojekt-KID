@@ -43,10 +43,11 @@ class AA:
             print(f"\nThe data was loaded successfully!\n")
 
 
-    def load_csv(self, filename: str, columns: list(), rows: int = None):
+    def load_csv(self, filename: str, columns: list(), rows: int = None, mute: bool = False):
         self.columns, self.M, self.N, self.X = self._clean_data(filename, columns, rows)
         self._has_data = True
-        print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
+        if not mute:
+            print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
 
     
     def _clean_data(self, filename, columns, rows):

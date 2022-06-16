@@ -12,7 +12,12 @@ from RBOAA_class import _RBOAA
 from TSAA_class import _TSAA
 
 AAM = AA()
-# AAM.create_synthetic_data(40000,10,5,6,-100,False,5,1,False,0)
-AAM.load_csv("ESS8_data.csv",np.arange(13,25),100)
-AAM.analyse(5,6,5000,True,"RBOAA",0.01,False,False,True)
-AAM.plot("RBOAA","attribute_scatter_plot",with_synthetic_data=False)
+
+AAM.create_synthetic_data(N = 10000, M=21,K=5,sigma=-20,a_param=1,b_param=1000, mute=True)
+reps = 10
+
+losses = []
+
+for rep in range(reps):
+    AAM.analyse(5,6,5000,True,"RBOAA",0.01,False,False,True)
+    AAM.plot("RBOAA","attribute_scatter_plot",with_synthetic_data=False)    

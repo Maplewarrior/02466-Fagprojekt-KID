@@ -10,7 +10,7 @@ path = os.getcwd()
 foldername = "varying archetype plots"
 path = os.path.join(path, foldername)
 
-for i in range(2,11):
+for i in [3,5,7]:
     CAA = data[(data["synthetic_k"] == i) & (data["AA_type"] == "CAA")]
     TSAA = data[(data["synthetic_k"] == i) & (data["AA_type"] == "TSAA")]
     OAA = data[(data["synthetic_k"] == i) & (data["AA_type"] == "OAA")]
@@ -25,6 +25,9 @@ for i in range(2,11):
     TSAA_MCC_max = []
     OAA_MCC_max = []
     RBOAA_MCC_max = []
+
+    OAA_BDM_min = []
+    RBOAA_BDM_min = []
 
     CAA_loss_min = []
     TSAA_loss_min = []
@@ -51,6 +54,9 @@ for i in range(2,11):
         TSAA_loss_min.append(np.max(TSAA[data["analysis_k"] == k]["loss"]))
         OAA_loss_min.append(np.max(OAA[data["analysis_k"] == k]["loss"]))
         RBOAA_loss_min.append(np.max(RBOAA[data["analysis_k"] == k]["loss"]))
+
+        OAA_BDM_min.append(np.max(OAA[data["analysis_k"] == k]["BDM"]))
+        RBOAA_BDM_min.append(np.max(RBOAA[data["analysis_k"] == k]["BDM"]))
         
         CAA_k_single.append(k)
         TSAA_k_single.append(k)
@@ -72,7 +78,7 @@ for i in range(2,11):
     plt.title("NMI over varying archetypes w. synthetic k = {0}".format(i), fontsize = 20)
     plt.legend()
     file = ("NMI_synthetic_k_{0}_varying_archs.png".format(i))
-    fig.savefig(os.path.join(path,file),dpi=100)
+    fig.savefig(os.path.join(path,file),dpi=200)
     plt.close()
 
     fig = plt.gcf()
@@ -90,26 +96,22 @@ for i in range(2,11):
     plt.title("MCC over varying archetypes w. synthetic k = {0}".format(i), fontsize = 20)
     plt.legend()
     file = ("MCC_synthetic_k_{0}_varying_archs.png".format(i))
-    fig.savefig(os.path.join(path,file),dpi=100)
+    fig.savefig(os.path.join(path,file),dpi=200)
     plt.close()
 
 
     fig = plt.gcf()
     fig.set_size_inches(10, 7)
-    plt.scatter(RBOAA_k_single,RBOAA_MCC_max, label = "RBOAA")
-    plt.plot(RBOAA_k_single,RBOAA_MCC_max, '--')
-    plt.scatter(OAA_k_single,OAA_MCC_max, label = "OAA")
-    plt.plot(OAA_k_single,OAA_MCC_max, '--')
-    plt.scatter(TSAA_k_single,TSAA_MCC_max, label = "TSAA")
-    plt.plot(TSAA_k_single,TSAA_MCC_max, '--')
-    plt.scatter(CAA_k_single,CAA_MCC_max, label = "CAA")
-    plt.plot(CAA_k_single,CAA_MCC_max, '--')
+    plt.scatter(RBOAA_k_single,RBOAA_BDM_min, label = "RBOAA")
+    plt.plot(RBOAA_k_single,RBOAA_BDM_min, '--')
+    plt.scatter(OAA_k_single,OAA_BDM_min, label = "OAA")
+    plt.plot(OAA_k_single,OAA_BDM_min, '--')
     plt.xlabel('Analysis Archetypes', fontsize=14)
-    plt.ylabel('MCC', fontsize=14)
-    plt.title("MCC over varying archetypes w. synthetic k = {0}".format(i), fontsize = 20)
+    plt.ylabel('BDM', fontsize=14)
+    plt.title("BDM over varying archetypes w. synthetic k = {0}".format(i), fontsize = 20)
     plt.legend()
-    file = ("MCC_synthetic_k_{0}_varying_archs.png".format(i))
-    fig.savefig(os.path.join(path,file),dpi=100)
+    file = ("BDM_synthetic_k_{0}_varying_archs.png".format(i))
+    fig.savefig(os.path.join(path,file),dpi=200)
     plt.close()
 
 
@@ -128,5 +130,5 @@ for i in range(2,11):
     plt.title("Loss over varying archetypes w. synthetic k = {0}".format(i), fontsize = 20)
     plt.legend()
     file = ("LOSS_synthetic_k_{0}_varying_archs.png".format(i))
-    fig.savefig(os.path.join(path,file),dpi=100)
+    fig.savefig(os.path.join(path,file),dpi=200)
     plt.close()

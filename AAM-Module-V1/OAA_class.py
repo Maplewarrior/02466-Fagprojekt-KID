@@ -67,7 +67,6 @@ class _OAA:
 
         P_next = torch.distributions.normal.Normal(0, 1).cdf(z_next)
         P_prev = torch.distributions.normal.Normal(0, 1).cdf(z_prev)
-
         neg_logP = -torch.log(( P_next - P_prev ) +1e-10)
         loss = torch.sum(neg_logP)
 
@@ -115,6 +114,7 @@ class _OAA:
         B_non_constraint = torch.autograd.Variable(torch.randn(K, self.N), requires_grad=True)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
         sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
+
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 

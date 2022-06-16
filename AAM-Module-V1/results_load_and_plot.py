@@ -91,8 +91,8 @@ print("Created data dictionary succesfully")
 #%%
 ######## MAKE PLOTS ######### 
 # a, b, syn_k, s_std, type, anal_k, metrics, sigmas
-pointScale = 80
-lineScale = 3
+pointScale = 120
+lineScale = 3.5
 def softplus(s):
     return np.log(1 + np.exp(s))
 
@@ -143,7 +143,8 @@ for a_param in a_params:
                         
                     
 
-                    
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make combined NMI and MCC plots for OAA and RBOAA
                     plt.scatter(sigmas_softplussed, NMI_OAA, label = "OAA " + "NMI",s=pointScale)
                     plt.plot(sigmas_softplussed, NMI_OAA, '--', linewidth = lineScale)
@@ -161,9 +162,11 @@ for a_param in a_params:
                     plt.legend()
                     file = ("OAA+RBOAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
                    
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
 
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make combined NMI and MCC plots for CAA and TSAA
                     plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
                     plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
@@ -180,9 +183,11 @@ for a_param in a_params:
                     plt.title("NMI and MCC plot CAA & TSAA", fontsize = 20)
                     plt.legend()
                     file = ("NMI+MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()                        
 
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make loss plots for RBOAA, OAA
                     plt.scatter(sigmas_softplussed, loss_OAA, label = "OAA ",s=pointScale)
                     plt.plot(sigmas_softplussed, loss_OAA, '--', linewidth = lineScale)
@@ -196,11 +201,12 @@ for a_param in a_params:
                     
                     plt.legend()
                     file = ("Loss OAA+RBOAA, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     
                     plt.close()
                     
-                    
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make loss plots for CAA and TSAA
                     plt.scatter(sigmas_softplussed, loss_CAA, label = "CAA ",s=pointScale)
                     plt.plot(sigmas_softplussed, loss_CAA, '--', linewidth = lineScale)
@@ -213,10 +219,11 @@ for a_param in a_params:
                     plt.title("Loss plot for CAA and TSAA", fontsize = 22)
                     plt.legend()
                     file = ("Loss CAA+TSAA, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
                     
-                        
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     ## Make sigma plot
                     plt.scatter(sigmas_softplussed, sigma_est_OAA, label = "OAA",s=3)
                     plt.plot(sigmas_softplussed, sigma_est_OAA, '--', linewidth = lineScale)
@@ -228,10 +235,11 @@ for a_param in a_params:
                     plt.title("Est. & true sigma for OAA & RBOAA", fontsize = 20)
                     plt.legend()
                     file = ("Sigma plot, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
                     
-                    
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make BDM plot
                     plt.scatter(sigmas_softplussed, BDM_OAA, label = "OAA" ,s=pointScale)
                     plt.plot(sigmas_softplussed, BDM_OAA, '--', linewidth = lineScale)
@@ -243,10 +251,11 @@ for a_param in a_params:
                     plt.title("Boundary difference plot for varying sigmas", fontsize = 20)
                     plt.legend()
                     file = ("BDM plot, a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
                     
-                    
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     # Make combined NMI and MCC plots for OAA and RBOAA
                     plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
                     plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
@@ -264,10 +273,11 @@ for a_param in a_params:
                     plt.legend()
                     file = ("CAA+RBOAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
                    
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
                     
-                    
+                    fig = plt.gcf()
+                    fig.set_size_inches(10, 7)
                     plt.scatter(sigmas_softplussed, NMI_CAA, label = "CAA " + "NMI",s=pointScale)
                     plt.plot(sigmas_softplussed, NMI_CAA, '--', linewidth = lineScale)
                     plt.scatter(sigmas_softplussed, NMI_OAA, label = "OAA " + "NMI", s=pointScale)
@@ -284,7 +294,7 @@ for a_param in a_params:
                     plt.legend()
                     file = ("CAA+OAA NMI & MCC,a={0}, b={1}, k_syn={2}, k_anal={3}, s_std={4}.png".format(a_param, b_param, k_syn, k_anal, s_std))
                    
-                    plt.savefig(os.path.join(path,file))
+                    fig.savefig(os.path.join(path,file),dpi=200)
                     plt.close()
                     
                     

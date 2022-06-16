@@ -70,8 +70,7 @@ class _TSAA:
         N, _ = X.T.shape
         A = torch.autograd.Variable(torch.rand(K, N), requires_grad=True)
         B = torch.autograd.Variable(torch.rand(N, K), requires_grad=True)
-        optimizer = optim.Adam([A, B], amsgrad = True, lr = lr)
-        
+        optimizer = optim.Adam([A, B], amsgrad = False, lr = lr)
         
 
         ########## ANALYSIS ##########

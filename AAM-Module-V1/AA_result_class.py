@@ -15,7 +15,7 @@ class _CAA_result:
         self.X = X
         self.X_hat  = X_hat
         self.n_iter = len(RSS)
-        self.RSS = RSS
+        self.loss = RSS
         self.Z = Z
         self.K = K
         self.time = time

@@ -30,6 +30,7 @@ class _CAA:
         A = torch.autograd.Variable(torch.rand(K, N), requires_grad=True)
         B = torch.autograd.Variable(torch.rand(N, K), requires_grad=True)
         optimizer = optim.Adam([A, B], amsgrad = True, lr = 0.01)
+        
 
 
         ########## ANALYSIS ##########
