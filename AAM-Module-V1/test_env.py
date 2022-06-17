@@ -13,9 +13,9 @@ from TSAA_class import _TSAA
 
 AAM = AA()
 
-AAM.load_csv("ESS8_data.csv",np.arange(12,33),40000)
+AAM.load_csv("ESS8_data.csv",np.arange(12,33),1000)
 AAM.analyse(10,6,10000,True,"RBOAA",0.01,False,False,True)
-AAM.save_analysis(model_type="RBOAA")
+AAM.save_analysis("10 RBOAA",model_type="RBOAA")
 
 # AAM.plot("RBOAA","loss_plot")
 # AAM.plot("RBOAA","barplot",archetype_number=1)
