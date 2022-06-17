@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.pyplot import figure
+import matplotlib
+import seaborn as sns
 
 Adam = pd.read_csv("optimizers results/optimizers_test_ADAM.csv")
 Adam_noArsmgrad = pd.read_csv("optimizers results/optimizers_test_ADAM_noArmsgrad.csv")
@@ -13,6 +15,8 @@ AA_types = ["CAA","TSAA","RBOAA","OAA"]
 
 path = "optimizers plots"
 
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("",["#cce6ff","#80bfff","#1e90ff","#0073e6", "#0059b3"])
+
 for AA_type in AA_types:
     adam_loss = Adam[AA_type]
     adamNoArmsgrad_loss = Adam_noArsmgrad[AA_type]
@@ -22,11 +26,11 @@ for AA_type in AA_types:
     fig, ax = plt.subplots()
     fig.set_size_inches(10, 7)
 
-    ax.boxplot((adam_loss,adamNoArmsgrad_loss,RMSprop_loss,SGD_loss),patch_artist=True,medianprops=dict(color="black"),)
-    plt.title("Loss for {0} over optimizers".format(AA_type), fontsize = 20)
-    plt.ylabel('Loss', fontsize=15)
-    plt.xticks(np.arange(6),("","ADAM w. armsgrad","ADAM","RMSprop","SGD",""), fontsize = 15)
-    ax.ticklabel_format(style='plain')
+    ax.boxplot((adam_loss,adamNoArmsgrad_loss,RMSprop_loss,SGD_loss), patch_artist=True, boxprops=dict(facecolor="#cce6ff", color="#cce6ff"),medianprops=dict(color="black"),)
+    plt.title("Loss for {0} over Optimizers".format(AA_type), fontsize = 20)
+    plt.xticks(np.arange(6),("","ADAM w. amsgrad","ADAM","RMSprop","SGD",""), fontsize = 15)
+    ax.set_ylabel('Loss', fontsize=15)
+    # ax.ticklabel_format(style='plain')
     file = ("Losses_{0}_optimizers.png".format(AA_type))
     fig.savefig(os.path.join(path,file),dpi=200)
     plt.close()
