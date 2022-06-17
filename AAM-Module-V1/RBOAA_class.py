@@ -120,7 +120,7 @@ class _RBOAA:
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
-                                sigma_non_constraint], amsgrad = False, lr = lr)
+                                sigma_non_constraint], amsgrad = True, lr = lr)
 
         if not mute:
             loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Archetypal Analysis")
@@ -172,6 +172,7 @@ class _RBOAA:
             X_hat_f.T,
             self.loss,
             K,
+            p,
             time,
             columns,
             "RBOAA",

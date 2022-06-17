@@ -96,7 +96,7 @@ class AA:
             elif AA_type == "all" or AA_type == "RBOAA":
                 self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns, with_synthetic_data=False, early_stopping=early_stopping, with_OAA_initialization = with_hot_start))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
+                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
     
@@ -108,7 +108,7 @@ class AA:
             elif AA_type == "all" or AA_type == "RBOAA":
                 self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping,with_OAA_initialization = with_hot_start))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
+                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
         
@@ -121,7 +121,7 @@ class AA:
             plot_type: str = "PCA_scatter_plot", 
             result_number: int = 0, 
             attributes: list() = [1,2], 
-            archetype_number: int = 0, 
+            archetype_number: int = 1, 
             types: dict = {},
             weighted: str = "equal_norm",
             with_synthetic_data: bool = False):
@@ -136,7 +136,7 @@ class AA:
         elif not with_synthetic_data:
             if result_number < 0 or not result_number < len(self._results[model_type]):
                 print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
-            elif archetype_number < 0 or archetype_number > self._results[model_type][result_number].K:
+            elif archetype_number < 1 or archetype_number > self._results[model_type][result_number].K:
                 print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._results[model_type][result_number].columns)):
                 print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")

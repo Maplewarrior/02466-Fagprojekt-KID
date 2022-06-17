@@ -24,8 +24,8 @@ fig.set_size_inches(10, 7)
 plt.scatter(CAA["sigma"],CAA["A_SDM"], label = "CAA")
 plt.plot(CAA["sigma"],CAA["A_SDM"], '--')
 
-plt.scatter(TSAA["sigma"],TSAA["A_SDM"], label = "TSAA")
-plt.plot(TSAA["sigma"],TSAA["A_SDM"], '--')
+# plt.scatter(TSAA["sigma"],TSAA["A_SDM"], label = "TSAA")
+# plt.plot(TSAA["sigma"],TSAA["A_SDM"], '--')
 
 plt.scatter(OAA["sigma"],OAA["A_SDM"], label = "OAA")
 plt.plot(OAA["sigma"],OAA["A_SDM"], '--')
@@ -48,8 +48,8 @@ fig.set_size_inches(10, 7)
 plt.scatter(CAA["sigma"],CAA["Z_SDM"], label = "CAA")
 plt.plot(CAA["sigma"],CAA["Z_SDM"], '--')
 
-plt.scatter(TSAA["sigma"],TSAA["Z_SDM"], label = "TSAA")
-plt.plot(TSAA["sigma"],TSAA["Z_SDM"], '--')
+# plt.scatter(TSAA["sigma"],TSAA["Z_SDM"], label = "TSAA")
+# plt.plot(TSAA["sigma"],TSAA["Z_SDM"], '--')
 
 plt.scatter(OAA["sigma"],OAA["Z_SDM"], label = "OAA")
 plt.plot(OAA["sigma"],OAA["Z_SDM"], '--')

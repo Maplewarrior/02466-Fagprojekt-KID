@@ -54,7 +54,7 @@ class _TSAA:
         return m(A)
     
     ############# Two-step ordinal AA #############
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False, early_stopping = False):
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns, with_synthetic_data = False, early_stopping = False):
         
         ##### Project the data #####
         # Xt = torch.tensor(X, dtype = torch.long)
@@ -100,8 +100,7 @@ class _TSAA:
         X_hat_f = X_hat.detach().numpy()
         end = timer()
         time = round(end-start,2)
-        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"TSAA", with_synthetic_data = with_synthetic_data)
-        # A, B, X, X_hat, n_iter, RSS, Z, K, time, columns,type, with_synthetic_data = False):
+        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, p, time,columns,"TSAA", with_synthetic_data = with_synthetic_data)
         if not mute:
             result._print()
 

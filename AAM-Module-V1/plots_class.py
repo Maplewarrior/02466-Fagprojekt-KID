@@ -89,19 +89,18 @@ class _plots:
         plt.show()
 
 
-    def _barplot(self,Z,columns,archetype_number,type):
+    def _barplot(self,Z,columns,archetype_number,type,p):
         plt.rcParams["figure.figsize"] = (10,10)
-        archetype = Z.T[archetype_number]
+        archetype = Z.T[archetype_number-1]*p
         fig, ax = plt.subplots()
         ax.set_ylabel('Value')
-        ax.set_title(f"Archeype {archetype_number}")
+        ax.set_title(f"Archeype {archetype_number} of {type}")
         ax.bar(np.arange(len(archetype)),archetype)
         ax.set_xticks(np.arange(len(archetype)))
         ax.set_xticklabels(labels=columns)
-        plt.ylim(np.floor(np.min(Z)), np.max(Z+0.2))
+        plt.ylim(0, p+0.5)
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
         fig.set_size_inches(10, 10)
-        ax.plot(np.arange(len(columns)), [np.max(Z) for i in range(len(columns))],c="black")
         plt.show()
 
 

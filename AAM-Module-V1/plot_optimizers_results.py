@@ -24,6 +24,7 @@ for AA_type in AA_types:
 
     ax.boxplot((adam_loss,adamNoArmsgrad_loss,RMSprop_loss,SGD_loss),patch_artist=True,medianprops=dict(color="black"),)
     plt.title("Loss for {0} over optimizers".format(AA_type), fontsize = 20)
+    plt.ylabel('Loss', fontsize=15)
     plt.xticks(np.arange(6),("","ADAM w. armsgrad","ADAM","RMSprop","SGD",""), fontsize = 15)
     ax.ticklabel_format(style='plain')
     file = ("Losses_{0}_optimizers.png".format(AA_type))

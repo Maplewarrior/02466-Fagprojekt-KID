@@ -171,6 +171,7 @@ class _OAA:
             X_hat_f.T,
             self.loss,
             K,
+            p,
             time,
             columns,
             "OAA",
