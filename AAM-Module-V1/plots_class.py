@@ -1,5 +1,6 @@
 ########## IMPORT ##########
 #from turtle import color
+from cProfile import label
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import numpy as np
@@ -10,7 +11,7 @@ import pandas as pd
 ########## PLOTS CLASS ##########
 class _plots:
 
-    def _PCA_scatter_plot(self,Z,X):
+    def _PCA_scatter_plot(self,Z,X,type):
         
         pca = PCA(n_components=2)
         pca.fit(Z.T)
@@ -21,24 +22,22 @@ class _plots:
         plt.rcParams["figure.figsize"] = (10,10)
         plt.scatter(X_pca[:,0], X_pca[:,1], c ="black", s = 1)
         plt.scatter(Z_pca[:,0], Z_pca[:,1], marker ="^", c ="#2c6c8c", s = 750, label="Archetypes")
-        plt.xlabel("Principal Component 1", fontsize=25)
-        plt.ylabel("Principal Component 2", fontsize=25)
+        plt.xlabel("Principal Component 1", fontsize=15)
+        plt.ylabel("Principal Component 2", fontsize=15)
+        plt.title(f"PCA Scatter Plot of {type}", fontsize = 20)
         plt.legend(prop={'size': 15})
-        
-        #plt.savefig("Scatter-plot Principal Component")
         plt.show()
 
 
-    def _attribute_scatter_plot(self,Z,X,attributes):
+    def _attribute_scatter_plot(self,Z,X,attributes,type):
         
         plt.rcParams["figure.figsize"] = (10,10)
-        plt.scatter(X[attributes[0],:], X[attributes[1],:], c ="black", s = 1)
-        plt.scatter(Z[attributes[0],:], Z[attributes[1],:], marker ="^", c ="#2c6c8c", s = 750, label="Archetypes")
-        plt.xlabel(f"Attribute {attributes[0]}", fontsize=25)
-        plt.ylabel(f"Attribute {attributes[1]}", fontsize=25)
+        plt.scatter(X[attributes[0]-1,:], X[attributes[1]-1,:], c ="black", s = 1)
+        plt.scatter(Z[attributes[0]-1,:], Z[attributes[1]-1,:], marker ="^", c ="#2c6c8c", s = 750, label="Archetypes")
+        plt.xlabel(f"Attribute {attributes[0]}", fontsize=15)
+        plt.ylabel(f"Attribute {attributes[1]}", fontsize=15)
         plt.legend(prop={'size': 15})
-        
-        #plt.savefig("Scatter-plot Principal Component")
+        plt.title(f"Attribute Scatter Plot of {type}", fontsize = 20)
         plt.show()
 
 
@@ -60,7 +59,13 @@ class _plots:
         corners = []
         for k in range(K):
             corners.append([np.cos(((2*np.pi)/K)*(k)), np.sin(((2*np.pi)/K)*(k))])
-            plt.plot(np.cos(((2*np.pi)/K)*(k)), np.sin(((2*np.pi)/K)*(k)), marker="o", markersize=10, markeredgecolor="black", markerfacecolor="#2c6c8c")
+            plt.plot(
+                np.cos(((2*np.pi)/K)*(k)), 
+                np.sin(((2*np.pi)/K)*(k)), 
+                marker="o", markersize=12, 
+                markeredgecolor="black", 
+                zorder=10,
+                label = "Archetype {0}".format(k+1))
 
         points_x = []
         points_y = []
@@ -73,30 +78,29 @@ class _plots:
             points_x.append(x)
             points_y.append(y)
         
-        p = Polygon(corners, closed=False)
-        #ax = plt.gca()
+        p = Polygon(corners, closed=False,zorder=0)
         ax.add_patch(p)
         ax.set_xlim(-1.1,1.1)
         ax.set_ylim(-1.1,1.1)
         ax.set_aspect('equal')
-        plt.scatter(points_x, points_y, c ="black", s = 1)
-        plt.title(f"Mixture Plot of {type}")
+        plt.title(f"Mixture Plot of {type}", fontsize = 20)
+        plt.scatter(points_x, points_y, c ="black", s = 3, zorder=5)
+        plt.legend()
         plt.show()
 
 
-    def _barplot(self,Z,columns,archetype_number,type):
+    def _barplot(self,Z,columns,archetype_number,type,p):
         plt.rcParams["figure.figsize"] = (10,10)
-        archetype = Z.T[archetype_number]
+        archetype = Z.T[archetype_number-1]*p
         fig, ax = plt.subplots()
         ax.set_ylabel('Value')
-        ax.set_title(f"Archeype {archetype_number}")
+        ax.set_title(f"Archeype {archetype_number} of {type}")
         ax.bar(np.arange(len(archetype)),archetype)
         ax.set_xticks(np.arange(len(archetype)))
         ax.set_xticklabels(labels=columns)
-        plt.ylim(np.floor(np.min(Z)), np.max(Z+0.2))
+        plt.ylim(0, p+0.5)
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
         fig.set_size_inches(10, 10)
-        ax.plot(np.arange(len(columns)), [np.max(Z) for i in range(len(columns))],c="black")
         plt.show()
 
 

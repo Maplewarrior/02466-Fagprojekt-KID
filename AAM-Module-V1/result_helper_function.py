@@ -1,5 +1,3 @@
-
-
 from telnetlib import OLD_ENVIRON
 from eval_measures import calcMI
 
@@ -12,11 +10,11 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 10000
+    N = 100
     M = 21
     p = 6
     n_iter = 2000
-    reps = 10
+    reps = 2
     AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
 
     s = params[0]
@@ -44,19 +42,20 @@ def result_helper_function(params):
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=False, a_param=a_param, b_param=0,mute=True, sigma_std=sigma_std)
     else:
         AAM.create_synthetic_data(N=N, M=M, K=synthetic_arch, p=p, sigma=s, rb=True, a_param=a_param, b_param=b_param,mute=True, sigma_std=sigma_std)
+    
     syn_A = AAM._synthetic_data.A
     syn_Z = AAM._synthetic_data.Z
     syn_betas = AAM._synthetic_data.betas
 
     for AA_type in AA_types:
         if AA_type == "CAA":
-            lr = 0.05
+            lr = 0.1
         elif AA_type == "TSAA":
             lr = 0.01
         elif AA_type == "OAA":
-            lr = 0.05
+            lr = 0.01
         elif AA_type == "RBOAA":
-            lr = 0.025
+            lr = 0.01
         
         for analysis_arch in analysis_archs:
             for rep in range(reps):
@@ -73,16 +72,17 @@ def result_helper_function(params):
                     loss = AAM._synthetic_results[AA_type][0].RSS[-1]
                     BDM_list.append("NaN")
                     sigma_est_list.append("NaN")
+                    losses_list.append(loss)
+                    NMIs_list.append(NMI(analysis_A,syn_A))
+                    MCCs_list.append(MCC(analysis_Z,syn_Z))
                 else:
                     loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     analysis_betas = AAM._synthetic_results[AA_type][0].b
                     BDM_list.append(BDM(syn_betas,analysis_betas,AA_type))
                     sigma_est_list.append(np.mean(AAM._synthetic_results[AA_type][0].sigma))
-                
-                losses_list.append(loss)
-                NMIs_list.append(NMI(analysis_A,syn_A))
-                MCCs_list.append(MCC(analysis_Z,syn_Z))
-                print(MCC(analysis_Z,syn_Z))
+                    losses_list.append(loss)
+                    NMIs_list.append(NMI(analysis_A,syn_A))
+                    MCCs_list.append(MCC(analysis_Z,syn_Z))
 
 
     dataframe = pd.DataFrame.from_dict({

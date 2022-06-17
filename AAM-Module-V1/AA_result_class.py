@@ -9,15 +9,16 @@ class _CAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, X_hat, n_iter, RSS, Z, K, time, columns,type, with_synthetic_data = False):
+    def __init__(self, A, B, X, X_hat, n_iter, RSS, Z, K, p, time, columns,type, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
         self.X_hat  = X_hat
         self.n_iter = len(RSS)
-        self.RSS = RSS
+        self.loss = RSS
         self.Z = Z
         self.K = K
+        self.p = p
         self.time = time
         self.columns = columns
         self.type = type
@@ -39,15 +40,15 @@ class _CAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z,self.X_hat)
+            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes)
+            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type)
         elif plot_type == "loss_plot":
             self.plots._loss_plot(self.RSS,self.type)
         elif plot_type == "mixture_plot":
             self.plots._mixture_plot(self.Z,self.A,self.type)
         elif plot_type == "barplot":
-            self.plots._barplot(self.Z,self.columns,archetype_number,self.type)
+            self.plots._barplot(self.Z,self.columns,archetype_number,self.type, self.p)
         elif plot_type == "barplot_all":
             self.plots._barplot_all(self.Z,self.columns)
         elif plot_type == "typal_plot":
@@ -67,7 +68,7 @@ class _OAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type,sigma, with_synthetic_data = False):
+    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, p, time, columns,type,sigma, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
@@ -80,6 +81,7 @@ class _OAA_result:
         self.loss = loss
         self.Z = Z
         self.K = K
+        self.p = p
         self.time = time
         self.columns = columns
         self.type = type
@@ -102,19 +104,19 @@ class _OAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z_tilde,self.X_hat)
+            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z_tilde,self.X_hat,attributes)
+            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type)
         elif plot_type == "loss_plot":
             self.plots._loss_plot(self.loss,self.type)
         elif plot_type == "mixture_plot":
             self.plots._mixture_plot(self.Z,self.A,self.type)
         elif plot_type == "barplot":
-            self.plots._barplot(self.Z_tilde,self.columns,archetype_number,self.type)
+            self.plots._barplot(self.Z,self.columns,archetype_number,self.type,self.p)
         elif plot_type == "barplot_all":
-            self.plots._barplot_all(self.Z_tilde,self.columns)
+            self.plots._barplot_all(self.Z,self.columns)
         elif plot_type == "typal_plot":
-            self.plots._typal_plot(self.Z_tilde,types,weighted)
+            self.plots._typal_plot(self.Z,types,weighted)
 
     def _save(self,filename):
         if not self.with_synthetic_data:

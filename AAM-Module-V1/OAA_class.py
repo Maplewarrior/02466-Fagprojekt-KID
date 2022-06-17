@@ -1,4 +1,5 @@
 ########## IMPORTS ##########
+from re import T
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,18 +8,21 @@ from timeit import default_timer as timer
 from AA_result_class import _OAA_result
 from loading_bar_class import _loading_bar
 from CAA_class import _CAA
-import matplotlib.pyplot as plt 
 
 
 
 ########## ORDINAL ARCHETYPAL ANALYSIS CLASS ##########
 class _OAA:
 
-    loss = []
+    ########## HELPER FUNCTION // EARLY STOPPING ##########
+    def _early_stopping(self):
+        next_imp = self.loss[-round(len(self.loss)/100)]-self.loss[-1]
+        prev_imp = (self.loss[0]-self.loss[-1])*1e-4
+        return next_imp < prev_imp
 
     ########## HELPER FUNCTION // A AND B ##########
     def _apply_constraints_AB(self,A):
-        m = nn.Softmax(dim=0)
+        m = nn.Softmax(dim=1)
         return m(A)
 
     ########## HELPER FUNCTION // BETAS ##########
@@ -38,31 +42,33 @@ class _OAA:
         alphas = (b_j_plus1+b_j)/2
         return alphas
 
-    ########## HELPER FUNCTION // X TILDE ##########
+    ########## HELPER FUNCTION // X_tilde ##########
     def _calculate_X_tilde(self,X,alphas):
         X_tilde = alphas[X.long()-1]
         return X_tilde
 
-    ########## HELPER FUNCTION // X HAT ##########
+    ########## HELPER FUNCTION // X_hat ##########
     def _calculate_X_hat(self,X_tilde,A,B):
-        # X_hat = B@A@X_tilde.T
-        X_hat = X_tilde @ B @ A
+        Z = B @ X_tilde
+        X_hat = A @ Z
         return X_hat
-
+    
     ########## HELPER FUNCTION // LOSS ##########
-    def _calculate_loss(self,X, X_hat, b, sigma):
+    def _calculate_loss(self,Xt, X_hat, b, sigma):
         
         pad = nn.ConstantPad1d(1, 0)
         b = pad(b)
         b[-1] = 1.0
 
-        zetaNext = (b[X] - X_hat)/sigma
-        zetaPrev = (b[X-1] - X_hat)/sigma
-        zetaNext[X==len(b)+1] = float("Inf")
-        zetaPrev[X == 1] = -float("Inf")
+        z_next = (b[Xt] - X_hat)/sigma
+        z_prev = (b[Xt-1] - X_hat)/sigma
+        z_next[Xt == len(b)+1] = np.inf
+        z_prev[Xt == 1] = -np.inf
 
-        logP= -torch.log((torch.distributions.normal.Normal(0, 1).cdf(zetaNext)- torch.distributions.normal.Normal(0, 1).cdf(zetaPrev))+10E-10) #add small number to avoid underflow.
-        loss = torch.sum(logP)
+        P_next = torch.distributions.normal.Normal(0, 1).cdf(z_next)
+        P_prev = torch.distributions.normal.Normal(0, 1).cdf(z_prev)
+        neg_logP = -torch.log(( P_next - P_prev ) +1e-10)
+        loss = torch.sum(neg_logP)
 
         return loss
 
@@ -74,45 +80,41 @@ class _OAA:
         b = self._apply_constraints_beta(b_non_constraint)
         sigma = self._apply_constraints_sigma(sigma_non_constraint)
         alphas = self._calculate_alpha(b)
-
+        
         X_tilde = self._calculate_X_tilde(Xt,alphas)
         X_hat = self._calculate_X_hat(X_tilde,A,B)
 
         loss = self._calculate_loss(Xt, X_hat, b, sigma)
-
+        
         return loss
         
-    ########## PERFORMING ARCHETYPAL ANALYSIS ##########
-    def _compute_archetypes(self, X, K, p, n_iter, lr, mute, columns, with_synthetic_data = False, early_stopping = False, with_CAA_initialization: bool = False, for_hotstart_usage = False):
 
-        
+    ########## COMPUTE ARCHETYPES FUNCTION OF OAA ##########
+    def _compute_archetypes(
+        self, 
+        X, 
+        K, 
+        p, 
+        n_iter, 
+        lr, 
+        mute, 
+        columns, 
+        with_synthetic_data = False, 
+        early_stopping = False, 
+        for_hotstart_usage = False):
+
+
         ########## INITIALIZATION ##########
-        self.M = len(X)
-        self.N = len(X[0,:])
-        self.N_arange = [n for n in range(self.M) for m in range(self.N)]
-        self.M_arange = [m for m in range(self.N) for n in range(self.M)]
+        self.N, self.M = len(X.T), len(X.T[0,:])
+        Xt = torch.tensor(X.T, dtype = torch.long)
         self.loss = []
         start = timer()
-        N, _ = X.T.shape
 
-        ########## CAA INITIALIZATION ##########
-        if with_CAA_initialization:
-            if not mute:
-                print("\nPerforming CAA for initialization of OAA.")
-            CAA = _CAA()
-            A_hot, B_hot = CAA._compute_archetypes(X, K, n_iter, lr, mute, columns, with_synthetic_data = with_synthetic_data, early_stopping = early_stopping, for_hotstart_usage=True)
-            A_non_constraint = torch.autograd.Variable(torch.tensor(A_hot), requires_grad=True)
-            B_non_constraint = torch.autograd.Variable(torch.tensor(B_hot), requires_grad=True)
-        else:
-            A_non_constraint = torch.autograd.Variable(torch.randn(K, N), requires_grad=True)
-            B_non_constraint=torch.sparse_csr_tensor(torch.tensor(range(self.N+1)),torch.tensor(np.random.randint(0, K,self.N, dtype=np.int64)),torch.ones(self.N),(self.N,K)).to_dense()
-            B_non_constraint = B_non_constraint*np.log(N*2)
-            B_non_constraint.requires_grad=True
-        
-        ########## INITIALIZATION OF GENERAL VARIABLES ##########
-        Xt = torch.tensor(X, dtype = torch.long)
+        A_non_constraint = torch.autograd.Variable(torch.randn(self.N, K), requires_grad=True)
+        B_non_constraint = torch.autograd.Variable(torch.randn(K, self.N), requires_grad=True)
         b_non_constraint = torch.autograd.Variable(torch.rand(p), requires_grad=True)
         sigma_non_constraint = torch.autograd.Variable(torch.rand(1), requires_grad=True)
+
         optimizer = optim.Adam([A_non_constraint, 
                                 B_non_constraint, 
                                 b_non_constraint, 
@@ -122,7 +124,6 @@ class _OAA:
             loading_bar = _loading_bar(n_iter, "Ordinal Archetypal Analysis")
 
         
-
         ########## ANALYSIS ##########
         for i in range(n_iter):
             if not mute:
@@ -136,7 +137,7 @@ class _OAA:
 
             ########## EARLY STOPPING ##########
             if i % 25 == 0 and early_stopping:
-                if len(self.loss) > 200 and (self.loss[-round(len(self.loss)/100)]-self.loss[-1]) < ((self.loss[0]-self.loss[-1])*1e-4):
+                if len(self.loss) > 200 and self._early_stopping():
                     if not mute:
                         loading_bar._kill()
                         print("Analysis ended due to early stopping.\n")
@@ -147,21 +148,46 @@ class _OAA:
         A_f = self._apply_constraints_AB(A_non_constraint).detach().numpy()
         B_f = self._apply_constraints_AB(B_non_constraint).detach().numpy()
         b_f = self._apply_constraints_beta(b_non_constraint)
-        Z_f = (X@self._apply_constraints_AB(B_non_constraint).detach().numpy())
         alphas_f = self._calculate_alpha(b_f)
         X_tilde_f = self._calculate_X_tilde(Xt,alphas_f).detach().numpy()
-        Z_tilde_f = (X_tilde_f@self._apply_constraints_AB(B_non_constraint).detach().numpy())
-        X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
+        Z_tilde_f = (self._apply_constraints_AB(B_non_constraint).detach().numpy() @ X_tilde_f)
         sigma_f = self._apply_constraints_sigma(sigma_non_constraint).detach().numpy()
+        X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
+        Z_f = B_f @ X_tilde_f
 
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f.detach().numpy(),Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"OAA",sigma_f,with_synthetic_data=with_synthetic_data)
+
+        ########## CREATE RESULT INSTANCE ##########
+        result = _OAA_result(
+            A_f.T,
+            B_f.T,
+            X,
+            n_iter,
+            b_f.detach().numpy(),
+            Z_f.T,
+            X_tilde_f.T,
+            Z_tilde_f.T,
+            X_hat_f.T,
+            self.loss,
+            K,
+            p,
+            time,
+            columns,
+            "OAA",
+            sigma_f,
+            with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()
         
+
+        ########## RETURN RESULT IF REGULAR, RETURN MATRICIES IF HOTSTART USAGE ##########
         if not for_hotstart_usage:
             return result
         else:
-            return A_non_constraint.detach().numpy(), B_non_constraint.detach().numpy(), sigma_non_constraint.detach().numpy(), b_non_constraint.detach().numpy()
+            A_non_constraint_np = A_non_constraint.detach().numpy()
+            B_non_constraint_np = B_non_constraint.detach().numpy()
+            sigma_non_constraint_np = sigma_non_constraint.detach().numpy()
+            b_non_constraint_np = b_non_constraint.detach().numpy()
+            return A_non_constraint_np, B_non_constraint_np, sigma_non_constraint_np, b_non_constraint_np

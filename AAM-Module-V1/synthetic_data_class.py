@@ -36,7 +36,6 @@ class _synthetic_data:
    
        new_betas = np.empty(len(betas))
        denom = sum(betas)
-       
        for i in range(len(new_betas)):
            new_betas[i] = np.sum(betas[:i+1]) / denom
    
@@ -129,10 +128,17 @@ class _synthetic_data:
                 elif j == J+1:
                     D[j] = np.ones((M,N))*(np.inf)
                 else:
-                    D[j] = (betas[:,j-1] - X_rec)/(sigma.T+1e-16) ## Add softplus(sigma)
+                    D[j] = (betas[:,j-1] - X_rec)/((sigma.T+1e-16)) ## Add softplus(sigma)
                     # D[j] = torch.div((b[:,j-1] - X_hat[:, None]),sigma)[:,0,:].T
         
-        return D
+        # print("SHAPEEEE", D.shape)
+        # min = np.min(D[(D > -np.inf) & (D < np.inf)]) 
+        # max = np.max(D[(D > -np.inf) & (D < np.inf)])
+        # D[J+1] = np.ones((M,N))*(max + (max-min)/J)
+        # D[0] = np.ones((M,N))*(min - (max-min)/J)
+        # print("min, max:", min, max)
+        # print("D_0", D[0])
+        return D - np.mean(D[1:-1])
 
     def Probs(self, D):
         
@@ -178,4 +184,3 @@ class _synthetic_data:
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
         pickle.dump(self, file)
         file.close()
-            

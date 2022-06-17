@@ -21,8 +21,6 @@ for filename in os.listdir(directory):
             results["DataSize"].append(data_size)
             results["Loss"].append(loss)
 
-print(results["Loss"])
-print(results["Loss"][0]+results["Loss"][1])
 
 
         

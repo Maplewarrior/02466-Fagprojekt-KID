@@ -43,10 +43,11 @@ class AA:
             print(f"\nThe data was loaded successfully!\n")
 
 
-    def load_csv(self, filename: str, columns: list(), rows: int = None):
+    def load_csv(self, filename: str, columns: list(), rows: int = None, mute: bool = False):
         self.columns, self.M, self.N, self.X = self._clean_data(filename, columns, rows)
         self._has_data = True
-        print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
+        if not mute:
+            print(f"\nThe data of \'{filename}\' was loaded successfully!\n")
 
     
     def _clean_data(self, filename, columns, rows):
@@ -86,15 +87,16 @@ class AA:
 
 
     def analyse(self, K: int = 3, p: int = 6, n_iter: int = 1000, early_stopping: bool = False, AA_type = "all", lr: float = 0.1, mute: bool = False, with_synthetic_data: bool = False, with_hot_start: bool = False):
+        
         if self._has_data and not with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
                 self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
-                self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,early_stopping=early_stopping,with_CAA_initialization=with_hot_start))
+                self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,with_synthetic_data=False,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "RBOAA":
-                self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,early_stopping=early_stopping, with_OAA_initialization = with_hot_start))
+                self._results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns, with_synthetic_data=False, early_stopping=early_stopping, with_OAA_initialization = with_hot_start))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
+                self._results["TSAA"].insert(0,self._TSAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
     
@@ -102,13 +104,14 @@ class AA:
             if AA_type == "all" or AA_type == "CAA":
                 self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns, with_synthetic_data=True,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
-                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping,with_CAA_initialization = with_hot_start))
+                self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping,for_hotstart_usage=False))
             elif AA_type == "all" or AA_type == "RBOAA":
                 self._synthetic_results["RBOAA"].insert(0,self._RBOAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping,with_OAA_initialization = with_hot_start))
             elif AA_type == "all" or AA_type == "TSAA":
-                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
+                self._synthetic_results["TSAA"].insert(0,self._TSAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping))
             else:
                 print("The AA_type \"{0}\" specified, does not match any of the possible AA_types.".format(AA_type))
+        
         else:
             print("\nYou have not loaded any data yet! \nPlease load data through the \'load_data\' or \'load_csv\' methods and try again.\n")
 
@@ -117,8 +120,8 @@ class AA:
             model_type: str = "CAA", 
             plot_type: str = "PCA_scatter_plot", 
             result_number: int = 0, 
-            attributes: list() = [0,1], 
-            archetype_number: int = 0, 
+            attributes: list() = [1,2], 
+            archetype_number: int = 1, 
             types: dict = {},
             weighted: str = "equal_norm",
             with_synthetic_data: bool = False):
@@ -133,7 +136,7 @@ class AA:
         elif not with_synthetic_data:
             if result_number < 0 or not result_number < len(self._results[model_type]):
                 print("\nThe result you are requesting to plot is not availabe.\n Please make sure you have specified the input correctly.\n")
-            elif archetype_number < 0 or archetype_number > self._results[model_type][result_number].K:
+            elif archetype_number < 1 or archetype_number > self._results[model_type][result_number].K:
                 print(f"\nThe \'archetype_number\' parameter received an unexpected value of {archetype_number}.\n")
             elif any(np.array(attributes) < 0) or any(np.array(attributes) > len(self._results[model_type][result_number].columns)):
                 print(f"\nThe \'attributes\' parameter received an unexpected value of {attributes}.\n")
@@ -212,18 +215,3 @@ class AA:
 
                 print("\nThe analysis with synthetic data was successfully loaded!\n")
                 self.has_synthetic_data = True
-
-
-    """def evaluate(self, ):
-
-        # tjek størrelsen af matricerne passer - sådan at der er lige mange kolonner i A1 og A2
-        self._evaluation._matrix_correlation_coefficient(A1,A2)
-
-        # tjek at kolonner summerer til 1
-        self._evaluation._normalised_mutual_information(A1,A2)
-
-        # tjek at endepunkter 0 og 1 ikke er med som grænser
-        # for RBOAA har vi mange lister af boundaries - dette skal løses på en måde, da vi pt. kun kan sammenligne 2 lister
-        self._evaluation._resbonse_bias_analysis(b1,b2)
-    """
-
