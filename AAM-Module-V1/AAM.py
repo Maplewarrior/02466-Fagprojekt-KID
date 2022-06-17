@@ -90,7 +90,7 @@ class AA:
         
         if self._has_data and not with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
+                self._results["CAA"].insert(0,self._CAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
                 self._results["OAA"].insert(0,self._OAA._compute_archetypes(self.X, K, p, n_iter, lr, mute,self.columns,with_synthetic_data=False,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "RBOAA":
@@ -102,7 +102,7 @@ class AA:
     
         elif self.has_synthetic_data and with_synthetic_data:
             if AA_type == "all" or AA_type == "CAA":
-                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, n_iter, lr, mute, self._synthetic_data.columns, with_synthetic_data=True,early_stopping=early_stopping))
+                self._synthetic_results ["CAA"].insert(0,self._CAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns, with_synthetic_data=True,early_stopping=early_stopping))
             elif AA_type == "all" or AA_type == "OAA":
                 self._synthetic_results["OAA"].insert(0,self._OAA._compute_archetypes(self._synthetic_data.X, K, p, n_iter, lr, mute, self._synthetic_data.columns,with_synthetic_data=True,early_stopping=early_stopping,for_hotstart_usage=False))
             elif AA_type == "all" or AA_type == "RBOAA":
