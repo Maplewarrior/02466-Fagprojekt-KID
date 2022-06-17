@@ -9,7 +9,8 @@ def early_stopping_helper_function(params):
     
     AA_type = params[0]
     early_stopping = params[1]
-    reps = 30
+    repAll = params[2]
+    reps = 3
 
     losses = []
 
@@ -25,7 +26,7 @@ def early_stopping_helper_function(params):
             'early_stopping': early_stopping,
             'losses': losses})
     
-    csv_name = "early stopping results/ES_{0}_K={1}".format(AA_type,early_stopping)
+    csv_name = "early stopping results/ES_{0}_K={1}_{2}".format(AA_type,early_stopping,repAll)
     dataframe.to_csv(csv_name, index=False) 
     
 

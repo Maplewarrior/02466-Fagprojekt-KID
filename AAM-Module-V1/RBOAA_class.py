@@ -16,7 +16,7 @@ class _RBOAA:
     ########## HELPER FUNCTION // EARLY STOPPING ##########
     def _early_stopping(self):
         next_imp = self.loss[-round(len(self.loss)/100)]-self.loss[-1]
-        prev_imp = (self.loss[0]-self.loss[-1])*1e-4
+        prev_imp = (self.loss[0]-self.loss[-1])*1e-5
         return next_imp < prev_imp
 
     ########## HELPER FUNCTION // A AND B ##########
