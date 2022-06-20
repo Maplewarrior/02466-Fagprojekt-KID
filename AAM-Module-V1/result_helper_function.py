@@ -10,12 +10,12 @@ def result_helper_function(params):
     from eval_measures import MCC
     from eval_measures import BDM
     
-    N = 100
+    N = 10000
     M = 21
     p = 6
     n_iter = 2000
     reps = 2
-    AA_types = ["CAA", "TSAA", "RBOAA", "OAA"]
+    AA_types = ["CAA", "RBOAA", "OAA"]
 
     s = params[0]
     a_param = params[2]
@@ -69,7 +69,7 @@ def result_helper_function(params):
                 analysis_Z = AAM._synthetic_results[AA_type][0].Z
 
                 if AA_type in ["CAA","TSAA"]:
-                    loss = AAM._synthetic_results[AA_type][0].RSS[-1]
+                    loss = AAM._synthetic_results[AA_type][0].loss[-1]
                     BDM_list.append("NaN")
                     sigma_est_list.append("NaN")
                     losses_list.append(loss)

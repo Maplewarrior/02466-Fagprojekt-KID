@@ -13,18 +13,8 @@ from TSAA_class import _TSAA
 
 AAM = AA()
 
-AAM.load_csv("ESS8_data.csv",np.arange(12,33),1000)
-AAM.analyse(10,6,10000,True,"RBOAA",0.01,False,False,True)
-AAM.save_analysis("10 RBOAA",model_type="RBOAA")
+AAM.create_synthetic_data(1000,21,5,6,-20,False,1,1,False,0)
 
-# AAM.plot("RBOAA","loss_plot")
-# AAM.plot("RBOAA","barplot",archetype_number=1)
-# AAM.plot("RBOAA","barplot",archetype_number=2)
-# AAM.plot("RBOAA","barplot",archetype_number=3)
-# AAM.plot("RBOAA","barplot",archetype_number=4)
-# AAM.plot("RBOAA","barplot",archetype_number=5)
-# AAM.plot("RBOAA","barplot",archetype_number=6)
-# AAM.plot("RBOAA","barplot",archetype_number=7)
-# AAM.plot("RBOAA","barplot",archetype_number=8)
-# AAM.plot("RBOAA","barplot",archetype_number=9)
-# AAM.plot("RBOAA","barplot",archetype_number=10)
+AAM.analyse(10,6,2000,False,"RBOAA",0.01,False,True,True)
+print(AAM._synthetic_results["RBOAA"][0].loss)
+AAM.plot("RBOAA","loss_plot",with_synthetic_data=True)

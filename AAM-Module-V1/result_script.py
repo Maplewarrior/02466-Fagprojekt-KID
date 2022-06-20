@@ -24,12 +24,22 @@ if __name__ ==  '__main__':
     #sigma_stds = [0]
     #varying_archetypes = False
 
-    ## REGULAR PARAMETRES ##
+    ## MODEL STABILITY OVER VARYING K ##
     archetypes = [5]
-    sigma_vals = [-100,-2.97,-2.25,-1.82,-1.5,-1.259,-1.05]
-    b_param = [1,5,10,"RB_false"]
-    sigma_stds = [0,1]
-    varying_archetypes = False
+    sigma_vals = [-2.25]
+    b_param = [5]
+    sigma_stds = [1]
+    varying_archetypes = True
+
+    ## REGULAR PARAMETRES ##
+    # archetypes = [5]
+    # sigma_vals = [-100,-2.97,-2.25,-1.82,-1.5,-1.259,-1.05]
+    # b_param = [1,5,10,"RB_false"]
+    # sigma_stds = [0,1]
+    # varying_archetypes = False
+
+
+
     l = []
 
     for sigma in sigma_vals:

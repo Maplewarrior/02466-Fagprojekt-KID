@@ -14,6 +14,8 @@ AA_types = ["CAA","TSAA","RBOAA","OAA"]
 
 path = "optimizers plots"
 
+#cmap = matplotlib.colors.LinearSegmentedColormap.from_list("",["#cce6ff","#80bfff","#1e90ff","#0073e6", "#0059b3"])
+
 for AA_type in AA_types:
     adam_loss = Adam[AA_type]
     adamNoArmsgrad_loss = Adam_noArsmgrad[AA_type]
