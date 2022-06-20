@@ -46,6 +46,44 @@ df_rboaa1 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 1000)]
 df_rboaa2 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 5000)]
 df_rboaa3 = df[(df["Type"]=="RBOAA") & (df["DataSize"] == 10000)]
 
+#For 1k
+df_caa1_1 = df_caa1[df_caa1['LR']==0.1]
+df_caa1_2 = df_caa1[df_caa1['LR']==0.05]
+df_caa1_3 = df_caa1[df_caa1['LR']==0.01]
+df_caa1_4 = df_caa1[df_caa1['LR']==0.005]
+df_caa1_5 = df_caa1[df_caa1['LR']==0.001]
+
+df_oaa1_1 = df_oaa1[df_oaa1['LR']==0.1]
+df_oaa1_2 = df_oaa1[df_oaa1['LR']==0.05]
+df_oaa1_3 = df_oaa1[df_oaa1['LR']==0.01]
+df_oaa1_4 = df_oaa1[df_oaa1['LR']==0.005]
+df_oaa1_5 = df_oaa1[df_oaa1['LR']==0.001]
+
+df_rboaa1_1 = df_rboaa1[df_rboaa1['LR']==0.1]
+df_rboaa1_2 = df_rboaa1[df_rboaa1['LR']==0.05]
+df_rboaa1_3 = df_rboaa1[df_rboaa1['LR']==0.01]
+df_rboaa1_4 = df_rboaa1[df_rboaa1['LR']==0.005]
+df_rboaa1_5 = df_rboaa1[df_rboaa1['LR']==0.001]
+
+#For 5k
+df_caa2_1 = df_caa2[df_caa2['LR']==0.1]
+df_caa2_2 = df_caa2[df_caa2['LR']==0.05]
+df_caa2_3 = df_caa2[df_caa2['LR']==0.01]
+df_caa2_4 = df_caa2[df_caa2['LR']==0.005]
+df_caa2_5 = df_caa2[df_caa2['LR']==0.001]
+
+df_oaa2_1 = df_oaa2[df_oaa2['LR']==0.1]
+df_oaa2_2 = df_oaa2[df_oaa2['LR']==0.05]
+df_oaa2_3 = df_oaa2[df_oaa2['LR']==0.01]
+df_oaa2_4 = df_oaa2[df_oaa2['LR']==0.005]
+df_oaa2_5 = df_oaa2[df_oaa2['LR']==0.001]
+
+df_rboaa2_1 = df_rboaa2[df_rboaa2['LR']==0.1]
+df_rboaa2_2 = df_rboaa2[df_rboaa2['LR']==0.05]
+df_rboaa2_3 = df_rboaa2[df_rboaa2['LR']==0.01]
+df_rboaa2_4 = df_rboaa2[df_rboaa2['LR']==0.005]
+df_rboaa2_5 = df_rboaa2[df_rboaa2['LR']==0.001]
+
 # For 10k sets
 df_caa3_1 = df_caa3[df_caa3['LR']==0.1]
 df_caa3_2 = df_caa3[df_caa3['LR']==0.05]
@@ -180,37 +218,72 @@ standardized_residuals_rboaa3 = influence_rboaa3.resid_studentized_internal
 from scipy import stats
 import numpy as np
 #Check for normality within groups
-print("SHAPIRO \nCAA W-test stat, p-value", stats.shapiro(model_caa3.resid))
-print("OAA W-test stat, p-value", stats.shapiro(model_oaa3.resid))
+"""
+print("1k\nCAA: ",stats.kruskal(df_caa1_1['Loss'], df_caa1_2['Loss'], df_caa1_3['Loss'], df_caa1_4['Loss'],df_caa1_5['Loss']))
+print("OAA: ",stats.kruskal(df_oaa1_1['Loss'], df_oaa1_2['Loss'], df_oaa1_3['Loss'], df_oaa1_4['Loss'],df_oaa1_5['Loss']))
+print("RBOAA: ",stats.kruskal(df_rboaa1_1['Loss'], df_rboaa1_2['Loss'], df_rboaa1_3['Loss'], df_rboaa1_4['Loss'],df_rboaa1_5['Loss']))
+
+print("5k\nCAA: ",stats.kruskal(df_caa2_1['Loss'], df_caa2_2['Loss'], df_caa2_3['Loss'], df_caa2_4['Loss'],df_caa2_5['Loss']))
+print("OAA: ",stats.kruskal(df_oaa2_1['Loss'], df_oaa2_2['Loss'], df_oaa2_3['Loss'], df_oaa2_4['Loss'],df_oaa2_5['Loss']))
+print("RBOAA: ",stats.kruskal(df_rboaa2_1['Loss'], df_rboaa2_2['Loss'], df_rboaa2_3['Loss'], df_rboaa2_4['Loss'],df_rboaa2_5['Loss']))
+
+print("10k\nCAA: ",stats.kruskal(df_caa3_1['Loss'], df_caa3_2['Loss'], df_caa3_3['Loss'], df_caa3_4['Loss'],df_caa3_5['Loss']))
+print("OAA: ",stats.kruskal(df_oaa3_1['Loss'], df_oaa3_2['Loss'], df_oaa3_3['Loss'], df_oaa3_4['Loss'],df_oaa3_5['Loss']))
+print("RBOAA: ",stats.kruskal(df_rboaa3_1['Loss'], df_rboaa3_2['Loss'], df_rboaa3_3['Loss'], df_rboaa3_4['Loss'],df_rboaa3_5['Loss']))
+
+print("1k\nSHAPIRO \nCAA W-test stat, p-value", stats.shapiro(model_caa1.resid))
+print("OAA W-test stat, p-value", stats.shapiro(model_oaa1.resid))
+print("RBOAA W-test stat, p-value", stats.shapiro(model_rboaa1.resid))
+
+print("5k\nSHAPIRO \nCAA W-test stat, p-value", stats.shapiro(model_caa2.resid))
+print("OAA W-test stat, p-value", stats.shapiro(model_oaa2.resid))
+print("RBOAA W-test stat, p-value", stats.shapiro(model_rboaa2.resid))
+"""
+#print("10k\nSHAPIRO \nCAA W-test stat, p-value", stats.shapiro(model_caa3.resid))
+#print("OAA W-test stat, p-value", stats.shapiro(model_oaa3.resid))
 print("RBOAA W-test stat, p-value", stats.shapiro(model_rboaa3.resid))
+#print("\n ktest:\nRBOAA W-test stat, p-value", stats.kstest(model_rboaa3.resid, 'norm'))
 
-print("\n ktest:\nRBOAA W-test stat, p-value", stats.kstest(model_rboaa3.resid, 'norm'))
-print("\n\n")
 
-print("SHAPIRO \nCAA W-test stat, p-value", stats.shapiro(standardized_residuals_caa3))
-print("OAA W-test stat, p-value", stats.shapiro(standardized_residuals_oaa3))
-print("RBOAA W-test stat, p-value", stats.shapiro(standardized_residuals_rboaa3))
+"""fig, axes = plt.subplots(1,3)
+fig.set_size_inches(10, 7)
+sns.histplot(standardized_residuals_caa1, bins='auto', ax=axes[0]) 
+sns.histplot(standardized_residuals_caa2, bins='auto', ax=axes[1]) 
+sns.histplot(standardized_residuals_caa3, bins='auto', ax=axes[2]) 
+fig.suptitle("Histograms of CAA residuals", fontsize=16)
+axes[0].set_title("1000")
+axes[1].set_title("5000")
+axes[2].set_title("10000")
+fig.subplots_adjust(wspace=0.4)
+fig.savefig("LR results/hists_models_res.png",bbox_inches='tight', dpi=200)
+plt.show()"""
+sns.set_palette(sns.color_palette(["#1e90ff","#0073e6"]))
 
 fig, axes = plt.subplots(1,3)
 fig.set_size_inches(10, 7)
-sns.histplot(df_caa, x='Loss', bins='auto', ax=axes[0]) 
-sns.histplot(df_oaa, x='Loss', bins='auto', ax=axes[1]) 
-sns.histplot(df_rboaa, x='Loss', bins='auto', ax=axes[2]) 
-fig.suptitle("Histograms of Models Data", fontsize=16)
+sns.histplot(standardized_residuals_caa3, bins='auto', ax=axes[0]) 
+sns.histplot(standardized_residuals_oaa3, bins='auto', ax=axes[1]) 
+sns.histplot(standardized_residuals_rboaa3, bins='auto', ax=axes[2]) 
+fig.suptitle("Histograms of Model residuals for 10000 respondents", fontsize=16)
 axes[0].set_title("CAA")
 axes[1].set_title("OAA")
 axes[2].set_title("RBOAA")
 fig.subplots_adjust(wspace=0.4)
-fig.savefig("LR results/hists_models_10k.png",bbox_inches='tight', dpi=200)
+fig.savefig("LR results/hists_models_res.png",bbox_inches='tight', dpi=200)
 plt.show()
 
+"""
+#log_caa_loss = np.log(df_caa['Loss'])
+#sns.histplot(log_caa_loss,bins='auto')
+#plt.show()
+df_oaa['Log'] = np.log(df_oaa['Loss'])
+model_oaa_log = ols('Log ~ LR', data=df_oaa).fit()
+sns.histplot(model_oaa_log.resid,bins='auto')
+plt.title("Log transform OAA loss")
+plt.show()
+print("Log\nOAA W-test stat, p-value", stats.shapiro(model_oaa_log.resid))
 
-log_caa_loss = np.log(df_caa['Loss'])
-sns.histplot(log_caa_loss,bins='auto')
-plt.show()
-log_oaa_loss = np.log(df_oaa['Loss'])
-sns.histplot(log_oaa_loss,bins='auto')
-plt.show()
+
 log_rboaa_loss = np.log(df_rboaa['Loss'])
 sns.histplot(log_rboaa_loss,bins='auto')
 plt.show()
@@ -221,7 +294,7 @@ box_oaa_loss = stats.boxcox(df_oaa['Loss'])
 sns.histplot(box_oaa_loss,bins='auto')
 plt.show()
 
-"""sns.set_palette(sns.color_palette(["#1e90ff","#0073e6"]))
+sns.set_palette(sns.color_palette(["#1e90ff","#0073e6"]))
 fig, axes = plt.subplots(2,3)
 fig.set_size_inches(10, 7)
 sns.histplot(df_caa3_1, x='Loss',bins='auto', ax=axes[0,0]) 
@@ -254,8 +327,7 @@ axes[1,0].set_title("0.005")
 axes[1,1].set_title("0.001")
 fig.subplots_adjust(wspace=0.4, hspace=0.4)
 fig.savefig("LR results/hists_oaa_10k_all_LR.png",bbox_inches='tight', dpi=200)
-plt.show()"""
-
+plt.show()
 fig, axes = plt.subplots(2,3)
 fig.set_size_inches(10, 7)
 sns.histplot(df_rboaa3_1, x='Loss',bins='auto', ax=axes[0,0])
@@ -271,11 +343,11 @@ axes[1,0].set_title("0.005")
 axes[1,1].set_title("0.001")
 fig.subplots_adjust(wspace=0.4, hspace=0.4)
 fig.savefig("LR results/hists_rboaa_10k_all_LR.png",bbox_inches='tight', dpi=200)
-plt.show()
+plt.show()"""
 
-print("CAA: ",stats.kruskal(df_caa3_1['Loss'], df_caa3_2['Loss'], df_caa3_3['Loss'], df_caa3_4['Loss'],df_caa3_5['Loss']))
-print("OAA: ",stats.kruskal(df_oaa3_1['Loss'], df_oaa3_2['Loss'], df_oaa3_3['Loss'], df_oaa3_4['Loss'],df_oaa3_5['Loss']))
-print("RBOAA: ",stats.kruskal(df_rboaa3_1['Loss'], df_rboaa3_2['Loss'], df_rboaa3_3['Loss'], df_rboaa3_4['Loss'],df_rboaa3_5['Loss']))
+#print("CAA: ",stats.kruskal(df_caa3_1['Loss'], df_caa3_2['Loss'], df_caa3_3['Loss'], df_caa3_4['Loss'],df_caa3_5['Loss']))
+#print("OAA: ",stats.kruskal(df_oaa3_1['Loss'], df_oaa3_2['Loss'], df_oaa3_3['Loss'], df_oaa3_4['Loss'],df_oaa3_5['Loss']))
+#print("RBOAA: ",stats.kruskal(df_rboaa3_1['Loss'], df_rboaa3_2['Loss'], df_rboaa3_3['Loss'], df_rboaa3_4['Loss'],df_rboaa3_5['Loss']))
 
 
 
@@ -291,7 +363,7 @@ axes[1].set_title("oaa")
 axes[2].set_title("rboaa")
 fig.subplots_adjust(wspace=0.4)
 fig.savefig("LR results/qq_models.png",bbox_inches='tight', dpi=200)
-plt.show()"""
+plt.show()
 
 fig, axes = plt.subplots(1,3)
 fig.set_size_inches(10, 7)
@@ -304,4 +376,4 @@ axes[1].set_title("5k")
 axes[2].set_title("10k")
 fig.subplots_adjust(wspace=0.4)
 fig.savefig("LR results/qq_rboaa.png",bbox_inches='tight', dpi=200)
-plt.show()
+plt.show()"""

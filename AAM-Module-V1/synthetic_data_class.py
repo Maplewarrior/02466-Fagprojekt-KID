@@ -184,3 +184,35 @@ class _synthetic_data:
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
         pickle.dump(self, file)
         file.close()
+
+#%%
+import matplotlib.pyplot as plt
+
+def softplus(s):
+    return np.log(1+np.exp(s))
+N = 400
+M = 21
+K = 5
+p = 6
+b_params = [1, 10]
+sigmas = [-10, -1.05, -0.565]
+sigmas_c = [softplus(s) for s in sigmas]
+rb = True
+a_param = 1
+LikertScale = np.arange(1,p+1)
+
+import seaborn as sns
+
+for i, b in enumerate(b_params):
+    for j, s in enumerate(sigmas):
+        answer_dist = []
+        syn = _synthetic_data(N, M, K, p, s, rb, a_param, b)
+        X = syn.X
+        answer_dist = [len(X[X == i+1]) for i in range(p)]
+        
+        # Generate plots
+        #plt.hist(LikertScale, answer_dist, bins=10)
+        plt.hist(LikertScale, answer_dist, bins=6)
+        plt.title("Answer distribution for sigma = {0} & beta_param = {1}".format(sigmas_c[j], b_params[i]))
+        plt.show()
+        
